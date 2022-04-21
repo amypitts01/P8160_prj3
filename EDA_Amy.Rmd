@@ -1,0 +1,164 @@
+---
+title: "EDA_amy"
+author: "Amy Pitts"
+date: '2022-04-21'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+library(data.table)
+library(maps)
+library(gtsummary)
+```
+
+## Data import 
+I am going to take all the code she gave us and run it first. 
+
+```{r}
+dt = read.csv("hurrican703.csv")
+dt %>% 
+  ggplot(aes(x = Longitude, y = Latitude)) + 
+    stat_summary_2d(
+      data = dt, 
+      aes(x = Longitude, y = Latitude, z = dt$Wind.kt), 
+      fun = median, 
+      binwidth = c(1, 1), 
+      show.legend = TRUE
+  )
+```
+
+This this just a lat and long of our data. Looks like it is centered around a middle with a right tail in the smaller longitude value and higher latitude values. 
+
+
+```{r}
+dt <- as.data.table(dt)
+summary(dt)
+```
+
+The data avaiable to use is `ID`, `Season`, `Month`, `Nature`, `time`, `Latitude`, `Longitude` and `Wind.kt`. 
+
+```{r}
+map <- ggplot(data = dt, aes(x = Longitude, y = Latitude)) + 
+  geom_polygon(
+    data = map_data(map = 'world'), 
+    aes(x = long, y = lat, group = group)
+  )
+map +
+  stat_summary_2d(
+    data = dt, 
+    aes(x = Longitude, y = Latitude, z = dt$Wind.kt), 
+    fun = median, binwidth = c(1, 1), 
+    show.legend = TRUE, 
+    alpha = 0.75
+  ) + 
+  ggtitle(paste0("Atlantic Windstorm mean knot"))
+```
+
+
+```{r}
+map <- ggplot(dt, aes(x = Longitude, y = Latitude, group = ID)) + 
+  geom_polygon(
+    data = map_data("world"), 
+    aes(x = long, y = lat, group = group), 
+    fill = "gray25", colour = "gray10", size = 0.2
+  ) + 
+  geom_path(data = dt, aes(group = ID, colour = Wind.kt), size = 0.5) + 
+  xlim(-138, -20) + ylim(3, 55) + 
+  labs(x = "", y = "", colour = "Wind \n(knots)") + 
+  theme(panel.background = element_rect(fill = "gray10", colour = "gray30"),
+        axis.text.x = element_blank(), axis.text.y = element_blank(), 
+        axis.ticks = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+seasonrange <- paste(range(dt[, Season]), collapse=" - ")
+
+map + ggtitle(paste("Atlantic named Windstorm Trajectories (", 
+                     seasonrange, ")\n")) 
+```
+
+Show hurricance tracks by month
+```{r}
+mapMonth <- map + facet_wrap(~ Month) +
+  ggtitle(paste("Atlantic named Windstorm Trajectories by Month (", 
+                 seasonrange, ")\n")) 
+mapMonth
+```
+
+It bothers me that months are not in order... I am going to try to force it to be in order. 
+
+Show hurricance tracks by month
+```{r}
+df_temp = dt %>%
+  mutate(
+    Nature = factor(Nature),
+    Season = factor(Season), # season is year not season.... 
+    #Month = factor(Month),
+    Month = factor(Month, levels = c(month.name)),
+  )
+
+map <- ggplot(df_temp, aes(x = Longitude, y = Latitude, group = ID)) + 
+  geom_polygon(
+    data = map_data("world"), 
+    aes(x = long, y = lat, group = group), 
+    fill = "gray25", colour = "gray10", size = 0.2
+  ) + 
+  geom_path(data = df_temp, aes(group = ID, colour = Wind.kt), size = 0.5) + 
+  xlim(-138, -20) + ylim(3, 55) + 
+  labs(x = "", y = "", colour = "Wind \n(knots)") + 
+  theme(panel.background = element_rect(fill = "gray10", colour = "gray30"),
+        axis.text.x = element_blank(), axis.text.y = element_blank(), 
+        axis.ticks = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+seasonrange <- paste(range(dt[, Season]), collapse=" - ")
+
+mapMonth <- map + facet_wrap(~ Month) +
+  ggtitle(paste("Atlantic named Windstorm Trajectories by Month (", 
+                 seasonrange, ")\n")) 
+mapMonth
+```
+
+
+
+### New Visualizations 
+
+Data Transformation 
+(Pushing some variables to factor)
+Note that the Month is pushed to a factor that have a new level for each month. However, in our dataset we have no observations for February and march. When I introduce this level in the table it shows no data for those two months. There are no NAs in our data, the level function just shows that there is no data for that month. 
+```{r}
+df_temp = dt %>%
+  mutate(
+    Nature = factor(Nature),
+    Season = factor(Season), # season is year not season.... 
+    #Month = factor(Month),
+    Month = factor(Month, levels = c(month.name)),
+  )
+
+df_temp %>%
+  #arrange(match(Month, month.name)) %>% 
+  select(Nature, Wind.kt, Latitude, Longitude,  Month ) %>% 
+  tbl_summary(by =Nature ) %>%
+  add_overall() %>% 
+  modify_spanning_header(c("stat_1", "stat_2","stat_3","stat_4","stat_5") ~ "**Nature of the Hurricane**") 
+```
+
+
+```{r message=FALSE, warning=TRUE, include=FALSE}
+temp = table(dt$ID) %>% as.data.frame() 
+```
+
+
+
+## Data Description
+
+There are `r unique(dt$ID) %>% length()` unique hurricanes in this dataset all the occurred in the north american region between the years `r `range(dt$Season)[1]` to `r `range(dt$Season)[2]`. Data on the storm's location (longitude & latitude) and maximum wind speed were recorded every 6 hours. The number of observations we have for each storm range from `r range(temp$Freq)[1]` to `r range(temp$Freq)[2]` with a mean value of `r round(mean(temp$Freq))` observations. Data is also collected on the storms month, and the nature of the hurricane; (Extra Tropical (ET), Disturbance (DS), Not Rated (NR), Sub Tropical (SS), and Tropical Storm (TS)). 
+
+
+
+
+
+
+

@@ -1,0 +1,106 @@
+---
+title: |
+  | P8160 - Project 3
+  | Baysian modeling of hurrican trajectories
+author: |
+  | Group 6
+  |
+  | Amy Pitts, Jiacheng Wu, Jimmy Kelliher, Ruiqi Yan & Tianchuan Gao
+date: "2022-05-09"
+output:
+  pdf_document: default
+  
+header-includes:
+  - \usepackage{amsmath,amssymb,amsthm,amsfonts,bbm,graphics,enumitem}
+  - \usepackage{geometry,mathrsfs}
+  - \usepackage{tikz}
+  - \usepackage{pgfplots}
+  - \usetikzlibrary{shapes,arrows}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(tidyverse)
+library(data.table)
+library(maps)
+library(gtsummary)
+
+dt = read.csv("hurrican703.csv")
+```
+
+
+\vspace{75mm}
+
+\begin{center}
+{\bf Abstract}
+\end{center}
+
+|        abstract 
+
+\newpage
+# 1. Introduction
+
+## 1.1. Background
+
+
+## 1.2. Objectives
+
+
+
+
+
+# 2. Methods
+
+## 2.1. Data Cleaning and Exploratory Analysis
+
+```{r message=FALSE, warning=TRUE, include=FALSE}
+temp = table(dt$ID) %>% as.data.frame() 
+```
+
+There are `r length(unique(dt$ID))` unique hurricanes in this dataset all the occurred in the north american region between the years `r range(dt$Season)[1]` to `r range(dt$Season)[2]`. Data on the storm's location (longitude & latitude) and maximum wind speed were recorded every 6 hours. The number of observations we have for each storm range from `r range(temp$Freq)[1]` to `r range(temp$Freq)[2]` with a mean value of `r round(mean(temp$Freq))` observations per hurricane. Data is also collected on the storms month, and the nature of the hurricane; (Extra Tropical (ET), Disturbance (DS), Not Rated (NR), Sub Tropical (SS), and Tropical Storm (TS)). 
+
+
+
+# 3. Results 
+
+
+
+# 4. Discussion 
+
+## 4.1. Summary of Findings
+
+
+## 4.2. Limitations
+
+
+
+## 4.3 Future Work
+
+
+
+## 4.4. Group Contributions
+
+
+
+\newpage
+
+# References 
+
+\begin{enumerate}[label={[\arabic*]}]
+  \item  one 
+  \item  two 
+\end{enumerate}
+
+\newpage 
+
+# Appendices
+
+
+
+
+
+
+
+
