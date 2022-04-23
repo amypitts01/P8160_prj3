@@ -28,6 +28,8 @@ library(maps)
 library(gtsummary)
 
 dt = read.csv("hurrican703.csv")
+
+load("df_rm.RData")
 ```
 
 
@@ -60,6 +62,26 @@ temp = table(dt$ID) %>% as.data.frame()
 ```
 
 There are `r length(unique(dt$ID))` unique hurricanes in this dataset all the occurred in the north american region between the years `r range(dt$Season)[1]` to `r range(dt$Season)[2]`. Data on the storm's location (longitude & latitude) and maximum wind speed were recorded every 6 hours. The number of observations we have for each storm range from `r range(temp$Freq)[1]` to `r range(temp$Freq)[2]` with a mean value of `r round(mean(temp$Freq))` observations per hurricane. Data is also collected on the storms month, and the nature of the hurricane; (Extra Tropical (ET), Disturbance (DS), Not Rated (NR), Sub Tropical (SS), and Tropical Storm (TS)). 
+
+To conduct our analysis we require at least 7 observations for each unique hurricane. In addition, we are only concerned about observations that occurred on 6 hour intervals. The dataset includes a couple observations between the 6 hour time periods. For our analysis we are only going to include observations that are recorded on hour 0, 6, 12, and 18. In addition we will exclude all hurricane IDs that have less then 7 observations. Through this process we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. 
+
+\begin{center}
+\textit{Table 1: Data Characteristics shown by the Nature of the Hurricane variable}
+\end{center}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+df_rm %>%
+  #arrange(match(Month, month.name)) %>% 
+  select(Nature, Wind.kt, Latitude, Longitude,  Month ) %>% 
+  tbl_summary(by =Nature ) %>%
+  add_overall() %>% 
+  modify_spanning_header(c("stat_1", "stat_2","stat_3","stat_4","stat_5") ~ "**Nature of the Hurricane**") 
+```
+
+
+**Standardization**
+
+
 
 
 

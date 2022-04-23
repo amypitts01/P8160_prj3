@@ -33,9 +33,12 @@ df_temp = dt %>%
 temp = table(df_temp$ID) %>% as.data.frame()
 
 # eliminate anyone that has less or equal to 7
-id_get_rid <- temp %>% arrange(Freq) %>% filter(Freq <= 7) %>% pull(Var1)
-df_temp_rm <- df_temp %>% filter(!(ID %in% c(id_get_rid))) 
+id_get_rid <- temp %>% arrange(Freq) %>% filter(Freq < 7) %>% pull(Var1)
+df_rm <- df_temp %>% filter(!(ID %in% c(id_get_rid))) 
 
 # figuring out the percentage we are removing 
-(dim(dt)[1]-dim(df_temp_rm)[1]) / dim(dt)[1]
+(dim(dt)[1]-dim(df_rm)[1]) / dim(dt)[1]
+
+save(df_rm, file = "df_rm.RData")
+
 
