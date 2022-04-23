@@ -209,4 +209,12 @@ dt_6hour_rm <- dt_6hours %>% filter(!(ID %in% c(id_get_rid))) # onlt getting rid
 ```
 
 
+```{r}
+df_new = read.csv("hurricanoutcome2.csv")
+
+df_new %>% pull(HurricanID) %>% unique()
+```
+
+
+
 
