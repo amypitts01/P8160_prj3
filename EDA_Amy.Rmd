@@ -149,8 +149,7 @@ df_temp %>%
 ```{r message=FALSE, warning=TRUE, include=FALSE}
 temp = table(dt$ID) %>% as.data.frame() 
 
-temp %>% arrange(Freq) %>% head()
-
+temp %>% arrange(Freq) 
 temp[which.max((temp$Freq)),]
 ```
 
@@ -188,7 +187,7 @@ dt_temp %>% head()
 
 #dt_temp %>% filter(ID == "GINGER.1971")
 
-dt_temp %>% filter(min != "00") %>% filter(ID =="SANDY.2012")
+dt_temp %>% filter(min != "00") %>% dim() # %>% filter(ID =="SANDY.2012")
 dt_temp %>% filter(ID =="SANDY.2012") %>% head()
 ```
 
@@ -196,8 +195,18 @@ We have data collected between the 6 hours. We need to think about how to handle
 
 
 
+## Filtering 
+
+```{r}
+dt_6hours <- dt_temp %>% filter(min == "00") 
 
 
+temp = table(dt_6hours$ID) %>% as.data.frame() 
+
+id_get_rid <- temp %>% arrange(Freq) %>% filter(Freq <= 7) %>% pull(Var1)
+
+dt_6hour_rm <- dt_6hours %>% filter(!(ID %in% c(id_get_rid))) # onlt getting rid of 214
+```
 
 
 
