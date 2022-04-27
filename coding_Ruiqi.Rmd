@@ -1,0 +1,281 @@
+---
+title: "coding_Ruiqi"
+author: "Ruiqi Yan (ry2417)"
+date: "4/20/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(ggplot2)
+library(maps)
+library(data.table)
+library(tidyverse)
+library(doParallel)
+```
+
+# Hurrican Data
+hurricane703.csv collected the track data of 703 hurricanes in  the North Atlantic area since 1950. For all the storms, their location (longitude \& latitude) and maximum wind speed were recorded every 6 hours. The data includes the following variables 
+
+1. **ID**:  ID of the hurricanes
+2. **Season**: In which \textbf{year} the hurricane occurred 
+3. **Month**: In which \textbf{month} the hurricane occurred 
+4. **Nature**:  Nature of the hurricane 
+  + ET: Extra Tropical
+  + DS: Disturbance
+  + NR: Not Rated
+  + SS: Sub Tropical
+  + TS: Tropical Storm
+5. **time**: dates and time of the record  
+6. **Latitude** and **Longitude**:  The location of  a hurricane check point 
+7. **Wind.kt**  Maximum wind speed (in Knot) at each check point 
+
+## load and clean data
+
+```{r}
+load("df_rm.RData")
+df_rm
+dt = df_rm %>% 
+  janitor::clean_names() %>% 
+  group_by(id) %>% 
+  mutate(wind_lag = lag(wind_kt,1),
+         lat_shift = lag(latitude, 1) - lag(latitude, 2),
+         long_shift = lag(longitude, 1) - lag(longitude, 2),
+         wind_shift = lag(wind_kt, 1) - lag(wind_kt, 2)) %>% 
+  drop_na() %>% 
+  select(id,wind_kt,wind_lag,lat_shift, long_shift, wind_shift)
+
+n_freq = dt %>% group_by(id) %>% count() %>% pull(n)
+df_mcmc = dt %>% 
+  nest(y = wind_kt, x_matrix=wind_lag:wind_shift) %>% 
+  mutate(x_matrix = map(.x = x_matrix, ~model.matrix(~., data = .x)),
+         y = map(y, pull))
+y_obs = df_mcmc$y
+x_matrix = df_mcmc$x_matrix
+n_obs = nrow(dt)
+
+obs_list = list(y_obs = y_obs,
+           x_matrix = x_matrix)
+
+n_rep = 10000
+d = 5
+n_beta = nrow(df_mcmc)*d
+n_theta = 3426
+m = 681
+rep_time = rep(n_freq,d)
+names = c(str_c(str_c("beta_", 0:4), "_", rep(1:m, each = d)),"sigma", str_c("beta_", 0:4))
+for(i in 0:4){for(j in i:4){names = c(names, paste0("sigma_", i,j))}}
+```
+
+
+```{r}
+numCores <- detectCores()
+
+log_lik_beta = function(sigma, beta, j){
+  obs = obs_list
+  beta = asplit(matrix(beta, ncol = 5),1)[[j]]
+  x = obs$x_matrix[[j]]
+  y = obs$y_obs[[j]]
+  return(-t(y - x %*% beta) %*% (y - x %*% beta)/(2*sigma))
+}
+
+log_prior_beta = function(sigma, sigma_p, mu, beta, j){
+  m = 681
+  d = 5
+  beta = asplit(matrix(beta, ncol = d),1)[j]
+  return(-(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
+}
+
+log_posterior_beta = function(theta, sigma_p, j){
+  sigma = theta[3411]
+  mu = theta[3406:3410]
+  x = obs_list$x_matrix[[j]]
+  y = obs_list$y_obs[[j]]
+  beta = asplit(matrix(theta[1:3405], ncol = 5),1)[[j]]
+  return(-t(y - x %*% beta) %*% (y - x %*% beta)/(2*sigma)-(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
+  
+}
+
+log_posterior_mu = function(theta){
+  beta = theta[1:3405]
+  sigma = theta[3411]
+  mu = theta[3406:3410]
+  
+  
+}
+
+
+
+log_lik = function(sigma, beta){
+  n_obs = 20216
+  beta_frame = matrix(rep(beta,time = rep_time), ncol = 5)
+  return(-(n_obs/2)*log(sigma)-sum((dt$wind_kt-beta_frame[,1]-dt$wind_lag*beta_frame[,2]-dt$lat_shift*beta_frame[,3]-dt$long_shift*beta_frame[,4]-dt$wind_shift*beta_frame[,5])^2/(2*sigma)))
+}
+
+log_prior = function(sigma, sigma_p, mu, beta){
+  m = 681
+  d = 5
+  beta = asplit(matrix(beta, ncol = d),1)
+  
+  
+  return(-log(sigma)+(d+1+m/2)*log(det(sigma_p))-(1/2)*sum(diag(sigma_p))-(1/2)*sum(mcmapply(function(x){t(x-mu)%*%sigma_p%*%(x-mu)}, x = beta, mc.cores = numCores)))
+}
+
+log_posterior_beta = function(theta, sigma_p, j){
+  beta = theta[1:3405]
+  sigma = theta[3411]
+  mu = theta[3406:3410]
+  sigma_p = matrix(0,5,5)
+  sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[3412:3426]
+  sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
+  
+  
+  
+}
+
+log_posterior_sigma = function(theta){
+  n_beta = 3405
+  d = 5
+  beta = theta[1:n_beta]
+  beta = asplit(matrix(theta[1:n_beta], ncol = d),1)
+  sigma = theta[3411]
+  mu = theta[3406:3410]
+  sigma_p = matrix(0,d,d)
+  sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[3412:3426]
+  sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
+  
+  if(min(eigen(sigma_p)$values, sigma) <= 0){
+    return(-Inf)
+  } else{
+    return(log_lik(beta, sigma) + log_prior(sigma, sigma_p, mu, beta))
+  }
+}
+
+log_posterior_1 = function(theta){
+  n_beta = 3405
+  d = 5
+  beta = asplit(matrix(theta[1:n_beta], ncol = d),1)
+  sigma = theta[3411]
+  mu = theta[3406:3410]
+  sigma_p = matrix(0,d,d)
+  sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[3412:3426]
+  sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
+  if(min(eigen(sigma_p)$values, sigma) <= 0){
+    return(-Inf)
+  } else{
+    return(log_prior(sigma, sigma_p, mu, beta))
+  }
+}
+
+
+
+log_posterior_2 = function(theta, sigma_p){
+  n_beta = 3405
+  d = 5
+  beta = asplit(matrix(theta[1:n_beta], ncol = d),1)
+  sigma = theta[3411]
+  mu = theta[3406:3410]
+  return(log_lik(beta, sigma) + log_prior(sigma, sigma_p, mu, beta))
+}
+
+
+
+
+componentwiseMH=function(a, theta_0, nrep=10000, obs,  n_theta, d, n_beta){
+  theta = theta_0
+  theta_chain = matrix(0, nrow = nrep, ncol = n_theta)
+  for(i in 1:nrep){
+    for(j in 1:n_theta){
+      prop = theta
+      prop[j] = prop[j]+2*(runif(1)-0.5)*a[j]
+      if(log(runif(1)) < (log_posterior_1(prop) - log_posterior_1(theta))){
+        theta[j] = prop[j]
+      }
+    }
+    theta_chain[i,] = theta
+  }
+  return(theta_chain)
+}
+
+search_a = function(a, theta_0, nrep=100, n_theta, d, n_beta){
+  theta = theta_0
+  theta_chain = matrix(0, nrow = nrep, ncol = n_theta)
+  
+  for(i in 1:nrep){
+    
+    sigma_p = matrix(0,d,d)
+    sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[3412:3426]
+    sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
+    
+    for(j in c(6:10, 3406:3410)){
+      prop = theta
+      prop[j] = prop[j]+2*(runif(1)-0.5)*a[j]
+      if(log(runif(1)) < (log_posterior_2(prop, sigma_p) - log_posterior_2(theta, sigma_p))){theta[j] = prop[j]}
+    }
+    
+    for(j in 3411:3426){
+      prop = theta
+      prop[j] = prop[j]+2*(runif(1)-0.5)*a[j]
+      
+      if(log(runif(1)) < (log_posterior(prop) - log_posterior(theta))){
+        theta[j] = prop[j]
+      }
+    }
+    theta_chain[i,] = theta
+  }
+  return(theta_chain)
+}
+
+
+blockwiseMH=function(a, theta_0, nrep=10000, n_theta, d, n_beta){
+  theta = theta_0
+  theta_chain = matrix(0, nrow = nrep, ncol = n_theta)
+  for(i in 1:nrep){
+    sigma_p = matrix(0,d,d)
+    sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[seq(n_theta-14, n_theta)]
+    sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
+    #update beta
+    prop = theta
+    prop[1:5] = prop[1:5]+2*(runif(5)-0.5)*a[1:5]
+    if(log(runif(1)) < (log_posterior_2(prop, sigma_p) - log_posterior_2(theta, sigma_p))){
+      theta[1:(n_beta+5)] = prop[1:(n_beta+5)]
+    }
+    # update sigma
+    prop = theta
+    prop[3411] = prop[3411]+2*(runif(1)-0.5)*a[3411]
+    if(log(runif(1)) < (log_posterior(prop) - log_posterior(theta))){
+      theta = prop
+    }
+    # update sigma matrix
+    for(j in 3410:3426){
+        prop = theta
+        prop[j] = prop[j]+2*(runif(1)-0.5)*a[j]
+        if(log(runif(1)) < (log_posterior_1(prop) - log_posterior_1(theta))){
+          theta[j] = prop[j]
+        }
+      }
+    theta_chain[i,] = theta
+  }
+  return(theta_chain)
+}
+
+```
+
+```{r}
+a = c(rep(c(0.1,0.01,0.3,0.3,0.2), each =681),0.03,0.03,0.03,0.03,0.03,1,2,2,2,2,2,2.5,1.8,1.8,1.8,3,1.8,2,2,2,2)
+
+beta_0 = lm(wind_kt~wind_lag+lat_shift+long_shift+ wind_shift, data = dt)
+theta_0 = c(rep(beta_0$coefficients, each = n_beta/d),beta_0$coefficients,mean((beta_0$residuals)^2),1,0,0,0,0,1,0,0,0,1,0,0,1,0,1)
+
+
+numunique = function(x){length(unique(x))}
+
+
+theta_chain = blockwiseMH(a, theta_0, nrep=20, n_theta, d, n_beta)
+numunique(theta_chain[,1])
+apply(x[,6:10], MARGIN = 2, numunique)/100
+```
+
+
