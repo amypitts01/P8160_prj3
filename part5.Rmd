@@ -1,0 +1,245 @@
+---
+title: "Part_5"
+author: "Amy Pitts"
+date: '2022-04-28'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(gtsummary)
+```
+
+
+
+```{r}
+load("df_rm.RData")
+load("mcmc_chain_1.RData")
+load("mcmc_chain_2.RData")
+load("mcmc_chain_3.RData")
+load("mcmc_chain_4.RData")
+load("mcmc_chain_5.RData")
+load("mcmc_chain_6.RData")
+```
+
+
+```{r}
+theta_chain <- rbind(
+  theta_chain_1,
+  theta_chain_2,
+  theta_chain_3,
+  theta_chain_4,
+  theta_chain_5,
+  theta_chain_6
+)
+```
+
+```{r}
+d = 5
+n_theta = 3426
+bs_estimates = apply(theta_chain[5001:10000,], 2, mean)
+mu = bs_estimates[3406:3410]
+sigma = bs_estimates[3411]
+cov_m = matrix(0,5,5)
+cov_m[lower.tri(cov_m, diag = TRUE)] = bs_estimates[seq(n_theta-14, n_theta)]
+cov_m[upper.tri(cov_m)] = t(cov_m)[upper.tri(cov_m)]
+beta = matrix(bs_estimates[1:3405], ncol = d)
+```
+
+
+```{r}
+dt = df_rm %>% 
+  janitor::clean_names() %>% 
+  group_by(id) %>% 
+  mutate(wind_lag = lag(wind_kt,1),
+         lat_shift = lag(latitude, 1) - lag(latitude, 2),
+         long_shift = lag(longitude, 1) - lag(longitude, 2),
+         wind_shift = lag(wind_kt, 1) - lag(wind_kt, 2)) %>% 
+  drop_na()
+
+dt_res = dt %>% 
+  select(id, nature, season, month, wind_kt, wind_lag,lat_shift, long_shift, wind_shift) %>%
+  nest(data = nature:wind_shift) %>% 
+  ungroup() %>% 
+  mutate(beta_0 = beta[,1],
+         beta_1 = beta[,2],
+         beta_2 = beta[,3],
+         beta_3 = beta[,4],
+         beta_4 = beta[,5]) %>% 
+  unnest(data) %>% 
+  mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift)
+
+head(dt_res)
+```
+
+
+### Linear Models 
+
+```{r}
+dt_res = dt_res %>% 
+  rename(year = season) %>%
+  mutate(
+    decade = (year - min(year))/10
+  )
+
+dt_long <- dt_res %>% 
+  select(decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+  pivot_longer(
+    c(beta_0:beta_4),
+    names_to = "beta",
+    values_to = "vals"
+  ) 
+
+dt_long %>% 
+  ggplot(aes(x=year, y=vals, color=beta )) +
+  geom_point()+
+  facet_grid(beta~nature, scale = "free")
+
+dt_long %>% 
+  ggplot(aes(x=year, y=vals, color=beta )) +
+  geom_point()+
+  facet_grid(beta~month, scale="free")
+
+dt_long %>% 
+  ggplot(aes(x=nature, y=vals, color=beta )) +
+  geom_boxplot()+
+  facet_wrap(~beta)
+
+dt_long %>% 
+  ggplot(aes(x=month, y=vals, color=beta )) +
+  geom_boxplot()+
+  facet_wrap(~beta) +
+  scale_x_discrete(guide = guide_axis(angle = -45))
+  
+
+
+beta0_mod <- lm(beta_0 ~ decade + nature + month, data = dt_res)
+#summary(beta0_mod)
+
+tab1 = beta0_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+beta1_mod <- lm(beta_1 ~ decade + nature + month, data = dt_res)
+#summary(beta1_mod)
+
+tab2 = beta1_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+beta2_mod <- lm(beta_2 ~ decade + nature + month, data = dt_res)
+#summary(beta2_mod)
+
+tab3 = beta2_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+beta3_mod <- lm(beta_3 ~ decade + nature + month, data = dt_res)
+#summary(beta3_mod)
+
+tab4 = beta3_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+beta4_mod <- lm(beta_4 ~ decade + nature + month, data = dt_res)
+#summary(beta4_mod)
+
+tab5 = beta4_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+tbl_merge(
+  list(tab1, tab2, tab3, tab4, tab5),
+  tab_spanner = c("beta0", "beta1", "beta2", "beta3", "beta4")
+) 
+
+```
+
+
+```{r}
+map(dt_res %>% select(beta_0, beta_1, beta_2, beta_3, beta_4), range)
+```
+
+
+### Just looking at year
+
+```{r}
+dt_long %>% 
+  ggplot(aes(x=year, y=vals )) + #, color=beta
+  geom_point()+
+  geom_smooth(method='lm')+ #method='lm'
+  facet_wrap(~beta, scale = "free") 
+  
+
+beta0_mod <- lm(beta_0 ~ decade , data = dt_res)
+beta1_mod <- lm(beta_1 ~ decade , data = dt_res)
+beta2_mod <- lm(beta_2 ~ decade , data = dt_res)
+beta3_mod <- lm(beta_3 ~ decade , data = dt_res)
+beta4_mod <- lm(beta_4 ~ decade , data = dt_res)
+tab1 = beta0_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+tab2 = beta1_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+tab3 = beta2_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+tab4 = beta3_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+tab5 = beta4_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+
+
+tbl_stack(
+  list(tab1, tab2, tab3, tab4, tab5),
+  group_header  = c("beta0", "beta1", "beta2", "beta3", "beta4")
+) 
+```
+
+
+
+```{r}
+dt_res%>% 
+  group_by(decade) %>%
+  summarize(
+    mean_wind = mean(wind_kt)
+  ) %>% 
+  ggplot(aes(x=decade, y= mean_wind)) +
+  geom_point()+
+  geom_line() +
+  geom_smooth(method='lm')
+```
+
+
+
+
+
+
+
+
