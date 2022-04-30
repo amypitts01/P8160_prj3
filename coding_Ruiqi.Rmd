@@ -182,6 +182,9 @@ blockwiseMH=function(a, theta_0, nrep=10000){
   }
   return(theta_chain)
 }
+
+## calculate the number of unique value
+numunique = function(x){length(unique(x))}
 ```
 
 
@@ -192,8 +195,8 @@ blockwiseMH=function(a, theta_0, nrep=10000){
 
 # specify a_1_i
 a2 = rep(0.06,m)
-ind_1 = c(266,458,619)
-ind_08 = c(8,38,63,64,66,72,80,84,87,115,130,145,149,164,194,196,218,223,234,236,238,243,254,260,288,291,294,323,324,326,330,334,336,354,370,377,378,380,387,401,423,429,432,437,451,454,457,460,469,482,487,495,504,505,510,517,520,526,527,534,537,539,545,547,551,570,575,583,596,599,602,603,609,610,612,624,630,637,640,641,648,660,666)
+ind_1 = c(102,323,266,458,619,630)
+ind_08 = c(8,13,38,44,63,64,66,72,80,84,87,115,130,137,145,149,159,164,165,186,194,196,204,207,218,223,234,236,238,243,246,251,254,260,268,288,290,291,294,324,325,326,330,334,336,354,368,370,377,378,380,387,395,398,401,423,428,429,432,437,451,454,457,460,469,480,482,487,488,491,495,504,505,510,517,520,526,527,534,537,539,545,547,551,570,575,583,596,595,599,602,603,609,610,612,623,624,637,640,641,648,660,665,666)
 ind_04 = c(1,3,6,7,16,19,24,28,31,41,45,46,47,50,51,54,68,73,82,83,94,95,97,99,108,113,118,119,121,122,126,140,157,158,163,181,206,217,225,239,250,252,261,263,274,282,292,297,306,310,315,332,333,335,344,355,357,371,372,381,397,399,400,404,412,416,418,421,427, 431,433,436,439,445,448,449,450,455,456,464,475,483,494,497,508,523,524,531,532,538,540,541,544,563,564,571,584,589,601,613,614,620,639,642,646,647,663,664,668)
 ind_02 = c(4,43,52,62,89,93,96,112,117,125,134,136,141,182,249,255,345,403,415,442,503,506,519,522,550,569,591,618)
 
@@ -209,7 +212,7 @@ a2[ind_02] = 0.02
 # a for inverse covariance matrix entry:
 # diagonal:3,55,5,5,6
 # off_diagnol:3-15
-a = c(rep(0.1, m),a2,rep(c(0.07,0.07,0.07), each = m),0.03,0.005,0.02,0.02,0.02, 1, 3,10,3,3,4,55,15,15,15,5,3,5,5,5,6)
+a = c(rep(0.1, m),a2,rep(c(0.07,0.07,0.07), each = m),0.03,0.005,0.02,0.02,0.02, 1, 3,10,3,3,4,55,15,15,15,5,3,5,5,5,8)
 ```
 
 
@@ -267,8 +270,6 @@ write_csv(theta_chain_df, file = "mcmc_chain.csv")
 
 ```{r}
 load("mcmc_chain.RData")
-## calculate the number of unique value
-numunique = function(x){length(unique(x))}
 ## acceptance rate
 a_rate = apply(theta_chain, MARGIN = 2, numunique)/10000
 
@@ -276,7 +277,6 @@ a_rate_matrix = matrix(a_rate[1:n_beta], ncol = 5)
 
 a_range = range(a_rate)
 a_0_range = range(a_rate_matrix[,1])
-which(a_rate_matrix[,1]>0.65)
 a_1_range = range(a_rate_matrix[,2])
 a_2_range = range(a_rate_matrix[,3])
 a_3_range = range(a_rate_matrix[,4])
@@ -345,7 +345,7 @@ hist(theta_chain[5001:10000,3426], nclass = 100)
 
 ```{r}
 ## take average as estimates
-bs_estimates = apply(theta_chain[5001:10000,], 2, mean)
+bs_estimates = unname(apply(theta_chain[5001:10000,], 2, mean))
 bs_estimates_20000 = apply(theta_chain_20000[10001:20000,], 2,mean)
 
 ## compare the results from 10000 and 20000 rep
@@ -388,8 +388,8 @@ dt_res = dt %>%
 
 ## adj r-square and r-square are 0.96
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
-
-adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5-1)
+p_value = 1-pchisq(sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sigma, n_obs-n_beta)
+adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
 
 ## visualize some hurricane prediction
 
