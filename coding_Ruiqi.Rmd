@@ -63,9 +63,12 @@ obs_list = list(y_obs = y_obs,
 
 n_freq = dt %>% group_by(id) %>% count() %>% pull(n) ## number of obs for each hurricane
 d = 5 ## dimension of beta_i
-n_beta = nrow(df_mcmc)*d ## total number of beta
-n_theta = 3426 ## total number of parameters
 m = 681 ## number of hurricanes
+n_beta = m*d ## total number of beta
+n_theta = n_beta+d+1+15 ## total number of parameters
+mu_ind = (n_beta+1):(n_beta+d)
+sigma_ind = n_beta+d+1
+cov_m_ind = (n_beta+d+2):n_theta
 rep_time = rep(n_freq,d) ## repeat time for each beta
 ```
 
@@ -74,19 +77,19 @@ rep_time = rep(n_freq,d) ## repeat time for each beta
 ```{r}
 ## log posterior for beta of hurricane j
 log_posterior_beta = function(theta, sigma_p, j){
-  sigma = theta[3411]
-  mu = theta[3406:3410]
+  sigma = theta[sigma_ind]
+  mu = theta[mu_ind]
   x = obs_list$x_matrix[[j]]
   y = obs_list$y_obs[[j]]
-  beta = matrix(theta[1:3405], ncol = 5)[j,]
+  beta = matrix(theta[1:n_beta], ncol = d)[j,]
   return(-t(y - x %*% beta) %*% (y - x %*% beta)/(2*sigma)-(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
 }
 
 ## log posterior for mu
 log_posterior_mu = function(theta, sigma_p){
-  beta = matrix(theta[1:3405], nrow = 5, byrow = T)
-  sigma = theta[3411]
-  mu = theta[3406:3410]
+  beta = matrix(theta[1:n_beta], nrow = d, byrow = T)
+  sigma = theta[sigma_ind]
+  mu = theta[mu_ind]
   beta_mu = beta-mu
   res = t(beta_mu) %*% sigma_p %*% beta_mu
   return(-(1/2)*sum(diag(res)))
@@ -94,11 +97,10 @@ log_posterior_mu = function(theta, sigma_p){
 
 ## log posterior for sigma
 log_posterior_sigma = function(theta, sigma_p){
-  n_obs = 20216
-  beta = theta[1:3405]
+  beta = theta[1:n_beta]
   beta_frame = matrix(rep(beta,time = rep_time), ncol = 5)
-  sigma = theta[3411]
-  mu = theta[3406:3410]
+  sigma = theta[sigma_ind]
+  mu = theta[mu_ind]
   ## make sure sigma is positive
   if(sigma <= 0){
     return(-Inf)
@@ -112,11 +114,11 @@ log_posterior_sigma = function(theta, sigma_p){
 ## log posterior for inverse covariance matrix
 
 log_posterior_sigmap = function(theta){
-  beta = matrix(theta[1:3405], nrow = 5, byrow = T)
-  sigma = theta[3411]
-  mu = theta[3406:3410]
-  sigma_p = matrix(0,5,5)
-  sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[3412:3426]
+  beta = matrix(theta[1:n_beta], nrow = d, byrow = T)
+  sigma = theta[sigma_ind]
+  mu = theta[mu_ind]
+  sigma_p = matrix(0,d,d)
+  sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[cov_m_ind]
   sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
   ## make sure the covariance is positive definite
   if(min(eigen(sigma_p)$values) <= 0){
@@ -137,16 +139,16 @@ log_posterior_sigmap = function(theta){
 ## update each mu_j
 ## update sigma
 ## update each entry in inverse covariance matrix
-blockwiseMH=function(a, theta_0, nrep=10000, n_theta){
+blockwiseMH=function(a, theta_0, nrep=10000){
   theta = theta_0
   theta_chain = matrix(0, nrow = nrep, ncol = n_theta)
   for(i in 1:nrep){
-    sigma_p = matrix(0,5,5)
-    sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[seq(n_theta-14, n_theta)]
+    sigma_p = matrix(0,d,d)
+    sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta[cov_m_ind]
     sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
     # update beta by block of each hurricane
-    for(j in 1:681){
-      ind =  c(j, j+681, j+681*2, j+681*3, j+681*4)
+    for(j in 1:m){
+      ind =  c(j, j+m, j+m*2, j+m*3, j+m*4)
       prop = theta
       prop[ind] = prop[ind]+2*(runif(5)-0.5)*a[ind]
       if(log(runif(1)) < (log_posterior_beta(prop, sigma_p, j) - log_posterior_beta(theta, sigma_p, j))){
@@ -155,7 +157,7 @@ blockwiseMH=function(a, theta_0, nrep=10000, n_theta){
       
     }
     # update mu
-    for (j in 3406:3410){
+    for (j in mu_ind){
       prop = theta
       prop[j] = prop[j]+2*(runif(1)-0.5)*a[j]
       if(log(runif(1)) < (log_posterior_mu(prop, sigma_p) - log_posterior_mu(theta, sigma_p))){
@@ -164,12 +166,12 @@ blockwiseMH=function(a, theta_0, nrep=10000, n_theta){
     }
     # update sigma
     prop = theta
-    prop[3411] = prop[3411]+2*(runif(1)-0.5)*a[3411]
+    prop[sigma_ind] = prop[sigma_ind]+2*(runif(1)-0.5)*a[sigma_ind]
     if(log(runif(1)) < (log_posterior_sigma(prop, sigma_p) - log_posterior_sigma(theta, sigma_p))){
-      theta[3411] = prop[3411]
+      theta[sigma_ind] = prop[sigma_ind]
     }
     # update inverse sigma matrix
-    for(j in 3412:3426){
+    for(j in cov_m_ind){
         prop = theta
         prop[j] = prop[j]+2*(runif(1)-0.5)*a[j]
         if(log(runif(1)) < (log_posterior_sigmap(prop) - log_posterior_sigmap(theta))){
@@ -180,9 +182,6 @@ blockwiseMH=function(a, theta_0, nrep=10000, n_theta){
   }
   return(theta_chain)
 }
-
-## calculate the number of unique value
-numunique = function(x){length(unique(x))}
 ```
 
 
@@ -192,9 +191,17 @@ numunique = function(x){length(unique(x))}
 ## search window
 
 # specify a_1_i
-a2 = rep(0.05,681)
-a2[c(62,89,134,403,506,522)] = 0.01
-a2[c(4,16,19,24,31,43,45,52,54,68,83,93,94,96,112,117,118,121,125,134,136,140,141,157,158,163,182,206,225,249,255,261,306,332,333,335,344,345,371,397,400,431,415,416,427,433, 436,442,445,449,450,456,464,475,503,508,519,523,524,532,544,550,563,564,569,584,589,591,601,614,618,642,664)] = 0.02
+a2 = rep(0.06,m)
+ind_1 = c(266,458,619)
+ind_08 = c(8,38,63,64,66,72,80,84,87,115,130,145,149,164,194,196,218,223,234,236,238,243,254,260,288,291,294,323,324,326,330,334,336,354,370,377,378,380,387,401,423,429,432,437,451,454,457,460,469,482,487,495,504,505,510,517,520,526,527,534,537,539,545,547,551,570,575,583,596,599,602,603,609,610,612,624,630,637,640,641,648,660,666)
+ind_04 = c(1,3,6,7,16,19,24,28,31,41,45,46,47,50,51,54,68,73,82,83,94,95,97,99,108,113,118,119,121,122,126,140,157,158,163,181,206,217,225,239,250,252,261,263,274,282,292,297,306,310,315,332,333,335,344,355,357,371,372,381,397,399,400,404,412,416,418,421,427, 431,433,436,439,445,448,449,450,455,456,464,475,483,494,497,508,523,524,531,532,538,540,541,544,563,564,571,584,589,601,613,614,620,639,642,646,647,663,664,668)
+ind_02 = c(4,43,52,62,89,93,96,112,117,125,134,136,141,182,249,255,345,403,415,442,503,506,519,522,550,569,591,618)
+
+a2[ind_1] = 0.1
+a2[ind_08]= 0.08
+a2[408] = 0.05
+a2[ind_04] = 0.04
+a2[ind_02] = 0.02
 
 # a_0_i = 0.1, a_2_i = a_3_i = a_4_i = 0.07
 # a for mu: (0.03,0.005,0.02,0.02,0.02)
@@ -202,25 +209,36 @@ a2[c(4,16,19,24,31,43,45,52,54,68,83,93,94,96,112,117,118,121,125,134,136,140,14
 # a for inverse covariance matrix entry:
 # diagonal:3,55,5,5,6
 # off_diagnol:3-15
-a = c(rep(0.1, 681),a2,rep(c(0.07,0.07,0.07), each = 681),0.03,0.005,0.02,0.02,0.02, 1, 3,10,3,3,4,55,15,15,15,5,3,5,5,5,6)
-
+a = c(rep(0.1, m),a2,rep(c(0.07,0.07,0.07), each = m),0.03,0.005,0.02,0.02,0.02, 1, 3,10,3,3,4,55,15,15,15,5,3,5,5,5,6)
 ```
 
 
 ```{r}
-## starting value: lm on all obs and get the coefficient as initial value for beta and mu
-## get the mse of the lm as the initial value for sigma
+## starting value: mlr on all obs and get the coefficient as initial value for beta and mu
+## get the mse of the mlr as the initial value for sigma
 ## use identity matrix as the initial value for inverse covariance matrix
 beta_0 = lm(wind_kt~wind_lag+lat_shift+long_shift+ wind_shift, data = dt)
 theta_0 = unname(c(rep(beta_0$coefficients, each = n_beta/d),beta_0$coefficients,mean((beta_0$residuals)^2),1,0,0,0,0,1,0,0,0,1,0,0,1,0,1))
 
+set.seed(2022)
+theta_chain_1000 = blockwiseMH(a, theta_0, nrep=1000)
+
+a_rate_1000 = apply(theta_chain_1000, MARGIN = 2, numunique)/1000
+a_rate_matrix_1000 = matrix(a_rate_1000[1:n_beta], ncol = 5)
+which(a_rate_matrix_1000[,1]>0.6)
+which(a_rate_matrix_1000[,1]<0.3)
+```
+
+
+```{r}
 ## generate mcmc chain 10000
 set.seed(2022)
-theta_chain = blockwiseMH(a, theta_0, nrep=10000, n_theta) ## generate mcmc chain 10000
-theta_chain_20000 = blockwiseMH(a, theta_0, nrep=20000, n_theta) ## generate mcmc chain 20000
+theta_chain = blockwiseMH(a, theta_0, nrep=10000)## generate mcmc chain 10000
+set.seed(2022)
+theta_chain_20000 = blockwiseMH(a, theta_0, nrep=20000) ## generate mcmc chain 20000
 
 ## add colnames
-names = c(str_c(rep(str_c("beta_", 0:4),each = 681),"_", rep(1:m, d)),str_c("mu_", 0:4),"sigma")
+names = c(str_c(rep(str_c("beta_", 0:4),each = m),"_", rep(1:m, d)),str_c("mu_", 0:4),"sigma")
 for(i in 0:4){for(j in i:4){names = c(names, paste0("sigma_", i,j))}}
 colnames(theta_chain) = names
 colnames(theta_chain_20000) = names
@@ -249,7 +267,8 @@ write_csv(theta_chain_df, file = "mcmc_chain.csv")
 
 ```{r}
 load("mcmc_chain.RData")
-
+## calculate the number of unique value
+numunique = function(x){length(unique(x))}
 ## acceptance rate
 a_rate = apply(theta_chain, MARGIN = 2, numunique)/10000
 
@@ -257,6 +276,7 @@ a_rate_matrix = matrix(a_rate[1:n_beta], ncol = 5)
 
 a_range = range(a_rate)
 a_0_range = range(a_rate_matrix[,1])
+which(a_rate_matrix[,1]>0.65)
 a_1_range = range(a_rate_matrix[,2])
 a_2_range = range(a_rate_matrix[,3])
 a_3_range = range(a_rate_matrix[,4])
@@ -266,8 +286,8 @@ a_mu_1 = a_rate[n_beta+2]
 a_mu_2 = a_rate[n_beta+3]
 a_mu_3 = a_rate[n_beta+4]
 a_mu_4 = a_rate[n_beta+5]
-a_sigma = a_rate[n_beta+6]
-a_cov_range = range(a_rate[3412:3426])
+a_sigma = a_rate[sigma_ind]
+a_cov_range = range(a_rate[cov_m_ind])
 
 ```
 
@@ -300,10 +320,10 @@ hist(theta_chain[5001:10000,3417], nclass = 100)
 hist(theta_chain[5001:10000,3421], nclass = 100)
 
 plot(theta_chain[,2], type = "l")
-plot(theta_chain[,681+2], type = "l")
-plot(theta_chain[,681*2+2], type = "l")
-plot(theta_chain[,681*3+2], type = "l")
-plot(theta_chain[,681*4+2], type = "l")
+plot(theta_chain[,m+2], type = "l")
+plot(theta_chain[,m*2+2], type = "l")
+plot(theta_chain[,m*3+2], type = "l")
+plot(theta_chain[,m*4+2], type = "l")
 plot(theta_chain[,3413], type = "l")
 plot(theta_chain[,3418], type = "l")
 plot(theta_chain[,3424], type = "l")
@@ -311,10 +331,10 @@ plot(theta_chain[,3426], type = "l")
 
 par(mfrow=c(3,3))
 hist(theta_chain[5001:10000,2], nclass = 100)
-hist(theta_chain[5001:10000,681+2], nclass = 100)
-hist(theta_chain[5001:10000,681*2+2], nclass = 100)
-hist(theta_chain[5001:10000,681*3+2], nclass = 100)
-hist(theta_chain[5001:10000,681*4+2], nclass = 100)
+hist(theta_chain[5001:10000,m+2], nclass = 100)
+hist(theta_chain[5001:10000,m*2+2], nclass = 100)
+hist(theta_chain[5001:10000,m*3+2], nclass = 100)
+hist(theta_chain[5001:10000,m*4+2], nclass = 100)
 hist(theta_chain[5001:10000,3413], nclass = 100)
 hist(theta_chain[5001:10000,3418], nclass = 100)
 hist(theta_chain[5001:10000,3424], nclass = 100)
@@ -347,7 +367,7 @@ sum((cov_m_20000-cov_m_10000)^2) ##diff between covaraince matrix is also small
 ## estimates
 sigma = bs_estimates[3411]
 mu = bs_estimates[3406:3410]
-beta = matrix(bs_estimates[1:3405], ncol = d)
+beta = matrix(bs_estimates[1:n_beta], ncol = d)
 ```
 
 
@@ -366,7 +386,7 @@ dt_res = dt %>%
   unnest(data) %>% 
   mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift)
 
-## adj r-square and r-sqaure are 0.96
+## adj r-square and r-square are 0.96
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
 
 adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5-1)
