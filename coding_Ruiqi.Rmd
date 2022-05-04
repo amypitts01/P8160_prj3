@@ -16,6 +16,7 @@ library(tidyverse)
 library(foreach)
 library(doParallel)
 library(MASS)
+theme_set(theme(legend.position = "bottom"))
 ```
 
 # Hurrican Data
@@ -244,13 +245,17 @@ ind_06 =  c(1,3,4,6,16,19,24,28,31,41,43,45,46,47,50,51,52,54,62,68,69,73,82,83,
 
 ind_12 = c(8,13,38,57,63,64,66,72,80,84,114,115,137,145,149,159,164,165,186,196,204,207,218,223,234,236,238,243,246,251,254,260,266,268,275,283,288,290,291,294,307,323:326,330,334,336,354,368,370,377,378,380,387,395,398,401,428,429,432,437,454,457,458,460,469,480,482,487,488,491,495,499,504,510,517,526,527,534,537,539,545,547,551,570,572,575,583,595,596,599,602,603,609,610,612,619,624,630,634,637,640,641,648,660,665,666,671)
 a2 = rep(0.08,m)
-a2[ind_06] = 0.05
+a2[ind_06] = 0.04
 a2[ind_12] = 0.1
+a3 = rep(1.3, m)
+a3[203] = 1.1
+a4 = rep(0.6,m)
+a4[c(4,18,20,32,40,50,62,68,94,106,118,124,134,140,166,216,220,250,272,274,282,306,328,364, 376, 400, 412, 420, 434, 440, 442, 452, 456, 464, 508, 514, 522, 524, 562, 564, 568,584, 614, 642,646)] = 0.5
 
 a5 = rep(0.3,m)
 ind_14 = c(3,6,12,15,18,21,24,30,36,39,42 ,48, 57 ,63,66,72,75,78,81,84,87,93,102, 108,114,120,126,132,135,138,147,153,159,162,165,168,174,177,180,183,186,189,192,195,198,201,204,207,210,216,219,222,225,228,231,234,237,240,243,246,252,258,261,264,267,270,276,279,288,291,294,297,300,303,309,312,315,318,324,327,330,333,336, 339,342, 348, 351,354,357,360,363,366, 369, 372, 375, 378, 381, 387, 390, 393, 399, 402, 405, 408, 411, 417, 420, 423, 426, 429,432, 435,438, 441, 444, 447, 450, 453, 459, 462, 465, 468, 471, 474, 477, 480, 486, 489, 492, 495, 498, 501,504, 507, 510, 513, 525, 528, 534, 537, 540, 543, 546, 549, 555, 558, 564, 567, 570, 573,576, 579, 582, 585,588, 594, 600, 603, 606, 609, 612, 615, 624, 630, 633, 636, 639, 642,645, 648, 651, 654, 657, 660, 663, 666,669, 672, 675, 678, 681)
 a5[ind_14] = 0.5
-a = c(rep(1.5,m),a2,rep(c(1.4,0.7),m), a5)
+a = c(rep(1.3,m),a2,a3,a4,a5)
 ```
 
 
@@ -283,14 +288,17 @@ cov_0 = solve(cov(starting_beta))
 
 
 set.seed(1971)
-theta_chain_10000 = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, sigma_0, cov_0, nrep=10000)
-theta_chain = theta_chain_10000
-a_rate_10000 = apply(theta_chain_10000, MARGIN = 2, numunique)/10000
-a_rate_matrix_10000 = matrix(a_rate_10000[1:n_beta], ncol = 5)
-a_rate_matrix_10000
-which(a_rate_matrix_10000[,5]>0.7)
-which(a_rate_matrix_10000[,5]<0.3)
-a_rate_10000[3411]
+theta_chain = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, sigma_0, cov_0, nrep=10000)
+a_rate = apply(theta_chain, MARGIN = 2, numunique)/10000
+a_rate_matrix = matrix(a_rate[1:n_beta], ncol = 5)
+a_rate_matrix
+
+which(a_rate_matrix[,4]>0.7)
+which(a_rate_matrix[,4]<0.3)
+
+which(a_rate_matrix[,3]>0.7)
+which(a_rate_matrix[,3]<0.3)
+a_rate[3411]
 
 
 ```
@@ -328,110 +336,27 @@ write_csv(theta_chain_df, file = "mcmc_chain.csv")
 
 ```{r}
 load("mcmc_chain.RData")
-load("mcmc_chain_100000.RData")
 ## acceptance rate
 
-a_rate = apply(theta_chain_10000, MARGIN = 2, numunique)/10000
+a_rate = apply(theta_chain, MARGIN = 2, numunique)/10000
 
 a_rate_matrix = matrix(a_rate[1:n_beta], ncol = 5)
 
-a_range = range(a_rate)
+a_range = range(a_rate_matrix)
 a_0_range = range(a_rate_matrix[,1])
 a_1_range = range(a_rate_matrix[,2])
 a_2_range = range(a_rate_matrix[,3])
 a_3_range = range(a_rate_matrix[,4])
 a_4_range = range(a_rate_matrix[,5])
-a_mu_0 = a_rate[n_beta+1]
-a_mu_1 = a_rate[n_beta+2]
-a_mu_2 = a_rate[n_beta+3]
-a_mu_3 = a_rate[n_beta+4]
-a_mu_4 = a_rate[n_beta+5]
 a_sigma = a_rate[sigma_ind]
-a_cov_range = range(a_rate[cov_m_ind])
-a_rate[cov_m_ind]
 ```
 
-```{r}
-a_rate_50000 = apply(theta_chain_50000, MARGIN = 2, numunique)/50000
-
-a_rate_matrix_50000 = matrix(a_rate_50000[1:n_beta], ncol = 5)
-
-a_range_50000 = range(a_rate_50000)
-a_0_range_50000 = range(a_rate_matrix_50000[,1])
-a_sigma_50000 = a_rate_50000[sigma_ind]
-
-```
-
-### convergence
-
-```{r}
-
-## visualization of convergence and distribution
-theta_trace_inverse = apply(theta_chain_comp, 1, trace_inverse)
-par(mfrow=c(3,4))
-plot(theta_chain_comp[,3406], type = "l")
-plot(theta_chain_comp[,3407], type = "l")
-plot(theta_chain_comp[,3408], type = "l")
-plot(theta_chain_comp[,3409], type = "l")
-plot(theta_chain_comp[,3410], type = "l")
-plot(theta_chain_comp[,3411], type = "l")
-plot(theta_trace_inverse, type = "l")
-plot(theta_chain_comp[,2], type = "l")
-plot(theta_chain_comp[,m+2], type = "l")
-plot(theta_chain_comp[,m*2+2], type = "l")
-plot(theta_chain_comp[,m*3+2], type = "l")
-plot(theta_chain_comp[,m*4+2], type = "l")
-
-par(mfrow=c(3,4))
-acf(theta_chain_30000[,3406])
-acf(theta_chain_30000[,3407])
-acf(theta_chain_30000[25001:30000,3408])
-acf(theta_chain_30000[25001:30000,3409])
-acf(theta_chain_30000[25001:30000,3410])
-acf(theta_chain_30000[25001:30000,3411])
-acf(theta_trace_inverse[25001:30000])
-acf(theta_chain_30000[25001:30000,2])
-acf(theta_chain_30000[25001:30000,m+2])
-acf(theta_chain_30000[25001:30000,m*2+2])
-acf(theta_chain_30000[25001:30000,m*3+2])
-acf(theta_chain_30000[25001:30000,m*4+2])
-
-theta_trace_inverse_50000 = apply(theta_chain_50000, 1, trace_inverse)
-
-par(mfrow=c(3,4))
-plot(theta_chain_50000[,3406], type = "l")
-plot(theta_chain_50000[,3407], type = "l")
-plot(theta_chain_50000[,3408], type = "l")
-plot(theta_chain_50000[,3409], type = "l")
-plot(theta_chain_50000[,3410], type = "l")
-plot(theta_chain_50000[,3411], type = "l")
-plot(theta_trace_inverse_50000, type = "l")
-plot(theta_chain_50000[,2], type = "l")
-plot(theta_chain_50000[,m+2], type = "l")
-plot(theta_chain_50000[,m*2+2], type = "l")
-plot(theta_chain_50000[,m*3+2], type = "l")
-plot(theta_chain_50000[,m*4+2], type = "l")
-
-par(mfrow=c(3,4))
-acf(theta_chain_50000[45001:50000,3406])
-acf(theta_chain_50000[45001:50000,3407])
-acf(theta_chain_50000[45001:50000,3408])
-acf(theta_chain_50000[45001:50000,3409])
-acf(theta_chain_50000[45001:50000,3410])
-acf(theta_chain_50000[45001:50000,3411])
-acf(theta_trace_inverse_50000[45001:50000])
-acf(theta_chain_50000[45001:50000,2])
-acf(theta_chain_50000[45001:50000,m+2])
-acf(theta_chain_50000[45001:50000,m*2+2])
-acf(theta_chain_50000[45001:50000,m*3+2])
-acf(theta_chain_50000[45001:50000,m*4+2])
-```
 
 ### Estimates
 
 ```{r}
 ## take average as estimates
-bs_estimates = unname(apply(theta_chai10000[5001:10000,], 2, mean))
+bs_estimates = unname(apply(theta_chain[6001:10000,], 2, mean))
 
 
 inv_cov_m = matrix(0,5,5)
@@ -439,9 +364,7 @@ inv_cov_m[lower.tri(inv_cov_m, diag = TRUE)] = bs_estimates[cov_m_ind]
 inv_cov_m[upper.tri(inv_cov_m)] = t(inv_cov_m)[upper.tri(inv_cov_m)]
 
 
-cov_m_10000 = solve(inv_cov_m)
-cov_m_20000 = solve(inv_cov_m_20000)
-cov_m_100000 = solve(inv_cov_m_100000)
+cov_m = solve(inv_cov_m)
 
 ## estimates
 sigma = bs_estimates[3411]
@@ -468,20 +391,6 @@ dt_res = dt %>%
   unnest(data) %>% 
   mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift)
 
-dt_res_5 = dt_res %>% 
-  dplyr::select(id, nature, season, month,beta_0:beta_4) %>% 
-  mutate(decades = (season-min(season))/10) %>% 
-  group_by(id) %>% slice(1)
-dt_res_5 %>% 
-  ggplot(aes(y = beta_2, x = decades))+ 
-  geom_point()
-
-dt_res_5 %>% 
-  mutate(month = reorder(month, beta_0)) %>% 
-  ggplot(aes(x = beta_0))+ 
-  geom_density()+
-  facet_grid(month~.,scales = "free")
-
 ## adj r-square and r-square are 0.96
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
 p_value = 1-pchisq(sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sigma, n_obs-n_beta)
@@ -489,17 +398,19 @@ adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
 
 ## visualize some hurricane prediction
 
-dt_res %>% filter(id == "DOG.1950") %>%
+dt_res %>% filter(id %in% c("DOG.1950","BECKY.1958", "DORIS.1975","ANDREW.1986","FLORENCE.2000", "SANDY.2012")) %>%
   mutate(time = 1:n()) %>% 
   ggplot(aes(y = wind_kt, x = time))+
-  geom_line()+
-  geom_line(aes(y = wind_kt_pred), col = 2)
+  geom_line(aes(color = "observation"))+
+  geom_line(aes(y = wind_kt_pred, color = "prediction"))+
+  scale_colour_manual(name = NULL,
+values = c( "observation" = 1, "prediction" = 2))+
+  facet_wrap(.~id, nrow = 2, scales = "free")+
+  labs(x = "time",
+       y = "wind speed",
+       title = "Observed wind speed vs. Baysian model estimates")
 
-dt_res %>% filter(id == "SANDY.2012") %>%
-  mutate(time = 1:n()) %>% 
-  ggplot(aes(y = wind_kt, x = time))+
-  geom_line()+
-  geom_line(aes(y = wind_kt_pred), col = 2)
+
 
 
 ```
