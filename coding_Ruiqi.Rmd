@@ -244,7 +244,7 @@ ind_06 =  c(1,3,4,6,16,19,24,28,31,41,43,45,46,47,50,51,52,54,62,68,69,73,82,83,
 
 ind_12 = c(8,13,38,57,63,64,66,72,80,84,114,115,137,145,149,159,164,165,186,196,204,207,218,223,234,236,238,243,246,251,254,260,266,268,275,283,288,290,291,294,307,323:326,330,334,336,354,368,370,377,378,380,387,395,398,401,428,429,432,437,454,457,458,460,469,480,482,487,488,491,495,499,504,510,517,526,527,534,537,539,545,547,551,570,572,575,583,595,596,599,602,603,609,610,612,619,624,630,634,637,640,641,648,660,665,666,671)
 a2 = rep(0.08,m)
-a2[ind_04] = 0.05
+a2[ind_06] = 0.05
 a2[ind_12] = 0.1
 
 a5 = rep(0.3,m)
@@ -284,10 +284,10 @@ cov_0 = solve(cov(starting_beta))
 
 set.seed(1971)
 theta_chain_10000 = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, sigma_0, cov_0, nrep=10000)
-
+theta_chain = theta_chain_10000
 a_rate_10000 = apply(theta_chain_10000, MARGIN = 2, numunique)/10000
 a_rate_matrix_10000 = matrix(a_rate_10000[1:n_beta], ncol = 5)
-range(a_rate_matrix_10000)
+a_rate_matrix_10000
 which(a_rate_matrix_10000[,5]>0.7)
 which(a_rate_matrix_10000[,5]<0.3)
 a_rate_10000[3411]
@@ -300,27 +300,27 @@ a_rate_10000[3411]
 ## add colnames
 names = c(str_c(rep(str_c("beta_", 0:4),each = m),"_", rep(1:m, d)),str_c("mu_", 0:4),"sigma")
 for(i in 0:4){for(j in i:4){names = c(names, paste0("sigma_", i,j))}}
-colnames(theta_chain_10000) = names
+colnames(theta_chain) = names
 colnames(theta_chain_20000) = names
 colnames(theta_chain_100000) = names
 ## save results
-save(theta_chain_10000, file = "mcmc_chain.RData")
+save(theta_chain, file = "mcmc_chain.RData")
 save(theta_chain_20000, file = "mcmc_chain_20000.RData")
 save(theta_chain_100000, file = "mcmc_chain_100000.RData")
 
-theta_chain_1 = theta_chain_10000[1:1900,]
-theta_chain_2 = theta_chain_10000[1901:3600,]
-theta_chain_3 = theta_chain_10000[3601:5200,]
-theta_chain_4 = theta_chain_10000[5201:6800,]
-theta_chain_5 = theta_chain_10000[6801:8400,]
-theta_chain_6 = theta_chain_10000[8401:10000,]
+theta_chain_1 = theta_chain[1:1900,]
+theta_chain_2 = theta_chain[1901:3600,]
+theta_chain_3 = theta_chain[3601:5200,]
+theta_chain_4 = theta_chain[5201:6800,]
+theta_chain_5 = theta_chain[6801:8400,]
+theta_chain_6 = theta_chain[8401:10000,]
 save(theta_chain_1, file = "mcmc_chain_1.RData")
 save(theta_chain_2, file = "mcmc_chain_2.RData")
 save(theta_chain_3, file = "mcmc_chain_3.RData")
 save(theta_chain_4, file = "mcmc_chain_4.RData")
 save(theta_chain_5, file = "mcmc_chain_5.RData")
 save(theta_chain_6, file = "mcmc_chain_6.RData")
-theta_chain_df = as_tibble(theta_chain_10000)
+theta_chain_df = as_tibble(theta_chain)
 write_csv(theta_chain_df, file = "mcmc_chain.csv")
 ```
 
