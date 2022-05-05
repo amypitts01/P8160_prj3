@@ -1,0 +1,122 @@
+```{r}
+theta_chain = rbind(theta_chain_1, theta_chain_2, theta_chain_3, theta_chain_4, theta_chain_5, theta_chain_6)
+```
+
+```{r}
+trace_inverse = function(x){
+  m = matrix(0,5,5)
+  m[lower.tri(m, diag = TRUE)] = x[cov_m_ind]
+  m[upper.tri(m)] = t(m)[upper.tri(m)]
+  return(sum(diag(m)))
+}
+
+theta_trace_inverse = apply(theta_chain, 1, trace_inverse)
+```
+
+
+## Convergence plots
+```{r}
+L = 1.5
+par(mfrow=c(3,4))
+par(mar = c(2, 2, 2, 2))
+plot(theta_chain[,2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "Beta0", line = L, cex.lab = 0.5)
+plot(theta_chain[,m+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+mtext("                                 Covergence Plots of Selected Parameters", side = 3, line = 0.6)
+plot(theta_chain[,m*2+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+plot(theta_chain[,m*3+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+plot(theta_chain[,m*4+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+plot(theta_chain[,3406], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "µ1", line = L, cex.lab = 0.5)
+plot(theta_chain[,3407], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "µ2", line = L, cex.lab = 0.5)
+plot(theta_chain[,3408], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "µ3", line = L, cex.lab = 0.5)
+plot(theta_chain[,3409], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "µ4", line = L, cex.lab = 0.5)
+plot(theta_chain[,3410], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "µ5", line = L, cex.lab = 0.5)
+plot(theta_chain[,3411], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = "Sigma", line = L, cex.lab = 0.5)
+plot(theta_trace_inverse, type = "l", cex.axis = 0.5, xlab = "", ylab = "") 
+title(ylab = "Trace of ∑^-1", line = L, cex.lab = 0.5)
+```
+
+## Histograms
+```{r}
+par(mfrow=c(3,4))
+par(mar = c(3, 1, 3, 1))
+hist(theta_chain[5501:10000,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Beta0", line = L)
+hist(theta_chain[5501:10000,m+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+mtext("                                 Histograms of Selected Parameters", side = 3, line = 0.6)
+title(cex.lab = 0.5, xlab = "Beta1", line = L)
+hist(theta_chain[5501:10000,m*2+2], nclass = 50, main = NULL, cex.axis = 0.5, xlab = "", ylab = "")
+title(cex.lab = 0.5, xlab = "Beta2", line = L)
+hist(theta_chain[5501:10000,m*3+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Beta3", line = L)
+hist(theta_chain[5501:10000,m*4+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Beta4", line = L)
+hist(theta_chain[5501:10000,3406], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ1", line = L)
+hist(theta_chain[5501:10000,3407], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ2", line = L)
+hist(theta_chain[5501:10000,3408], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ3", line = L)
+hist(theta_chain[5501:10000,3409], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ4", line = L)
+hist(theta_chain[5501:10000,3410], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ5", line = L)
+hist(theta_chain[5501:10000,3411], nclass = 50, main = NULL, xlab = "", ylab  = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Sigma", line = L)
+hist(theta_trace_inverse, nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Trace of ∑^-1", line = L)
+```
+
+## Beta estimate histograms
+```{r}
+par(mfrow=c(2,3))
+hist(beta[,1], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = "Beta0", cex.lab = 0.5, line = L)
+hist(beta[,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = "Beta1", cex.lab = 0.5, line = L)
+mtext("Histograms of Betas of All Hurricanes", side = 3, line = 0.6)
+hist(beta[,3], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = "Beta2", cex.lab = 0.5, line = L)
+hist(beta[,4], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = "Beta3", cex.lab = 0.5, line = L)
+hist(beta[,5], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = "Beta4", cex.lab = 0.5, line = L)
+```
+
+## Chart of the estimates of mu, sigma and inverseCov
+```{r}
+output1 = t(rbind(round(mu[1], 2), round(mu[2], 2), round(mu[3], 2), round(mu[4], 2), round(mu[5], 2), round(sigma, 2)))
+colnames(output1) = c("µ1", "µ2", "µ3", "µ4", "µ5", "sigma^2")
+rownames(output1) = "Estimates"
+output1 %>% knitr::kable()
+```
+
+```{r}
+colnames(cov_m_10000) = c("beta0", "beta1", "beta2", "beta3", "beta4")
+rownames(cov_m_10000) = c("beta0", "beta1", "beta2", "beta3", "beta4")
+cov_m_10000 %>% knitr::kable()
+
+```
+
+```{r}
+sigmap = bs_estimates[3412:3426]
+row1 = c(round(sigmap[1], 2), " ", " ", " ", " ")
+row2 = c(round(sigmap[2], 2), round(sigmap[3], 2), " ", " ", " ") 
+row3 = c(round(sigmap[4], 2), round(sigmap[5], 2), round(sigmap[6], 2), " ", " ")
+row4 = c(round(sigmap[7], 2), round(sigmap[8], 2), round(sigmap[9], 2), round(sigmap[10], 2), " ")
+row5 = c(round(sigmap[11], 2), round(sigmap[12], 2), round(sigmap[13], 2), round(sigmap[14], 2), round(sigmap[15], 2))
+output2 = rbind(row1, row2, row3, row4, row5)
+colnames(output2) = c("beta0", "beta1", "beta2", "beta3", "beta4")
+rownames(output2) = c("beta0", "beta1", "beta2", "beta3", "beta4")
+output2 %>% knitr::kable()
+```
