@@ -244,18 +244,19 @@ trace_inverse = function(x){
 ind_06 =  c(1,3,4,6,16,19,24,28,31,41,43,45,46,47,50,51,52,54,62,68,69,73,82,83,89,93:97,99,108,112,113,117:119, 121,122,125, 126,134,136,140,141,146,157, 158,163,182,206,217,225,239,249,250,255,261,263,274,282,297,306,310,315,332,333,335,344,345,355,357,371,372,381,397,399,400,403,404,412,415,416,418,421,427,431,433,436,439,442,445,448:450, 455,456,464,475,494,497,503,506,508,519,522:524,531,532,538,540,541,544,550,563,564,569,571,584,589,591,601,613,614,618,639,642,646,663,664)
 
 ind_12 = c(8,13,38,57,63,64,66,72,80,84,114,115,137,145,149,159,164,165,186,196,204,207,218,223,234,236,238,243,246,251,254,260,266,268,275,283,288,290,291,294,307,323:326,330,334,336,354,368,370,377,378,380,387,395,398,401,428,429,432,437,454,457,458,460,469,480,482,487,488,491,495,499,504,510,517,526,527,534,537,539,545,547,551,570,572,575,583,595,596,599,602,603,609,610,612,619,624,630,634,637,640,641,648,660,665,666,671)
+
 a2 = rep(0.08,m)
 a2[ind_06] = 0.04
 a2[ind_12] = 0.1
-a3 = rep(1.3, m)
-a3[203] = 1.1
+a3 = rep(1, m)
+a3[203] = 0.8
 a4 = rep(0.6,m)
 a4[c(4,18,20,32,40,50,62,68,94,106,118,124,134,140,166,216,220,250,272,274,282,306,328,364, 376, 400, 412, 420, 434, 440, 442, 452, 456, 464, 508, 514, 522, 524, 562, 564, 568,584, 614, 642,646)] = 0.5
 
 a5 = rep(0.3,m)
 ind_14 = c(3,6,12,15,18,21,24,30,36,39,42 ,48, 57 ,63,66,72,75,78,81,84,87,93,102, 108,114,120,126,132,135,138,147,153,159,162,165,168,174,177,180,183,186,189,192,195,198,201,204,207,210,216,219,222,225,228,231,234,237,240,243,246,252,258,261,264,267,270,276,279,288,291,294,297,300,303,309,312,315,318,324,327,330,333,336, 339,342, 348, 351,354,357,360,363,366, 369, 372, 375, 378, 381, 387, 390, 393, 399, 402, 405, 408, 411, 417, 420, 423, 426, 429,432, 435,438, 441, 444, 447, 450, 453, 459, 462, 465, 468, 471, 474, 477, 480, 486, 489, 492, 495, 498, 501,504, 507, 510, 513, 525, 528, 534, 537, 540, 543, 546, 549, 555, 558, 564, 567, 570, 573,576, 579, 582, 585,588, 594, 600, 603, 606, 609, 612, 615, 624, 630, 633, 636, 639, 642,645, 648, 651, 654, 657, 660, 663, 666,669, 672, 675, 678, 681)
-a5[ind_14] = 0.5
-a = c(rep(1.3,m),a2,a3,a4,a5)
+a5[ind_14] = 0.4
+a = c(rep(1.1,m),a2,a3,a4,a5)
 ```
 
 
@@ -287,34 +288,20 @@ starting_beta[which(is.na(starting_beta[,5])),5] = coef(beta_0)[5]
 cov_0 = solve(cov(starting_beta))
 
 
-set.seed(1971)
-theta_chain = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, sigma_0, cov_0, nrep=10000)
-a_rate = apply(theta_chain, MARGIN = 2, numunique)/10000
-a_rate_matrix = matrix(a_rate[1:n_beta], ncol = 5)
-a_rate_matrix
-
-which(a_rate_matrix[,4]>0.7)
-which(a_rate_matrix[,4]<0.3)
-
-which(a_rate_matrix[,3]>0.7)
-which(a_rate_matrix[,3]<0.3)
-a_rate[3411]
-
 
 ```
 
 
 ```{r}
+set.seed(1971)
+theta_chain = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, sigma_0, cov_0, nrep=10000)
+
 ## add colnames
 names = c(str_c(rep(str_c("beta_", 0:4),each = m),"_", rep(1:m, d)),str_c("mu_", 0:4),"sigma")
 for(i in 0:4){for(j in i:4){names = c(names, paste0("sigma_", i,j))}}
 colnames(theta_chain) = names
-colnames(theta_chain_20000) = names
-colnames(theta_chain_100000) = names
 ## save results
 save(theta_chain, file = "mcmc_chain.RData")
-save(theta_chain_20000, file = "mcmc_chain_20000.RData")
-save(theta_chain_100000, file = "mcmc_chain_100000.RData")
 
 theta_chain_1 = theta_chain[1:1900,]
 theta_chain_2 = theta_chain[1901:3600,]
@@ -342,21 +329,61 @@ a_rate = apply(theta_chain, MARGIN = 2, numunique)/10000
 
 a_rate_matrix = matrix(a_rate[1:n_beta], ncol = 5)
 
-a_range = range(a_rate_matrix)
-a_0_range = range(a_rate_matrix[,1])
-a_1_range = range(a_rate_matrix[,2])
-a_2_range = range(a_rate_matrix[,3])
-a_3_range = range(a_rate_matrix[,4])
-a_4_range = range(a_rate_matrix[,5])
+a_0_range = range(a_rate_matrix[,1]) # search window 1.1
+a_1_range = range(a_rate_matrix[,2]) # search window: 0.04-0.1
+a_2_range = range(a_rate_matrix[,3]) # search window: 0.8-1
+a_3_range = range(a_rate_matrix[,4]) # search window:0.5-0.6
+a_4_range = range(a_rate_matrix[,5]) # search window: 0.4-0.5
 a_sigma = a_rate[sigma_ind]
+
+df_a = tibble(parameter = c("$\beta_0$", "$\beta_1$", "$\beta_2$", "$\beta_3$", "$\beta_4$", "$\sigma^2$"),
+              search_window = c("1.1",
+                                "0.04-0.1",
+                                "0.8-1",
+                                "0.5-0.6",
+                                "0.4-0.5"),
+              acceptance_rate = c(paste0(a_0_range[1],"-",a_0_range[2]),
+                                  paste0(a_1_range[1],"-",a_1_range[2]),
+                                  paste0(a_2_range[1],"-",a_2_range[2]),
+                                  paste0(a_3_range[1],"-",a_3_range[2]),
+                                  paste0(a_4_range[1],"-",a_4_range[2]),
+                                  paste0(a_sigma)))
 ```
 
+```{r}
+theta_trace_inverse = apply(theta_chain, 1, trace_inverse)
+par(mfrow=c(3,4))
+plot(theta_chain[,3406], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,3407], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,3408], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,3409], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,3410], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,3411], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_trace_inverse, type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,2], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,m+2], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,m*2+2], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,m*3+2], type = "l")
+abline(v = 5500, lty = 2)
+plot(theta_chain[,m*4+2], type = "l")
+abline(v = 5500, lty = 2)
+```
 
 ### Estimates
 
 ```{r}
 ## take average as estimates
-bs_estimates = unname(apply(theta_chain[6001:10000,], 2, mean))
+bs_estimates = unname(apply(theta_chain[5501:10000,], 2, mean))
 
 
 inv_cov_m = matrix(0,5,5)
