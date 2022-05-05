@@ -15,12 +15,12 @@ library(gtsummary)
 
 ```{r}
 load("df_rm.RData")
-load("mcmc_chain_1 2.RData")
-load("mcmc_chain_2 2.RData")
-load("mcmc_chain_3 2.RData")
-load("mcmc_chain_4 2.RData")
-load("mcmc_chain_5 2.RData")
-load("mcmc_chain_6 2.RData")
+load("mcmc_chain_1.RData")
+load("mcmc_chain_2.RData")
+load("mcmc_chain_3.RData")
+load("mcmc_chain_4.RData")
+load("mcmc_chain_5.RData")
+load("mcmc_chain_6.RData")
 ```
 
 
@@ -38,6 +38,7 @@ theta_chain <- rbind(
 ```{r}
 d = 5
 n_theta = 3426
+
 bs_estimates = apply(theta_chain[5001:10000,], 2, mean)
 mu = bs_estimates[3406:3410]
 sigma = bs_estimates[3411]
@@ -46,6 +47,9 @@ cov_m[lower.tri(cov_m, diag = TRUE)] = bs_estimates[seq(n_theta-14, n_theta)]
 cov_m[upper.tri(cov_m)] = t(cov_m)[upper.tri(cov_m)]
 beta = matrix(bs_estimates[1:3405], ncol = d)
 ```
+
+
+
 
 
 ```{r}
@@ -74,8 +78,39 @@ head(dt_res)
 ```
 
 
-### Linear Models 
+```{r}
+n_obs = nrow(dt)
+d = 5 ## dimension of beta_i
+m = 681 ## number of hurricanes
+n_beta = m*d ## total number of beta
+n_theta = n_beta+d+1+15 ## total number of parameters
+## adj r-square and r-square are 0.96
+r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
+p_value = 1-pchisq(sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sigma, n_obs-n_beta)
+adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
 
+## visualize some hurricane prediction
+
+dt_res %>% filter(id %in% c("DOG.1950","BECKY.1958", "DORIS.1975","ANDREW.1986","FLORENCE.2000", "SANDY.2012")) %>%
+  mutate(time = 1:n()) %>% 
+  ggplot(aes(y = wind_kt, x = time))+
+  geom_line(aes(color = "observation"))+
+  geom_line(aes(y = wind_kt_pred, color = "prediction"))+
+  scale_colour_manual(name = NULL,
+values = c( "observation" = 1, "prediction" = 2))+
+  facet_wrap(.~id, nrow = 2, scales = "free")+
+  labs(x = "time",
+       y = "wind speed",
+       title = "Observed wind speed vs. Baysian model estimates")
+
+```
+
+
+
+
+## Exploring the data
+
+### Pivoting the data 
 ```{r}
 dt_res = dt_res %>% 
   rename(year = season) %>%
@@ -84,36 +119,80 @@ dt_res = dt_res %>%
   )
 
 dt_long <- dt_res %>% 
-  select(decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+  select(id, decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
   pivot_longer(
     c(beta_0:beta_4),
     names_to = "beta",
     values_to = "vals"
   ) 
 
+```
+
+
+### Look into the beta histograms and distributions 
+
+Looking at the 95\% credibility interval 
+
+$$\int_{C} \pi(\theta | X) d \theta = 1- \alpha$$
+
+```{r}
+mean_beta_df = dt_long %>%
+  group_by(beta) %>%
+  distinct(id, .keep_all = TRUE) %>%
+  summarize(
+    n = n(),
+    mean_beta = mean(vals),
+    sd_beta = sd(vals),
+    lower_cred_int = mean_beta - 1.96*(sd_beta/sqrt(n)),
+    upper_cred_int = mean_beta + 1.96*(sd_beta/sqrt(n))
+  )
+# Summary of Beta Values 
+mean_beta_df
+
+dt_long1 <- full_join(dt_long,mean_beta_df, by="beta") 
+# Histogram of Beta Values 
+dt_long1 %>% 
+  group_by(beta) %>% 
+  distinct(id, .keep_all = TRUE) %>%
+  ggplot(aes(x=vals, fill = beta)) +
+  geom_histogram() + 
+  geom_vline(aes(xintercept = mean_beta), color="black") +
+  # geom_vline(aes(xintercept = lower_cred_int), color="red") +
+  # geom_vline(aes(xintercept = upper_cred_int), color="red") +
+  facet_wrap(~beta, scale = "free") 
+  
+```
+
+
+```{r}
 dt_long %>% 
   ggplot(aes(x=year, y=vals, color=beta )) +
   geom_point()+
-  facet_grid(beta~nature, scale = "free")
+  facet_grid(beta~nature, scale = "free_y") +
+  theme(axis.text.x = element_text(angle = -45))
 
 dt_long %>% 
   ggplot(aes(x=year, y=vals, color=beta )) +
   geom_point()+
-  facet_grid(beta~month, scale="free")
+  facet_grid(beta~month, scale = "free_y") +
+  theme(axis.text.x = element_text(angle = -45))
 
 dt_long %>% 
   ggplot(aes(x=nature, y=vals, color=beta )) +
   geom_boxplot()+
-  facet_wrap(~beta)
+  facet_wrap(~beta, scale = "free")
 
 dt_long %>% 
   ggplot(aes(x=month, y=vals, color=beta )) +
   geom_boxplot()+
-  facet_wrap(~beta) +
+  facet_wrap(~beta, scale = "free") +
   scale_x_discrete(guide = guide_axis(angle = -45))
   
 
+```
 
+
+```{r}
 beta0_mod <- lm(beta_0 ~ decade + nature + month, data = dt_res)
 #summary(beta0_mod)
 
@@ -164,11 +243,6 @@ tbl_merge(
   tab_spanner = c("beta0", "beta1", "beta2", "beta3", "beta4")
 ) 
 
-```
-
-
-```{r}
-map(dt_res %>% select(beta_0, beta_1, beta_2, beta_3, beta_4), range)
 ```
 
 
