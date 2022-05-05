@@ -1,0 +1,79 @@
+---
+title: "Method_latex"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+$$L(Y \mid \theta) \propto \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}} \exp \left\{-\frac{1}{2 \sigma^{2}}\left(Y_{i}-X_{i} \beta_{i}\right)^{\top}\left(Y_{i}-X_{i} \beta_{i}\right)\right\}$$
+
+$$
+\pi\left(\theta=B, \mu, \Sigma^{-1}, \sigma^{2}\right) \propto\left(\sigma^{2}\right)^{-1} \left|\Sigma^{-1}\right|^{d+1} \exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right)\right\}\prod_{i=1}^{m}\left(\Sigma^{-1}\right)^{\frac{1}{2}}\exp \left\{-\frac{1}{2}\left(\beta_{i}-\mu\right)^{\top}\left|\Sigma^{-1}\right|\left(\beta_{i}-\mu\right)\right\}
+$$
+$$
+\pi(\theta \mid Y) \propto\left(\sigma^{2}\right)^{-1}\left|\Sigma^{-1}\right|^{d+1} 
+\exp \left\{-\frac{1}{2}+ \operatorname{tr}\left(\Sigma^{-1}\right)\right\}\\ \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}}\left(\Sigma^{-1}\right)^{\frac{1}{2}} 
+\exp \left\{-\frac{1}{2 \sigma^{2}}\left(Y_{i}-X_{i} \beta_{i}\right)^{T}\left(Y_{i}-X_{i} \beta_{i}\right)\right\} 
+\exp \left\{-\frac{1}{2}\left(\beta_{i}-\mu\right)^{\top} \Sigma^{-1}\left(\beta_{i}-\mu\right)\right\}
+$$
+
+$$
+\left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m}}{2} n_{i}\right)}\left|\Sigma^{-1}\right|^{d+1+\frac{m}{2}} 
+\exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right) \right\}
+\exp \left\{\frac{1}{2} \sum_{i=1}^{m}\left(\beta_{i}-\mu\right)^{\top} \Sigma^{-1}\left(\beta_{i}-\mu\right)\right\} \\
+\exp \left\{-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{m}\left(Y_{i}-X_{i} \beta_{i}\right)^{\top}\left(Y_{i}-X_{i} \beta_{i}\right)\right\}
+$$
+
+$$
+\frac{\pi\left(\beta_{\mathrm{i}}^{\prime}, \theta_{(\mathrm{t})}^{\left.\left(-\beta_{\mathrm{i}}\right) \mid \mathrm{Y}\right)}\right.}{\pi\left(\theta^{(\mathrm{t})} \mid \mathrm{Y}\right)}=\frac{\exp \left\{-\frac{1}{2 \sigma^{2(t)}}\left(Y_{i}-X_{i} \beta_{i}^{\prime}\right)^{T}\left(Y_{i}-X_{i} \beta_{i}^{\prime}\right)-\frac{1}{2}\left(\beta_{i}^{\prime}-\mu^{(t)}\right)^{T} \Sigma^{-1^{(t)}}\left(\beta_{i}^{\prime}-\mu^{(t)}\right)\right\}}{\exp \left\{-\frac{1}{2} \frac{\left(Y_{i}-X_{i} \beta_{i}^{(t)}\right)^{T}\left(Y_{i}-X_{i} \beta_{i}^{(t)}\right)}{\sigma^{2(t)}}+\left(\beta_{i}^{(t)}-\mu^{(t)}\right){ }^{T} \Sigma^{-1(t)}\left(\beta_{i}^{(t)}-\mu^{(t)}\right)\right\}}
+$$
+
+$$
+\begin{aligned}
+\log (\text { ratio })=-\frac{1}{2}\left(\frac{\left(Y_{i}-X_{i} \beta_{i}^{\prime}\right)^{T}\left(Y_{i}-X_{i} \beta_{i}^{\prime}\right)}{\sigma^{2(t)}}+\left(\beta_{i}^{\prime}-\mu^{(t)}\right)^{T} \Sigma^{-1^{(t)}}\left(\beta_{i}^{\prime}-\mu^{(t)}\right)\right)\\
++\frac{1}{2}\left(\frac{\left(Y_{i}-X_{i} \beta_{i}^{(t)}\right)^{T}\left(Y_{i}-X_{i} \beta_{i}^{(t)}\right)}{\sigma^{2(t)}}+\left(\beta_{i}^{(t)}-\mu^{(t)}\right)^{T} \Sigma^{-1}{ }^{(t)}\left(\beta_{i}^{(t)}-\mu^{(t)}\right)\right)
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\pi\left(u \mid \theta_{(-u)}, Y\right)\propto
+\exp \left\{-\frac{1}{2} \sum_{i=1}^{m}\left(\beta_{i}-\mu\right)^{T} \Sigma^{-1}\left(\beta_{i}-\mu\right)\right\}\\
+=\exp \left\{-\frac{1}{2}(\mu-\bar{\beta})^{T}\left(\Sigma^{-1}\right) m(\mu-\bar{\beta})\right\}
+\end{aligned}
+$$
+
+$$
+\mu \mid \theta_{(-\mu)}, Y \sim MVN(\bar{\beta},\Sigma/m)
+$$
+
+$$
+\begin{equation}
+\frac{\pi\left(\sigma^{2^{\prime}}, \theta_{\left(-\sigma^{2}\right)}^{(t)}\mid Y\right)}{\pi\left(\theta^{(t)}\mid Y\right)}=
+
+\frac{\left(\sigma^{2^{\prime}}\right)^{-\left(1+\frac{M}{2}\right)}
+\exp \left\{-\frac{1}{2 \sigma^{2^{\prime}}} \sum_{i=1}^{m}\left(Y_{i}-x_{i} \beta_{i}^{(t)}\right)^{\top}\left(Y_{i}-x_{i} \beta_{i}^{(t)}\right)\right\}} 
+
+{\left(\sigma^{2^{(t)}}\right)^{-\left(1+\frac{M}{2}\right)}
+\exp \left\{-\frac{1}{2 \sigma^{2(t)}} \sum_{i=1}^{m}\left(Y_{i}-x_{i} \beta_{i}^{(t)}\right)^{\top}\left(Y_{i}-x_{i} \beta_{i}^{(t)}\right)\right\}}
+\end{equation}
+$$
+
+$$
+(\beta_{i}-\mu)^{\top} \Sigma^{-1}(\beta_{i}-\mu)=\operatorname{tr}\left(\left(\beta_{i}-\mu\right)^{\top} \Sigma^{-1}\left(\beta_{i}-\mu\right)\right)\\
+=\operatorname{tr}\left(\Sigma^{-1}\left(\beta_{i}-\mu\right)(\beta i-\mu)^{\top}\right)
+$$
+
+$$
+\begin{aligned}
+\pi\left(\Sigma^{-1} \mid \theta_{\left(-\Sigma^{-1}\right)}, Y\right)\propto
+\left(\Sigma^{-1}\right)^{d+1+\frac{m}{2}} \exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right)\right\}\exp \left\{-\frac{1}{2} \sum_{i=1}^{m}\left(\beta_{i}-\mu\right)^{\top} \Sigma^{-1}\left(\beta_{i}-\mu\right)\right\}\\
+=\left|\Sigma^{-1}\right|^{d+1+\frac{m}{2}}\exp \left\{-\frac{1}{2}\left(\operatorname{tr}\left(\Sigma^{-1}\right)+\sum_{i=1}^{m}\left(\beta_{i}-\mu\right)^{\top} \Sigma^{-1}\left(\beta_{i}-\mu\right)\right)\right\}\\
+=\left|\Sigma^{-1}\right|^{d+1+\frac{m}{2}}
+\exp \left\{-\frac{1}{2}\left(\operatorname{tr}\left(\Sigma^{-1}\left(I+\sum_{i=1}^{m}\left(\beta_{i}-\mu\right)\left(\beta_{1}-\mu\right)^{\top}\right)\right)\right\}\right.
+\end{aligned}
+$$
+
+$$
+\Sigma^{-1} \mid \theta_{\left(-\Sigma^{-1}\right)}, Y \sim Wishart\left(3d+3+m,\left(I+\sum_{i=1}^{m}\left(\beta_{i}-\mu\right)\left(\beta_{1}-\mu\right)^{\top}\right) \right)
+$$
