@@ -217,8 +217,16 @@ Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $N 
 
 
 Next, MH step to generate $\sigma^{2^{\prime}}$. The log posterior ratio:
-$$\log \frac{\pi\left(\sigma^{2^{\prime}},\boldsymbol \theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)}{\pi\left( \sigma^{2^{(t)}},\boldsymbol \theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)} = -\left(1+\frac{M}{2}\right)\log(\sigma^{2^{\prime}})-\frac{1}{2\sigma^{2^{\prime}}}\sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)\\
-+\left(1+\frac{M}{2}\right)\log(\sigma^{2^{(t)}})+\frac{1}{2\sigma^{2^{(t)}}}\sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)$$ where $M$ is total number of observation for all hurricanes.
+
+$$
+\begin{aligned}
+\log \frac{\pi\left(\sigma^{2^{\prime}},\boldsymbol \theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)}{\pi\left( \sigma^{2^{(t)}},\boldsymbol \theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)} 
+&= -\left(1+\frac{M}{2}\right)\log(\sigma^{2^{\prime}})-\frac{1}{2\sigma^{2^{\prime}}}\sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)\\
+&+\left(1+\frac{M}{2}\right)\log(\sigma^{2^{(t)}})+\frac{1}{2\sigma^{2^{(t)}}}\sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t+1)}\right)
+\end{aligned}
+$$
+
+where $M$ is total number of observation for all hurricanes.
 
 
 Check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with
