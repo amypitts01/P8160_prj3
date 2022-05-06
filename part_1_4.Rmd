@@ -1,6 +1,6 @@
 ---
 title: "Part_1-4"
-author: "Ruiqi Yan (ry2417)"
+author: "Tianchuan Gao, Ruiqi Yan, Jiacheng Wu"
 date: "5/4/2022"
 output: 
   pdf_document
