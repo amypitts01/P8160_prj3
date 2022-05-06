@@ -120,7 +120,7 @@ trace_inverse = function(x){
 $$
 L(\boldsymbol Y \mid \boldsymbol \theta) \propto \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}} \exp \left\{-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}
 $$
-where $m$ is the number of hurricane and $n_i$ is the number of observations for $i_{th}$ hurricane
+where $m$ is the number of hurricane and $n_i$ is the number of observations for $i^{th}$ hurricane
 
 
 ### Prior
@@ -150,36 +150,37 @@ $$
 
 ### Conditional Posterior
 
-For $\boldsymbol \beta_i$:
-$$
-\pi(\boldsymbol \beta_i \mid \boldsymbol \theta_{(-\boldsymbol \beta_i)} \boldsymbol Y) \propto \exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}
-$$
-
-
-For $\boldsymbol \mu$:
 $$
 \begin{aligned}
-\pi\left(\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y\right)&\propto
-\exp \left\{-\frac{1}{2} \sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\right\}\\
-(\boldsymbol \beta_{i}-\boldsymbol \mu)^{T} \Sigma^{-1}(\boldsymbol \beta_{i}-\boldsymbol \mu)&=\operatorname{tr}\left(\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\right)\\
+&\boldsymbol \beta_i:
+\pi(\boldsymbol \beta_i \mid \boldsymbol \theta_{(-\boldsymbol \beta_i)} \boldsymbol Y) \propto \exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}\\
+&\boldsymbol \mu:
+\pi\left(\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y\right)\propto
+\exp \left\{-\frac{1}{2} \sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\right\}
+\end{aligned}
+$$
+$$
+\begin{aligned}
+(\boldsymbol \beta_{i}-\boldsymbol \mu)^{T} \Sigma^{-1}(\boldsymbol \beta_{i}-\boldsymbol \mu)
+&=\operatorname{tr}\left(\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\right)\\
 &=\operatorname{tr}\left(\Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)(\boldsymbol \beta_i-\boldsymbol \mu)^{T}\right)\\
 \pi\left(\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, Y\right)&\propto \exp\left\{-\frac{1}{2}\operatorname{tr}\left(\Sigma^{-1}\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)(\boldsymbol \beta_i-\boldsymbol \mu)^{T}\right)\right\}\\
 &= \exp\left\{-\frac{1}{2}\operatorname{tr}\left(\Sigma^{-1}m\left(\boldsymbol \mu - \bar{\boldsymbol \beta}\right)(\boldsymbol \mu - \bar{\boldsymbol \beta})^{T}\right)\right\}\\
 &= \exp \left\{-\frac{1}{2}(\boldsymbol \mu-\bar{\boldsymbol \beta})^{T}\Sigma^{-1} m(\boldsymbol \mu-\bar{\boldsymbol \beta})\right\}\\
-\Rightarrow &\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y \sim N(\bar{\boldsymbol \beta},\Sigma/m)
+&\Rightarrow \boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y \sim N(\bar{\boldsymbol \beta},\Sigma/m)
 \end{aligned} 
 $$
 
 
-For $\sigma^2$:
 $$
-\pi\left(\sigma^{2} \mid \boldsymbol \theta_{(-\sigma^{2})}, \boldsymbol Y\right) \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}
+\sigma^2: \pi\left(\sigma^{2} \mid \boldsymbol \theta_{(-\sigma^{2})}, \boldsymbol Y\right) \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}
 \times \exp \left\{-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}
 $$
 
 
 $$
 \begin{aligned}
+\Sigma^{-1}:
 \pi\left(\Sigma^{-1} \mid \boldsymbol \theta_{\left(-\Sigma^{-1}\right)},\boldsymbol Y\right)
 &\propto
 \left|\Sigma^{-1}\right|^{d+1+\frac{m}{2}} \exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right)\right\}\exp \left\{-\frac{1}{2} \sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\right\}\\
@@ -193,20 +194,17 @@ $$
 
 ## Part II: MCMC Algorithm
 
-We could generate full conditional posterior distribution for partial parameters, so we apply hybrid algorithm consisting with Metropolis-Hastings steps and Gibbs steps.
+We could generate full conditional posterior distribution for some parameters but not all, so we apply hybrid algorithm consisting with Metropolis-Hastings steps and Gibbs steps.
 
 
 MH steps for $\beta_{ij}$:
-
-
-Sampling proposed $\beta_{ij}^{\prime}$ $j = 0,1...4$ for $i_{th}$ hurricane from proposal distribution $U\left(\beta_{ij}^{(t)}-a_{ij},\beta_{ij}^{(t)}+a_{ij}\right)$, where $a_{ij}$ is the search window for $\beta_{ij}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{ij}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \theta$ could be cancelled out, so the ratio simplified to be:
+Sampling proposed $\beta_{ij}^{\prime}$, $j = 0,1...4$ for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{ij}^{(t)}-a_{ij},\beta_{ij}^{(t)}+a_{ij}\right)$, where $a_{ij}$ is the search window for $\beta_{ij}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{ij}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \theta$ could be cancelled out, so the ratio simplified to be:
 
 $$
 \frac{\pi\left(\boldsymbol \beta_{i}^{\prime},\boldsymbol \theta_{(-\boldsymbol \beta_i)}^{(t)} \mid \boldsymbol Y\right)}{\pi\left(\boldsymbol \beta_{i}^{(t)}, \boldsymbol \theta_{(-\boldsymbol \beta_i)}^{(t)} \mid \boldsymbol Y\right)}
 =\frac{\exp \left\{-\frac{1}{2 \sigma^{2(t)}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{\prime}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{\prime}\right)-\frac{1}{2} \left(\boldsymbol \beta_{i}^{\prime}-\boldsymbol \mu^{(t)}\right)^{T}\Sigma^{-1^{(t)}}\left(\boldsymbol \beta_{i}^{\prime}-\boldsymbol \mu^{(t)}\right)\right\}}{\exp \left\{-\frac{1}{2 \sigma^{2(t)}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t)}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t)}\right)-\frac{1}{2}\left(\boldsymbol \beta_{i}^{(t)}-\boldsymbol \mu^{(t)}\right){ }^{T} \Sigma^{-1(t)}\left(\boldsymbol \beta_{i}^{(t)}-\boldsymbol \mu^{(t)}\right)\right\}}
 $$
 where $\boldsymbol \beta_i^{\prime}$ consisting with $\beta_{ij}^{\prime}$, $\beta_{ik}^{(t)}$ for $k>j$ and $\beta_{ik}^{(t+1)}$ for $k<j$.
-
 
 The log of the ratio:
 $$
@@ -216,14 +214,14 @@ $$
 \end{aligned}
 $$
 
-Then we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with the log ratio, if the $\log(u)$ is smaller, we accept $\beta_{ij}^{\prime} = \beta_{ij}^{(t+1)}$, otherwise we reject $\beta_{ij}^{\prime}$ and $\beta_{ij}^{(t)} = \beta_{ij}^{(t+1)}$.
+Then we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with the log ratio. If the $\log(u)$ is smaller, we accept $\beta_{ij}^{\prime} = \beta_{ij}^{(t+1)}$, otherwise we reject $\beta_{ij}^{\prime}$ and $\beta_{ij}^{(t)} = \beta_{ij}^{(t+1)}$.
 
 
 Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $N \left(\bar{\boldsymbol \beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$.
 
 
-Next, MH step to generate $\sigma^{2^{\prime}}$. The log posterior ratio:
-
+Next, MH step to generate $\sigma^{2^{\prime}}$ from $U\left(\sigma^{2^{(t)}}-a_{\sigma^2},\sigma^{2^{(t)}}+a_{\sigma^2}\right)$. Firstly, check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with
+the log posterior ratio. The log posterior ratio
 $$
 \begin{aligned}
 \log \frac{\pi\left(\sigma^{2^{\prime}},\boldsymbol \theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)}{\pi\left( \sigma^{2^{(t)}},\boldsymbol \theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)} 
@@ -232,11 +230,7 @@ $$
 \end{aligned}
 $$
 
-where $M$ is total number of observation for all hurricanes.
-
-
-Check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with
-the log ratio. If the $\log(u)$ is smaller, we accept $\sigma^{2^{\prime}} = \sigma^{2^{(t+1)}}$.
+where $M$ is total number of observation for all hurricanes. If the $\log(u)$ is smaller, we accept $\sigma^{2^{\prime}} = \sigma^{2^{(t+1)}}$.
 
 
 Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right)$ 
@@ -288,7 +282,7 @@ componentwisemixedMH=function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
 
 ## Part III: Implementation and Estimations
 
-### Starting Value and Search Window
+### Iinitial Value
 
 ```{r}
 ## beta_i_0: MLR on ith hurricane and get the coefficient as beta_i_0
@@ -317,7 +311,15 @@ starting_beta[which(is.na(starting_beta[,5])),5] = coef(beta_0)[5]
 cov_0 = solve(cov(starting_beta))
 ```
 
+Initial Values:
 
+- $\boldsymbol \beta_{i}$ - Fit multivariate linear regression (MLR) for $i^{th}$ hurricane and use the coefficients as $\boldsymbol \beta_{i0}$
+
+- $\boldsymbol \mu$ - Average over all $\boldsymbol \beta_{i0}$ as $\boldsymbol \mu_0$ 
+
+- $\sigma^2$ - $\hat{\sigma}^2_i$ is the mean square residuals of the MLR model on $i^{th}$ hurricane. Take the mean over all $\hat{\sigma}^2_i$ as $\sigma^2_0$
+
+- $\Sigma^{-1}$ - Generate the covaraiance matrix of $\boldsymbol \beta_{i0}$ and take the inverse of the matrix as $\Sigma^{-1}_0$
 
 ```{r}
 ## search window
@@ -370,14 +372,14 @@ a = c(rep(1.1,m),a2,a3,a4,a5)
 
 ### Implement 10000 MCMC iterations
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo = TRUE}
 set.seed(1971)
 theta_chain = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, 
                                    sigma_0, cov_0, nrep=10000)
 ```
 
 
-### Acceptance Rate
+### Search Window and Acceptance Rate
 
 ```{r}
 load("mcmc_chain_1.RData")
@@ -394,13 +396,19 @@ a_rate = apply(theta_chain, MARGIN = 2, numunique)/10000
 
 a_rate_matrix = matrix(a_rate[1:n_beta], ncol = 5)
 
+a_range = range(c(a_rate[1:n_beta], a_rate[sigma_ind]))
+
 a_0_range = range(a_rate_matrix[,1])*100 # search window 1.1
 a_1_range = range(a_rate_matrix[,2])*100 # search window: 0.04-0.1
 a_2_range = range(a_rate_matrix[,3])*100 # search window: 0.8-1
 a_3_range = range(a_rate_matrix[,4])*100 # search window:0.5-0.6
 a_4_range = range(a_rate_matrix[,5])*100 # search window: 0.4-0.5
 a_sigma = a_rate[sigma_ind]*100
+```
 
+There is MH step in the MCMC algorithm so the choice of search window is important. The acceptance rate of the MH step is around `r a_range[1]` to `r a_range[2]`, so the search window of our algorithm is appropriate. We tune the search windows multiple times to achieve this result. Table 1 demonstrates the range of search windows $a$ and associated acceptance rates for $\boldsymbol \beta$ and $\sigma^2$.
+
+```{r}
 df_a = tibble(parameter = c("$\\boldsymbol{\\beta}_0$", "$\\boldsymbol{\\beta}_1$", 
                             "$\\boldsymbol{\\beta}_2$", "$\\boldsymbol{\\beta}_3$", 
                             "$\\boldsymbol{\\beta}_4$", "$\\boldsymbol{\\sigma}^2$"),
@@ -420,18 +428,17 @@ df_a = tibble(parameter = c("$\\boldsymbol{\\beta}_0$", "$\\boldsymbol{\\beta}_1
 label_2 = c("","search window", "acceptance rate ($\\%$)")
 
 df_a %>% kable(format = "latex",escape=FALSE, booktabs = TRUE, col.names = label_2,
-               centering = T, vline = "|", linesep = c("\\addlinespace", "\\addlinespace", 
-                                                       "\\addlinespace", "\\addlinespace",
-                                                       "\\addlinespace","\\addlinespace"),
-               caption = "Range of Search Window and Acceptance Rate for each paraemter in MH Algorithm")
+               centering = T, vline = "|", 
+               linesep = c("\\addlinespace", "\\addlinespace",
+                           "\\addlinespace", "\\addlinespace",
+                           "\\addlinespace","\\addlinespace"),
+               caption = "Range of Search Window and Acceptance Rate for paraemters used MH step") %>% 
+  kable_styling(latex_options = "hold_position")
 ```
-
-
+ 
 ```{r}
 theta_trace_inverse = apply(theta_chain, 1, trace_inverse)
 ```
-
-
 ### Convergence trace plots
 
 ```{r}
@@ -529,8 +536,6 @@ mu = bs_estimates[3406:3410]
 beta = matrix(bs_estimates[1:n_beta], ncol = d)
 ```
 
-## Beta estimate histograms
-
 ```{r}
 par(mfrow=c(2,3))
 par(mar = c(3, 2, 3, 2))
@@ -540,7 +545,7 @@ title(xlab = "Beta0", cex.lab = 0.5, line = L)
 hist(beta[,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
 abline(v = mu[2], lty = 2, col = 2)
 title(xlab = "Beta1", cex.lab = 0.5, line = L)
-mtext("Histograms of Betas of All Hurricanes", side = 3, line = 0.6)
+mtext("Histograms of estimated Betas of All Hurricanes", side = 3, line = 0.6)
 hist(beta[,3], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
 abline(v = mu[3], lty = 2, col = 2)
 title(xlab = "Beta2", cex.lab = 0.5, line = L)
@@ -552,13 +557,14 @@ abline(v = mu[5], lty = 2, col = 2)
 title(xlab = "Beta4", cex.lab = 0.5, line = L)
 ```
 
-## Chart of the estimates of mu, sigma and inverseCov
+### Chart of the estimates of mu, sigma and inverseCov
 
 ```{r}
 output1 = t(rbind(round(mu[1], 2), round(mu[2], 2), round(mu[3], 2), round(mu[4], 2), round(mu[5], 2), round(sigma, 2)))
 colnames(output1) = c("$\\boldsymbol \\mu_0$", "$\\boldsymbol \\mu_1$", "$\\boldsymbol \\mu_2$", "$\\boldsymbol \\mu_3$", "$\\boldsymbol \\mu_4$", "$\\boldsymbol \\sigma^2$")
 rownames(output1) = "Estimates"
-output1 %>% knitr::kable(caption = "Bayesian Estimates for $\\boldsymbol \\mu$ and $\\boldsymbol \\sigma^2$", escape = FALSE)
+output1 %>% knitr::kable(caption = "Bayesian Estimates for $\\boldsymbol \\mu$ and $\\boldsymbol \\sigma^2$", escape = FALSE) %>% 
+  kable_styling(latex_options = "hold_position")
 ```
 
 ```{r}
@@ -569,9 +575,15 @@ row3 = c(round(sigmap[4], 2), round(sigmap[5], 2), round(sigmap[6], 2), round(si
 row4 = c(round(sigmap[7], 2), round(sigmap[8], 2), round(sigmap[9], 2), round(sigmap[10], 2), round(sigmap[14], 2))
 row5 = c(round(sigmap[11], 2), round(sigmap[12], 2), round(sigmap[13], 2), round(sigmap[14], 2), round(sigmap[15], 2))
 output2 = rbind(row1, row2, row3, row4, row5)
-colnames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", "$\\boldsymbol \\beta_4$")
-rownames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", "$\\boldsymbol \\beta_4$")
-output2 %>% knitr::kable(escape = FALSE, booktabs = T, caption = "Bayesian Estimate for $\\Sigma^{-1}$")
+colnames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", 
+                      "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", 
+                      "$\\boldsymbol \\beta_4$")
+rownames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", 
+                      "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", 
+                      "$\\boldsymbol \\beta_4$")
+output2 %>% knitr::kable(escape = FALSE, booktabs = T, 
+                         caption = "Bayesian Estimate for $\\Sigma^{-1}$") %>% 
+  kable_styling(latex_options = "hold_position")
 ```
 
 
@@ -588,72 +600,84 @@ dt_res = dt %>%
          beta_3 = beta[,4],
          beta_4 = beta[,5]) %>% 
   unnest(data) %>% 
-  mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift)
+  mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift) %>%
+  group_by(id) %>% 
+  mutate(r_square = (1-sum((wind_kt_pred-wind_kt)^2)/(sum((wind_kt-mean(wind_kt))^2))),
+         n_obs = n(),
+         adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5),
+         p_value = 1-pchisq(sum((wind_kt_pred-wind_kt)^2)/sigma, n_obs-5))
   
 ```
 
 
 ```{r}
-## overall adj r-square are 0.95
-
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
 p_value = 1-pchisq(sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sigma, n_obs-n_beta)
 adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
+```
+
+The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square` and P-value for goodness-of-fit test of all observations is `r p_value`. 
 
 
+```{r}
 dt_rsquare = dt_res %>% 
-  group_by(id) %>% 
-  mutate(r_square = (1-sum((wind_kt_pred-wind_kt)^2)/(sum((wind_kt-mean(wind_kt))^2))),
-         n_obs = n(),
-         adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5)) %>% 
-  dplyr::select(id, r_square, adj_r_square) %>% 
+  dplyr::select(id, r_square, adj_r_square, p_value) %>% 
   distinct()
 
-d_high = dt_rsquare %>% 
-  filter(adj_r_square >=0.7 & adj_r_square <= 1) %>% 
+n_lowp = dt_rsquare %>% filter(p_value < 0.05) %>% 
   nrow()
+
+d_high = dt_rsquare %>% 
+  filter(adj_r_square >=0.6 & adj_r_square <= 1) %>% 
+  nrow()
+
 d_moderate = dt_rsquare %>% 
-  filter(adj_r_square >= 0.3 & adj_r_square< 0.7) %>% 
+  filter(adj_r_square >= 0.2 & adj_r_square< 0.6) %>% 
   nrow()
 
 d_low = dt_rsquare %>% 
-  filter(adj_r_square < 0.3 & adj_r_square> 0) %>% 
+  filter(adj_r_square < 0.2) %>% 
   nrow()
 
-d_bad = dt_rsquare %>% 
-  filter(adj_r_square <= 0)%>% 
-  nrow()
 
 label_1 = c("$R_{adj}^2$", "Count of Hurricanes","Percentage($\\%$)")
-tibble(adj_r = c("0.7-1", "0.3-0.7", "0-0.3", "< 0"),
-       count = c(d_high, d_moderate, d_low, d_bad),
+
+tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
+       count = c(d_high, d_moderate, d_low),
        prop = c(round(d_high/681,3)*100, round(d_moderate/681,3)*100, 
-                round(d_low/681,3)*100, round(d_bad/681,3)*100)) %>% 
-  kable(escape = F, col.names = label_1, caption = "$R_{adj}^2$ for each hurricane")
+                round(d_low/681,3)*100)) %>% 
+  kable(escape = F, col.names = label_1, 
+        caption = "$R_{adj}^2$ for each hurricane") %>% 
+  kable_styling(latex_options = "hold_position")
 
 ```
 
+Furthermore, we check the model performance of individual hurricane. Even though most of the estimated models track hurricanes well with great adjusted $R^2$, some estimated models track the hurricanes extremely bad. `r round((d_low+d_moderate)/681,3)*100`% of the estimated models do not track the hurricane well and have adjusted $R^2$ less than 0.6. Few models have negative adjusted $R^2$. Table 2 show the distribution of the adjusted $R^2$ of the estimated Baysian models for individual hurricane.
 
 
+We also perform the goodness-of-fit test for individual estimated model. `r n_lowp` of the estimated models have p-value less than 0.05, implying that those models do not fit well.   
 
 ```{r}
 ## visualize some hurricane prediction
 
-dt_res %>% filter(id %in% c("INVEST.2010","BECKY.1958", 
-                            "DORIS.1975","ANDREW.1986",
-                            "FLORENCE.2000", "SANDY.2012")) %>%
-  mutate(time = 1:n()) %>% 
+dt_res %>% filter(id %in% c("DOG.1950","JANET.1955","KING.1950",
+                            "BARBARA.1954","GINGER.1967", "ARLENE.1971",
+                            "ALFA.1973","JERRY.2007","JENNY.1969")) %>% 
+  ungroup() %>% 
+  mutate(adj_r_square = round(adj_r_square,3),
+         id = factor(paste0(id, "(",adj_r_square,")")),
+         id = reorder(id, adj_r_square)) %>% 
+  group_by(id) %>% 
+  mutate(time = 1:n()) %>%
   ggplot(aes(y = wind_kt, x = time))+
   geom_line(aes(color = "observation"))+
   geom_line(aes(y = wind_kt_pred, color = "prediction"))+
   scale_colour_manual(name = NULL,
 values = c( "observation" = 1, "prediction" = 2))+
-  facet_wrap(.~id, nrow = 2, scales = "free")+
+  facet_wrap(.~id, nrow = 3, scales = "free")+
   labs(x = "time",
        y = "wind speed",
        title = "Observed Wind Speed vs. Baysian Model Estimates")
-
-
 ```
 
 
