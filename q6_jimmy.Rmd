@@ -1,0 +1,96 @@
+---
+title: "Topics in Advanced Statistical Computing"
+author: "Project 3; Problem 6"
+date: "Jimmy Kelliher (UNI: jmk2303)"
+output:
+  pdf_document:
+    extra_dependencies: ["bbm"]
+---
+
+```{r setup, include = FALSE}
+# load necessary packages
+library(tidyverse)
+
+# set seed for reproducibility
+set.seed(8160)
+
+# set knitr defaults
+knitr::opts_chunk$set(
+    echo      = TRUE
+  , warning   = FALSE
+  , fig.align = "center"
+  , fig.width = 7
+  , fig.asp   = .6
+  , out.width = "90%"
+)
+
+# set theme defaults
+theme_set(
+  theme_bw() +
+  theme(
+    legend.position = "right"
+    , plot.title    = element_text(hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5)
+    , plot.caption  = element_text(hjust = 0.0)
+  )
+)
+
+# set color scale defaults
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill   = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete   = scale_fill_viridis_d
+```
+
+```{r}
+hurr <-
+  read_csv("hurricanoutcome2.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  mutate(damage = as.numeric(str_replace(damage, "\\$", "")))
+
+hurr
+```
+
+```{r}
+hurr %>%
+  filter(damage <= quantile(damage, 0.95)) %>%
+  ggplot(aes(x = damage)) +
+  geom_density()
+
+hurr %>%
+  filter(damage <= quantile(damage, 0.95)) %>%
+  ggplot(aes(x = log(1 + damage))) +
+  geom_density()
+```
+
+
+```{r}
+hurr %>%
+  filter(deaths <= quantile(deaths, 0.95)) %>%
+  ggplot(aes(x = deaths)) +
+  geom_density()
+
+hurr %>% mutate(ratio = deaths / total_pop) %>% arrange(-ratio)
+```
+
+
+```{r}
+cutoff <- 1000
+
+fit_damage <- glm(
+  deaths ~ .
+  , data = hurr %>% select(-c(hurrican_id, damage)) %>% filter(deaths < cutoff)
+  , family = "poisson"
+)
+
+summary(fit_damage)
+
+hurr %>%
+  filter(deaths < cutoff) %>%
+  mutate(predict = exp(predict(fit_damage))) %>%
+  ggplot(aes(x = deaths, y = predict)) +
+  geom_point()
+```
+
