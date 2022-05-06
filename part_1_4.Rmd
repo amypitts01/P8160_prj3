@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
+knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
                       message = FALSE)
 library(ggplot2)
@@ -82,7 +82,8 @@ rep_time = rep(n_freq,d) ## repeat time for each beta
 log_posterior_beta = function(beta, sigma, mu, sigma_p,j){
   x = obs_list$x_matrix[[j]]
   y = obs_list$y_obs[[j]]
-  return(-t(y - x %*% beta) %*% (y - x %*% beta)/(2*sigma)-(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
+  return(-t(y - x %*% beta) %*% (y - x %*% beta)/(2*sigma)
+         -(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
 }
 
 ## log posterior for sigma
@@ -92,7 +93,12 @@ log_posterior_sigma = function(beta_frame, sigma){
   if(sigma <= 0){
     return(-Inf)
   } else{
-    log_lik = -(n_obs/2)*log(sigma)-sum((dt$wind_kt-beta_frame[,1]-dt$wind_lag*beta_frame[,2]-dt$lat_shift*beta_frame[,3]-dt$long_shift*beta_frame[,4]-dt$wind_shift*beta_frame[,5])^2/(2*sigma))
+    log_lik = -(n_obs/2)*log(sigma)
+    -sum((dt$wind_kt-beta_frame[,1]
+          -dt$wind_lag*beta_frame[,2]
+          -dt$lat_shift*beta_frame[,3]
+          -dt$long_shift*beta_frame[,4]
+          -dt$wind_shift*beta_frame[,5])^2/(2*sigma))
     log_prior = -log(sigma)
     return(log_lik + log_prior)
   }
@@ -250,7 +256,8 @@ componentwisemixedMH=function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
       for(k in 1:5){
         prop = beta[j,]
         prop[k] = prop[k]+2*(runif(1)-0.5)*a[(k-1)*681+j]
-        if(log(runif(1)) < (log_posterior_beta(prop, sigma, mu, sigma_p,j) - log_posterior_beta(beta[j,], sigma, mu, sigma_p,j))){
+        if(log(runif(1)) < (log_posterior_beta(prop, sigma, mu, sigma_p,j) 
+                            - log_posterior_beta(beta[j,], sigma, mu, sigma_p,j))){
           beta[j,k] = prop[k]
         }
       }
@@ -263,7 +270,8 @@ componentwisemixedMH=function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
     beta_frame = matrix(rep(c(beta),times = rep_time), ncol = d)
     prop = sigma
     prop = prop+2*(runif(1)-0.5)*a_sigma
-    if(log(runif(1)) < (log_posterior_sigma(beta_frame, prop) - log_posterior_sigma(beta_frame, sigma))){
+    if(log(runif(1)) < (log_posterior_sigma(beta_frame, prop) 
+                        - log_posterior_sigma(beta_frame, sigma))){
       sigma = prop
     }
     # update inverse covariance matrix
@@ -314,9 +322,22 @@ cov_0 = solve(cov(starting_beta))
 ```{r}
 ## search window
 
-ind_06 =  c(1,3,4,6,16,19,24,28,31,41,43,45,46,47,50,51,52,54,62,68,69,73,82,83,89,93:97,99,108,112,113,117:119, 121,122,125, 126,134,136,140,141,146,157, 158,163,182,206,217,225,239,249,250,255,261,263,274,282,297,306,310,315,332,333,335,344,345,355,357,371,372,381,397,399,400,403,404,412,415,416,418,421,427,431,433,436,439,442,445,448:450, 455,456,464,475,494,497,503,506,508,519,522:524,531,532,538,540,541,544,550,563,564,569,571,584,589,591,601,613,614,618,639,642,646,663,664)
+ind_06 =  c(1,3,4,6,16,19,24,28,31,41,43,45,46,47,50,51,52,54,62,68,69,73,82,
+            83,89,93:97,99,108,112,113,117:119, 121,122,125, 126,134,136,140,
+            141,146,157, 158,163,182,206,217,225,239,249,250,255,261,263,274,
+            282,297,306,310,315,332,333,335,344,345,355,357,371,372,381,397,
+            399,400,403,404,412,415,416,418,421,427,431,433,436,439,442,445,
+            448:450, 455,456,464,475,494,497,503,506,508,519,522:524,531,532,
+            538,540,541,544,550,563,564,569,571,584,589,591,601,613,614,618,
+            639,642,646,663,664)
 
-ind_12 = c(8,13,38,57,63,64,66,72,80,84,114,115,137,145,149,159,164,165,186,196,204,207,218,223,234,236,238,243,246,251,254,260,266,268,275,283,288,290,291,294,307,323:326,330,334,336,354,368,370,377,378,380,387,395,398,401,428,429,432,437,454,457,458,460,469,480,482,487,488,491,495,499,504,510,517,526,527,534,537,539,545,547,551,570,572,575,583,595,596,599,602,603,609,610,612,619,624,630,634,637,640,641,648,660,665,666,671)
+ind_12 = c(8,13,38,57,63,64,66,72,80,84,114,115,137,145,149,159,164,165,186,
+           196,204,207,218,223,234,236,238,243,246,251,254,260,266,268,275,
+           283,288,290,291,294,307,323:326,330,334,336,354,368,370,377,378,
+           380,387,395,398,401,428,429,432,437,454,457,458,460,469,480,482,
+           487,488,491,495,499,504,510,517,526,527,534,537,539,545,547,551,
+           570,572,575,583,595,596,599,602,603,609,610,612,619,624,630,634,
+           637,640,641,648,660,665,666,671)
 
 a2 = rep(0.08,m)
 a2[ind_06] = 0.04
@@ -324,11 +345,26 @@ a2[ind_12] = 0.1
 a3 = rep(1, m)
 a3[203] = 0.8
 a4 = rep(0.6,m)
-a4[c(4,18,20,32,40,50,62,68,94,106,118,124,134,140,166,216,220,250,272,274,282,306,328,364, 376, 400, 412, 420, 434, 440, 442, 452, 456, 464, 508, 514, 522, 524, 562, 564, 568,584, 614, 642,646)] = 0.5
+a4[c(4,18,20,32,40,50,62,68,94,106,118,124,134,140,166,216,220,250,272,274,282,
+     306,328,364, 376, 400, 412, 420, 434, 440, 442, 452, 456, 464, 508, 514, 
+     522, 524, 562, 564, 568,584, 614, 642,646)] = 0.5
 
 a5 = rep(0.3,m)
-ind_14 = c(3,6,12,15,18,21,24,30,36,39,42 ,48, 57 ,63,66,72,75,78,81,84,87,93,102, 108,114,120,126,132,135,138,147,153,159,162,165,168,174,177,180,183,186,189,192,195,198,201,204,207,210,216,219,222,225,228,231,234,237,240,243,246,252,258,261,264,267,270,276,279,288,291,294,297,300,303,309,312,315,318,324,327,330,333,336, 339,342, 348, 351,354,357,360,363,366, 369, 372, 375, 378, 381, 387, 390, 393, 399, 402, 405, 408, 411, 417, 420, 423, 426, 429,432, 435,438, 441, 444, 447, 450, 453, 459, 462, 465, 468, 471, 474, 477, 480, 486, 489, 492, 495, 498, 501,504, 507, 510, 513, 525, 528, 534, 537, 540, 543, 546, 549, 555, 558, 564, 567, 570, 573,576, 579, 582, 585,588, 594, 600, 603, 606, 609, 612, 615, 624, 630, 633, 636, 639, 642,645, 648, 651, 654, 657, 660, 663, 666,669, 672, 675, 678, 681)
+ind_14 = c(3,6,12,15,18,21,24,30,36,39,42 ,48, 57 ,63,66,72,75,78,81,84,87,93,
+           102, 108,114,120,126,132,135,138,147,153,159,162,165,168,174,177,180,
+           183,186,189,192,195,198,201,204,207,210,216,219,222,225,228,231,234,
+           237,240,243,246,252,258,261,264,267,270,276,279,288,291,294,297,300,
+           303,309,312,315,318,324,327,330,333,336, 339,342, 348, 351,354,357,
+           360,363,366, 369, 372, 375, 378, 381, 387, 390, 393, 399, 402,405, 
+           408, 411, 417, 420, 423, 426, 429,432, 435,438, 441, 444, 447, 450,
+           453, 459, 462, 465, 468, 471, 474, 477, 480, 486, 489, 492,495,498, 
+           501,504, 507, 510, 513, 525, 528, 534, 537, 540, 543, 546, 549, 555, 
+           558, 564, 567, 570, 573,576, 579, 582, 585,588, 594, 600, 603, 606, 
+           609, 612, 615, 624, 630, 633, 636, 639, 642,645, 648, 651, 654, 657, 
+           660, 663, 666,669, 672, 675, 678, 681)
+
 a5[ind_14] = 0.4
+
 a = c(rep(1.1,m),a2,a3,a4,a5)
 ```
 
@@ -336,7 +372,8 @@ a = c(rep(1.1,m),a2,a3,a4,a5)
 
 ```{r eval=FALSE}
 set.seed(1971)
-theta_chain = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, sigma_0, cov_0, nrep=10000)
+theta_chain = componentwisemixedMH(a, a_sigma = 2, beta_0 = starting_beta, 
+                                   sigma_0, cov_0, nrep=10000)
 ```
 
 
@@ -390,8 +427,87 @@ df_a %>% kable(format = "latex",escape=FALSE, booktabs = TRUE, col.names = label
 ```
 
 
-### Convergence and Distribution
+```{r}
+theta_trace_inverse = apply(theta_chain, 1, trace_inverse)
+```
 
+
+### Convergence trace plots
+
+```{r}
+L = 1.5
+par(mfrow=c(3,4))
+par(mar = c(2, 2, 2, 2))
+plot(theta_chain[,2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "Beta0", line = L, cex.lab = 0.5)
+plot(theta_chain[,m+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+mtext("                                 Covergence Plots of Selected Parameters", side = 3, line = 0.6)
+plot(theta_chain[,m*2+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+plot(theta_chain[,m*3+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+plot(theta_chain[,m*4+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "Beta1", line = L, cex.lab = 0.5)
+plot(theta_chain[,3406], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "µ1", line = L, cex.lab = 0.5)
+plot(theta_chain[,3407], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "µ2", line = L, cex.lab = 0.5)
+plot(theta_chain[,3408], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "µ3", line = L, cex.lab = 0.5)
+plot(theta_chain[,3409], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "µ4", line = L, cex.lab = 0.5)
+plot(theta_chain[,3410], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "µ5", line = L, cex.lab = 0.5)
+plot(theta_chain[,3411], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "Sigma", line = L, cex.lab = 0.5)
+plot(theta_trace_inverse, type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+abline(v = 5500, lty = 2, col = 2)
+title(ylab = "Trace of ∑^-1", line = L, cex.lab = 0.5)
+```
+
+### Histograms
+
+```{r}
+par(mfrow=c(3,4))
+par(mar = c(3, 1, 3, 1))
+hist(theta_chain[5501:10000,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Beta0", line = L)
+hist(theta_chain[5501:10000,m+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+mtext("                                 Histograms of Selected Parameters", side = 3, line = 0.6)
+title(cex.lab = 0.5, xlab = "Beta1", line = L)
+hist(theta_chain[5501:10000,m*2+2], nclass = 50, main = NULL, cex.axis = 0.5, xlab = "", ylab = "")
+title(cex.lab = 0.5, xlab = "Beta2", line = L)
+hist(theta_chain[5501:10000,m*3+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Beta3", line = L)
+hist(theta_chain[5501:10000,m*4+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Beta4", line = L)
+hist(theta_chain[5501:10000,3406], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ1", line = L)
+hist(theta_chain[5501:10000,3407], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ2", line = L)
+hist(theta_chain[5501:10000,3408], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ3", line = L)
+hist(theta_chain[5501:10000,3409], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ4", line = L)
+hist(theta_chain[5501:10000,3410], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "µ5", line = L)
+hist(theta_chain[5501:10000,3411], nclass = 50, main = NULL, xlab = "", ylab  = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Sigma", line = L)
+hist(theta_trace_inverse, nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(cex.lab = 0.5, xlab = "Trace of ∑^-1", line = L)
+```
 
 ### Estimates (burn-in first 5500 runs)
 
@@ -411,7 +527,51 @@ cov_m = solve(inv_cov_m)
 sigma = bs_estimates[3411]
 mu = bs_estimates[3406:3410]
 beta = matrix(bs_estimates[1:n_beta], ncol = d)
+```
 
+## Beta estimate histograms
+
+```{r}
+par(mfrow=c(2,3))
+par(mar = c(3, 2, 3, 2))
+hist(beta[,1], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+abline(v = mu[1], lty = 2, col = 2)
+title(xlab = "Beta0", cex.lab = 0.5, line = L)
+hist(beta[,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+abline(v = mu[2], lty = 2, col = 2)
+title(xlab = "Beta1", cex.lab = 0.5, line = L)
+mtext("Histograms of Betas of All Hurricanes", side = 3, line = 0.6)
+hist(beta[,3], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+abline(v = mu[3], lty = 2, col = 2)
+title(xlab = "Beta2", cex.lab = 0.5, line = L)
+hist(beta[,4], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+abline(v = mu[4], lty = 2, col = 2)
+title(xlab = "Beta3", cex.lab = 0.5, line = L)
+hist(beta[,5], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+abline(v = mu[5], lty = 2, col = 2)
+title(xlab = "Beta4", cex.lab = 0.5, line = L)
+```
+
+## Chart of the estimates of mu, sigma and inverseCov
+
+```{r}
+output1 = t(rbind(round(mu[1], 2), round(mu[2], 2), round(mu[3], 2), round(mu[4], 2), round(mu[5], 2), round(sigma, 2)))
+colnames(output1) = c("$\\boldsymbol \\mu_0$", "$\\boldsymbol \\mu_1$", "$\\boldsymbol \\mu_2$", "$\\boldsymbol \\mu_3$", "$\\boldsymbol \\mu_4$", "$\\boldsymbol \\sigma^2$")
+rownames(output1) = "Estimates"
+output1 %>% knitr::kable(caption = "Bayesian Estimates for $\\boldsymbol \\mu$ and $\\boldsymbol \\sigma^2$", escape = FALSE)
+```
+
+```{r}
+sigmap = bs_estimates[3412:3426]
+row1 = c(round(sigmap[1], 2), round(sigmap[2], 2), round(sigmap[4], 2), round(sigmap[7], 2), round(sigmap[11], 2))
+row2 = c(round(sigmap[2], 2), round(sigmap[3], 2), round(sigmap[5], 2), round(sigmap[8], 2), round(sigmap[12], 2)) 
+row3 = c(round(sigmap[4], 2), round(sigmap[5], 2), round(sigmap[6], 2), round(sigmap[9], 2), round(sigmap[13], 2))
+row4 = c(round(sigmap[7], 2), round(sigmap[8], 2), round(sigmap[9], 2), round(sigmap[10], 2), round(sigmap[14], 2))
+row5 = c(round(sigmap[11], 2), round(sigmap[12], 2), round(sigmap[13], 2), round(sigmap[14], 2), round(sigmap[15], 2))
+output2 = rbind(row1, row2, row3, row4, row5)
+colnames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", "$\\boldsymbol \\beta_4$")
+rownames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", "$\\boldsymbol \\beta_4$")
+output2 %>% knitr::kable(escape = FALSE, booktabs = T, caption = "Bayesian Estimate for $\\Sigma^{-1}$")
 ```
 
 
@@ -429,15 +589,59 @@ dt_res = dt %>%
          beta_4 = beta[,5]) %>% 
   unnest(data) %>% 
   mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift)
+  
+```
 
-## adj r-square and r-square are 0.96
+
+```{r}
+## overall adj r-square are 0.95
+
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
 p_value = 1-pchisq(sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sigma, n_obs-n_beta)
 adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
 
+
+dt_rsquare = dt_res %>% 
+  group_by(id) %>% 
+  mutate(r_square = (1-sum((wind_kt_pred-wind_kt)^2)/(sum((wind_kt-mean(wind_kt))^2))),
+         n_obs = n(),
+         adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5)) %>% 
+  dplyr::select(id, r_square, adj_r_square) %>% 
+  distinct()
+
+d_high = dt_rsquare %>% 
+  filter(adj_r_square >=0.7 & adj_r_square <= 1) %>% 
+  nrow()
+d_moderate = dt_rsquare %>% 
+  filter(adj_r_square >= 0.3 & adj_r_square< 0.7) %>% 
+  nrow()
+
+d_low = dt_rsquare %>% 
+  filter(adj_r_square < 0.3 & adj_r_square> 0) %>% 
+  nrow()
+
+d_bad = dt_rsquare %>% 
+  filter(adj_r_square <= 0)%>% 
+  nrow()
+
+label_1 = c("$R_{adj}^2$", "Count of Hurricanes","Percentage($\\%$)")
+tibble(adj_r = c("0.7-1", "0.3-0.7", "0-0.3", "< 0"),
+       count = c(d_high, d_moderate, d_low, d_bad),
+       prop = c(round(d_high/681,3)*100, round(d_moderate/681,3)*100, 
+                round(d_low/681,3)*100, round(d_bad/681,3)*100)) %>% 
+  kable(escape = F, col.names = label_1, caption = "$R_{adj}^2$ for each hurricane")
+
+```
+
+
+
+
+```{r}
 ## visualize some hurricane prediction
 
-dt_res %>% filter(id %in% c("DOG.1950","BECKY.1958", "DORIS.1975","ANDREW.1986","FLORENCE.2000", "SANDY.2012")) %>%
+dt_res %>% filter(id %in% c("INVEST.2010","BECKY.1958", 
+                            "DORIS.1975","ANDREW.1986",
+                            "FLORENCE.2000", "SANDY.2012")) %>%
   mutate(time = 1:n()) %>% 
   ggplot(aes(y = wind_kt, x = time))+
   geom_line(aes(color = "observation"))+
