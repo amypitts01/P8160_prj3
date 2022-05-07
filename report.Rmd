@@ -41,10 +41,12 @@ theme_gtsummary_compact()
 
 ## 1.1. Background
 
+Hurricanes are tropical storms that reach a wind speed of 74 miles (119 kilometers) per hour or greater. They also bring heavy rain, thunder storms, and other severe meteorological phenomena. 
+Throughout history, hurricanes have brought about huge death tolls and financial loss, especially in coastal cities and countries. Therefore, it is crucial for researchers to predict the behaviors of hurricanes, take appropriate counter measures, and minimize casualty. 
 
 ## 1.2. Objectives
 
-
+For this project, we aim to examine the factors that could predict the wind speed of hurricanes, using the track data of 703 hurricanes in the North Atlantic area since 1950. The data includes each hurricane’s geographical coordinates, maximum speeds recorded every 6 hours, the year (season) and month in which the hurricane took place, and its nature. We build a Bayesian model for each hurricane that predicts its wind speed at a given time based on its last recorded speed, and the change in longitude, latitude, and speed from the last observation. After deriving the posterior distributions, we use the Markov Chain Monte-Carlo Method to estimate the parameters. We then explore whether the season, month, and nature of the hurricane affect the wind speed and the impact of wind speed on death counts and financial loss. 
 
 
 
