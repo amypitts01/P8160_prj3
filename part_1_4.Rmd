@@ -195,14 +195,14 @@ $$
 We could generate full conditional posterior distribution for some parameters but not all, so we apply hybrid algorithm consisting with Metropolis-Hastings steps and Gibbs steps.
 
 
-MH steps for $\beta_{ij}$:
-Sampling proposed $\beta_{ij}^{\prime}$, $j = 0,1...4$ for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{ij}^{(t)}-a_{ij},\beta_{ij}^{(t)}+a_{ij}\right)$, where $a_{ij}$ is the search window for $\beta_{ij}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{ij}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \theta$ could be cancelled out, so the ratio simplified to be:
+MH steps for $\beta_{j,i}$:
+Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$, for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \theta$ could be cancelled out, so the ratio simplified to be:
 
 $$
 \frac{\pi\left(\boldsymbol \beta_{i}^{\prime},\boldsymbol \theta_{(-\boldsymbol \beta_i)}^{(t)} \mid \boldsymbol Y\right)}{\pi\left(\boldsymbol \beta_{i}^{(t)}, \boldsymbol \theta_{(-\boldsymbol \beta_i)}^{(t)} \mid \boldsymbol Y\right)}
 =\frac{\exp \left\{-\frac{1}{2 \sigma^{2(t)}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{\prime}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{\prime}\right)-\frac{1}{2} \left(\boldsymbol \beta_{i}^{\prime}-\boldsymbol \mu^{(t)}\right)^{T}\Sigma^{-1^{(t)}}\left(\boldsymbol \beta_{i}^{\prime}-\boldsymbol \mu^{(t)}\right)\right\}}{\exp \left\{-\frac{1}{2 \sigma^{2(t)}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t)}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}^{(t)}\right)-\frac{1}{2}\left(\boldsymbol \beta_{i}^{(t)}-\boldsymbol \mu^{(t)}\right){ }^{T} \Sigma^{-1(t)}\left(\boldsymbol \beta_{i}^{(t)}-\boldsymbol \mu^{(t)}\right)\right\}}
 $$
-where $\boldsymbol \beta_i^{\prime}$ consisting with $\beta_{ij}^{\prime}$, $\beta_{ik}^{(t)}$ for $k>j$ and $\beta_{ik}^{(t+1)}$ for $k<j$.
+where $\boldsymbol \beta_i^{\prime}$ consisting with $\beta_{j,i}^{\prime}$, $\beta_{k,i}^{(t)}$ for $k>j$ and $\beta_{k,i}^{(t+1)}$ for $k<j$.
 
 The log of the ratio:
 $$
@@ -212,10 +212,10 @@ $$
 \end{aligned}
 $$
 
-Then we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with the log ratio. If the $\log(u)$ is smaller, we accept $\beta_{ij}^{\prime} = \beta_{ij}^{(t+1)}$, otherwise we reject $\beta_{ij}^{\prime}$ and $\beta_{ij}^{(t)} = \beta_{ij}^{(t+1)}$.
+Then we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with the log ratio. If the $\log(u)$ is smaller, we accept $\beta_{j,i}^{\prime} = \beta_{j,i}^{(t+1)}$, otherwise we reject $\beta_{j,i}^{\prime}$ and $\beta_{j,i}^{(t)} = \beta_{j,i}^{(t+1)}$.
 
 
-Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $N \left(\bar{\boldsymbol \beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\boldsymbol \beta}^{(t+1)}$ is the average over $\boldsymbol \beta_i^{(t+1)}$.
+Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $N \left(\bar{\boldsymbol \beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\boldsymbol \beta}^{(t+1)}$ is the average of $\boldsymbol \beta_i^{(t+1)}$ over all hurricanes.
 
 
 Next, MH step to generate $\sigma^{2^{\prime}}$ from $U\left(\sigma^{2^{(t)}}-a_{\sigma^2},\sigma^{2^{(t)}}+a_{\sigma^2}\right)$. Firstly, check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with
@@ -311,13 +311,13 @@ cov_0 = solve(cov(starting_beta))
 
 Initial Values:
 
-- $\boldsymbol \beta_{i}$ - Fit multivariate linear regression (MLR) for $i^{th}$ hurricane and use the coefficients as $\boldsymbol \beta_{i0}$
+- $\boldsymbol \beta_{i}$ - Fit OLS multivariate linear regression (MLR) for $i^{th}$ hurricane and use the coefficients as $\boldsymbol \beta_{i}^{(0)}$
 
-- $\boldsymbol \mu$ - Average over all $\boldsymbol \beta_{i0}$ as $\boldsymbol \mu_0$ 
+- $\boldsymbol \mu$ - Average over all $\boldsymbol \beta_{i}^{(0)}$ as $\boldsymbol \mu^{(0)}$ 
 
-- $\sigma^2$ - $\hat{\sigma}^2_i$ is the mean square residuals of the MLR model on $i^{th}$ hurricane. Take the mean over all $\hat{\sigma}^2_i$ as $\sigma^2_0$
+- $\sigma^2$ - $\hat{\sigma}^2_i$ is the mean square residuals of the OLS model for $i^{th}$ hurricane. Take the mean over all $\hat{\sigma}^2_i$ as $\sigma^{2^{(0)}}$
 
-- $\Sigma^{-1}$ - Generate the covaraiance matrix of $\boldsymbol \beta_{i0}$ and take the inverse of the matrix as $\Sigma^{-1}_0$
+- $\Sigma^{-1}$ - Generate the covariance matrix of $\boldsymbol \beta_{i}^{(0)}$ and take the inverse of the matrix as $\Sigma^{-1^{(0)}}$
 
 ```{r}
 ## search window
@@ -447,7 +447,7 @@ par(mfrow=c(3,4),mgp = c(0.5,0.1,0), tck = -0.01)
 par(mar = c(2, 2, 2, 0.3))
 plot(theta_chain[,2], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = expression(beta[0*2]), line = L, cex.lab = cex_lab)
+title(ylab = expression(beta[02]), line = L, cex.lab = cex_lab)
 plot(theta_chain[,m+2], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
 title(ylab = expression(beta[12]), line = L, cex.lab = cex_lab)

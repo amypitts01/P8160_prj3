@@ -146,18 +146,18 @@ Where
 **Goal**: Estimate $\Theta = (\boldsymbol B, \boldsymbol \mu, \Sigma^{-1}, \sigma^{2})$
 
 # Likelihood \& Prior Function
-**Likelihood** Let $X_i = (\boldsymbol 1, Y_{i}(t-6),\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t))$
+**Likelihood** Let $X_i = \left(\mathbf{1}, Y_{i}(t-6),\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)\right)$
 \[ \scriptsize{
-L(\boldsymbol Y \mid \boldsymbol \theta) \propto \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}} \exp \left\{-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}}
+L(\boldsymbol Y \mid \boldsymbol \Theta) \propto \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}} \exp \left\{-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}}
 \]
 where $m$ is the number of hurricane and $n_i$ is the number of observations for $i^{th}$ hurricane
 
 
-**Prior** Let $\boldsymbol\theta=(\boldsymbol B, \boldsymbol \mu, \Sigma^{-1}, \sigma^{2})$
+**Prior** Let $\boldsymbol\Theta=(\boldsymbol B, \boldsymbol \mu, \Sigma^{-1}, \sigma^{2})$
 $$
 \scriptsize{
 \begin{aligned}
-\pi\left(\boldsymbol\theta \right) & \propto\left(\sigma^{2}\right)^{-1} \left|\Sigma^{-1}\right|^{d+1} \exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right)\right\} 
+\pi\left(\boldsymbol\Theta \right) & \propto\left(\sigma^{2}\right)^{-1} \left|\Sigma^{-1}\right|^{d+1} \exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right)\right\} 
 \prod_{i=1}^{m}\left|\Sigma^{-1}\right|^{\frac{1}{2}}\exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu \right)^{T} \Sigma^{-1}(\boldsymbol \beta_{i}-\boldsymbol \mu)\right\}
 \end{aligned}
 }
@@ -172,7 +172,7 @@ where $d$ is the dimension of $\boldsymbol \mu$
 $$
 \scriptsize{
 \begin{aligned}
-\pi(\boldsymbol \theta \mid \boldsymbol Y) & \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}\left|\Sigma^{-1}\right|^{d+1+\frac{m}{2}} 
+\pi(\boldsymbol \Theta \mid \boldsymbol Y) & \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}\left|\Sigma^{-1}\right|^{d+1+\frac{m}{2}} 
 \exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right) \right\}\\
 &\times \exp \left\{-\frac{1}{2} \sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\right\} 
  \exp \left\{-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}
@@ -184,13 +184,13 @@ $$
 \scriptsize{
 \begin{aligned}
 &\boldsymbol \beta_i:
-\pi(\boldsymbol \beta_i \mid \boldsymbol \theta_{(-\boldsymbol \beta_i)} \boldsymbol Y) \propto \exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}\\
+\pi(\boldsymbol \beta_i \mid \boldsymbol \Theta_{(-\boldsymbol \beta_i)} \boldsymbol Y) \propto \exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}\\
 &\boldsymbol \mu:
-\pi\left(\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y\right)  \sim \mathcal{N}(\bar{\beta},\Sigma/m), \bar{\beta} = \left(\bar{\beta}_{0,.},\bar{\beta}_{1,.},\bar{\beta}_{2,.},\bar{\beta}_{3,.},\bar{\beta}_{4,.}\right)^T\\
-&\sigma^2: \pi\left(\sigma^{2} \mid \boldsymbol \theta_{(-\sigma^{2})}, \boldsymbol Y\right) \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}
+\pi\left(\boldsymbol \mu \mid \boldsymbol \Theta_{(-\boldsymbol \mu)}, \boldsymbol Y\right)  \sim \mathcal{N}(\bar{\beta},\Sigma/m), \bar{\beta} = \left(\bar{\beta}_{0,.},\bar{\beta}_{1,.},\bar{\beta}_{2,.},\bar{\beta}_{3,.},\bar{\beta}_{4,.}\right)^T\\
+&\sigma^2: \pi\left(\sigma^{2} \mid \boldsymbol \Theta_{(-\sigma^{2})}, \boldsymbol Y\right) \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}
 \times \exp \left\{-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\} \\
 &\Sigma^{-1}:
-\pi\left(\Sigma^{-1} \mid \boldsymbol \theta_{\left(-\Sigma^{-1}\right)},\boldsymbol Y\right) \sim \mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T}\right)^{-1} \right)
+\pi\left(\Sigma^{-1} \mid \boldsymbol \Theta_{\left(-\Sigma^{-1}\right)},\boldsymbol Y\right) \sim \mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T}\right)^{-1} \right)
 \end{aligned}
 }
 $$
