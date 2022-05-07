@@ -10,6 +10,9 @@ output:
 ```{r setup, include = FALSE}
 # load necessary packages
 library(tidyverse)
+library(glmnet)
+library(parallel)
+library(MASS)
 
 # set seed for reproducibility
 set.seed(8160)
@@ -76,12 +79,102 @@ hurr %>% mutate(ratio = deaths / total_pop) %>% arrange(-ratio)
 ```
 
 
+
+# Loading in Coefficient Estimates
+
+```{r}
+load("df_rm.RData")
+load("mcmc_chain_1.RData")
+load("mcmc_chain_2.RData")
+load("mcmc_chain_3.RData")
+load("mcmc_chain_4.RData")
+load("mcmc_chain_5.RData")
+load("mcmc_chain_6.RData")
+```
+
+
+```{r}
+theta_chain <- rbind(
+  theta_chain_1,
+  theta_chain_2,
+  theta_chain_3,
+  theta_chain_4,
+  theta_chain_5,
+  theta_chain_6
+)
+```
+
+```{r}
+d = 5
+n_theta = 3426
+
+bs_estimates = apply(theta_chain[5501:10000,], 2, mean)
+mu = bs_estimates[3406:3410]
+sigma = bs_estimates[3411]
+cov_m = matrix(0,5,5)
+cov_m[lower.tri(cov_m, diag = TRUE)] = bs_estimates[seq(n_theta-14, n_theta)]
+cov_m[upper.tri(cov_m)] = t(cov_m)[upper.tri(cov_m)]
+beta = matrix(bs_estimates[1:3405], ncol = d)
+```
+
+
+
+
+
+```{r}
+dt = df_rm %>% 
+  janitor::clean_names() %>% 
+  group_by(id) %>% 
+  mutate(wind_lag = lag(wind_kt,1),
+         lat_shift = lag(latitude, 1) - lag(latitude, 2),
+         long_shift = lag(longitude, 1) - lag(longitude, 2),
+         wind_shift = lag(wind_kt, 1) - lag(wind_kt, 2)) %>% 
+  drop_na()
+
+dt_res = dt %>% 
+  select(id, nature, season, month, wind_kt, wind_lag,lat_shift, long_shift, wind_shift) %>%
+  nest(data = nature:wind_shift) %>% 
+  ungroup() %>% 
+  mutate(beta_0 = beta[,1],
+         beta_1 = beta[,2],
+         beta_2 = beta[,3],
+         beta_3 = beta[,4],
+         beta_4 = beta[,5]) %>% 
+  unnest(data) %>% 
+  mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift)
+
+head(dt_res)
+```
+
+
+```{r}
+hurr <- 
+  hurr %>%
+  mutate(id = toupper(hurrican_id))
+
+full_hurr <-
+  left_join(
+    hurr
+    , dt_res %>%
+      select(id, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+      group_by(id, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+      summarize(n_obs = n()) %>%
+      ungroup()
+    , by = "id"
+  ) %>%
+  select(-c(id, n_obs))
+
+full_hurr
+```
+
+
+
 ```{r}
 cutoff <- 1000
 
 fit_damage <- glm(
   deaths ~ .
-  , data = hurr %>% select(-c(hurrican_id, damage)) %>% filter(deaths < cutoff)
+  , data = full_hurr %>% select(-c(hurrican_id, damage)) %>% filter(deaths < cutoff)
   , family = "poisson"
 )
 
@@ -92,5 +185,279 @@ hurr %>%
   mutate(predict = exp(predict(fit_damage))) %>%
   ggplot(aes(x = deaths, y = predict)) +
   geom_point()
+```
+
+
+```{r}
+cutoff <- 50000
+
+design <- model.matrix(
+    ~ .
+  , full_hurr %>%
+    filter(deaths < cutoff) %>%
+    select(-c(hurrican_id, damage, deaths))
+)
+y_damage <- full_hurr %>% filter(deaths < cutoff) %>% pull(damage)
+y_deaths <- full_hurr %>% filter(deaths < cutoff) %>% pull(deaths)
+p_offset <- full_hurr %>% filter(deaths < cutoff) %>% pull(total_pop)
+
+cv_out <- cv.glmnet(
+    x = design[ , -15] # column 15 is total_pop
+  , y = y_deaths
+  , alpha  = 1
+  , thresh = 1E-12
+  , nfolds = nrow(full_hurr %>% filter(deaths < cutoff))
+  , family = "poisson"
+  , offset = log(p_offset)
+  , type.measure = "deviance"
+)
+
+plot(cv_out)
+cv_out$glmnet.fit$beta[ , which(cv_out$lambda == cv_out$lambda.min)]
+cv_out
+```
+
+
+```{r}
+cutoff <- 50000
+
+design <- model.matrix(
+    ~ .
+  , full_hurr %>%
+    filter(deaths < cutoff) %>%
+    select(-c(hurrican_id, damage, deaths))
+)
+y_damage <- 1000 * (full_hurr %>% filter(deaths < cutoff) %>% pull(damage))
+y_deaths <- full_hurr %>% filter(deaths < cutoff) %>% pull(deaths)
+p_offset <- full_hurr %>% filter(deaths < cutoff) %>% pull(total_pop)
+
+cv_out <- cv.glmnet(
+    x = design[ , -15] # column 15 is total_pop
+  , y = y_damage
+  , alpha  = 1
+  , thresh = 1E-12
+  , nfolds = nrow(full_hurr %>% filter(deaths < cutoff))
+  , family = "poisson"
+  , offset = log(p_offset)
+  , nlambda = 200
+)
+
+plot(cv_out)
+cv_out$glmnet.fit$beta[ , which(cv_out$lambda == cv_out$lambda.min)]
+cv_out
+```
+
+
+```{r}
+cutoff <- 50000
+
+design <- model.matrix(
+    ~ .
+  , full_hurr %>%
+    filter(deaths < cutoff) %>%
+    mutate(total_pop = total_pop) %>%
+    select(-c(hurrican_id, damage, deaths))
+)
+y_damage <- full_hurr %>% filter(deaths < cutoff) %>% pull(damage)
+y_deaths <- full_hurr %>% filter(deaths < cutoff) %>% pull(deaths)
+p_offset <- full_hurr %>% filter(deaths < cutoff) %>% pull(total_pop)
+
+cv_out <- cv.glmnet(
+    x = design
+  , y = log(y_damage)
+  , alpha  = 1
+  , thresh = 1E-12
+  , nfolds = nrow(full_hurr %>% filter(deaths < cutoff))
+)
+
+plot(cv_out)
+cv_out$glmnet.fit$beta[ , which(cv_out$lambda == cv_out$lambda.min)]
+cv_out
+```
+
+
+
+
+# Model Selection and Inference with Poisson Regression
+
+```{r}
+# set cores
+my_cores <- detectCores()
+
+# set number of trials
+N <- 5000
+trials <- 1:N
+
+# create design matrix
+design <- model.matrix(
+    ~ .
+  , full_hurr %>%
+    dplyr::select(-c(hurrican_id, damage, deaths, total_pop))
+)
+
+# extract outcomes and offset vectors
+y_damage <- 1000 * (full_hurr %>% pull(damage))
+y_deaths <- full_hurr %>% pull(deaths)
+p_offset <- full_hurr %>% pull(total_pop)
+```
+
+```{r}
+# extract full model parameter estimates for damage outcome
+full_fit_damage <- glm(
+    1000 * damage ~ . + offset(log(p_offset))
+  , data   = full_hurr %>% dplyr::select(-c(hurrican_id, deaths, total_pop))
+  , family = "poisson"
+)
+
+# define smoothing procedure for damage outcome
+inference_damage <- function(trial) {
+
+  # predict poisson parameters based on full model
+  alpha_full <- exp(predict(full_fit_damage))
+  # draw outcomes from joint poisson density
+  y_boot     <- rpois(length(alpha_full), alpha_full)
+  # execute lasso with simulated outcomes
+  cv_boot <- cv.glmnet(
+      x = design
+    , y = y_boot
+    , alpha  = 1
+    , thresh = 1E-12
+    , nfolds = nrow(full_hurr)
+    , family = "poisson"
+    , offset = log(p_offset)
+    , nlambda = 200
+  )
+  # output vector of coefficients
+  as.vector(cv_boot$glmnet.fit$beta[ , which(cv_boot$lambda == cv_boot$lambda.min)])
+
+}
+
+# execute bootstrap smoothing
+system.time({
+  results <- mclapply(trials, inference_damage, mc.cores = my_cores)
+})
+results_damage <- do.call(rbind.data.frame, results)
+names(results_damage) <- colnames(design)
+sd_damage <- apply(results_damage, 2, sd)
+```
+
+
+
+```{r}
+# extract full model parameter estimates for death outcome
+full_fit_deaths <- glm(
+    deaths ~ . + offset(log(p_offset))
+  , data   = full_hurr %>% dplyr::select(-c(hurrican_id, damage, total_pop))
+  , family = "poisson"
+)
+
+# define smoothing procedure for death outcome
+inference_deaths <- function(trial) {
+
+  # predict poisson parameters based on full model
+  alpha_full <- exp(predict(full_fit_deaths))
+  # draw outcomes from joint poisson density
+  y_boot     <- rpois(length(alpha_full), alpha_full)
+  # execute lasso with simulated outcomes
+  cv_boot <- cv.glmnet(
+      x = design
+    , y = y_boot
+    , alpha  = 1
+    , thresh = 1E-12
+    , nfolds = nrow(full_hurr)
+    , family = "poisson"
+    , offset = log(p_offset)
+    , nlambda = 200
+  )
+  # output vector of coefficients
+  as.vector(cv_boot$glmnet.fit$beta[ , which(cv_boot$lambda == cv_boot$lambda.min)])
+
+}
+
+# execute bootstrap smoothing
+system.time({
+  results <- mclapply(trials, inference_deaths, mc.cores = my_cores)
+})
+results_deaths <- do.call(rbind.data.frame, results)
+names(results_deaths) <- colnames(design)
+sd_deaths <- apply(results_deaths, 2, sd)
+```
+
+
+
+```{r}
+cv_damage <- cv.glmnet(
+    x = design
+  , y = y_damage
+  , alpha  = 1
+  , thresh = 1E-12
+  , nfolds = nrow(full_hurr)
+  , family = "poisson"
+  , offset = log(p_offset)
+  , nlambda = 200
+)
+
+plot(cv_damage)
+beta_damage <-
+  as.vector(cv_damage$glmnet.fit$beta[
+    , which(cv_damage$lambda == cv_damage$lambda.min)
+  ])
+output_damage <- tibble(
+    variable = colnames(design)
+  , estimate = beta_damage
+  , smoothsd = sd_damage
+) %>%
+  mutate(
+      zscore = estimate / smoothsd
+    , left   = estimate - qnorm(0.975) * smoothsd
+    , right  = estimate + qnorm(0.975) * smoothsd
+  ) %>%
+  mutate(
+      zscore = replace(zscore, estimate == 0, NA)
+    , left   = replace(left,   estimate == 0, NA)
+    , right  = replace(right,  estimate == 0, NA)
+  )
+output_damage
+
+```
+
+```{r}
+cv_deaths <- cv.glmnet(
+    x = design
+  , y = y_deaths
+  , alpha  = 1
+  , thresh = 1E-12
+  , nfolds = nrow(full_hurr)
+  , family = "poisson"
+  , offset = log(p_offset)
+  , nlambda = 200
+)
+
+plot(cv_deaths)
+beta_deaths <-
+  as.vector(cv_deaths$glmnet.fit$beta[
+    , which(cv_deaths$lambda == cv_deaths$lambda.min)
+  ])
+output_deaths <- tibble(
+    variable = colnames(design)
+  , estimate = beta_deaths
+  , smoothsd = sd_deaths
+) %>%
+  mutate(
+      zscore = estimate / smoothsd
+    , left   = estimate - qnorm(0.975) * smoothsd
+    , right  = estimate + qnorm(0.975) * smoothsd
+  ) %>%
+  mutate(
+      zscore = replace(zscore, estimate == 0, NA)
+    , left   = replace(left,   estimate == 0, NA)
+    , right  = replace(right,  estimate == 0, NA)
+  )
+output_deaths
+```
+
+```{r}
+save(output_damage, output_deaths, file = "q6output.RData")
+load("q6output.RData")
 ```
 
