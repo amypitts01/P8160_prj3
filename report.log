@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  7 MAY 2022 16:11
-=======
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 MAY 2022 15:56
->>>>>>> e3ab237ce4521f1830a2325e586ff38f12746d41
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  7 MAY 2022 16:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -816,14 +812,7 @@ File: tikzlibraryplotmarks.code.tex 2020/12/27 v3.1.8b (3.1.8b)
 (/usr/local/texlive/2021/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotmar
 ks.code.tex
 File: pgflibraryplotmarks.code.tex 2020/12/27 v3.1.8b (3.1.8b)
-))) (/usr/local/texlive/2021/texmf-dist/tex/latex/float/float.sty
-Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count324
-\float@exts=\toks51
-\float@box=\box69
-\@float@everytoks=\toks52
-\@floatcapt=\box70
-)
+)))
 (/usr/local/texlive/2021/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
 s/tikzlibraryshapes.code.tex
 File: tikzlibraryshapes.code.tex 2020/12/27 v3.1.8b (3.1.8b)
@@ -871,26 +860,26 @@ File: tikzlibraryshapes.multipart.code.tex 2020/12/27 v3.1.8b (3.1.8b)
 (/usr/local/texlive/2021/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibrary
 shapes.multipart.code.tex
 File: pgflibraryshapes.multipart.code.tex 2020/12/27 v3.1.8b (3.1.8b)
-\pgfnodepartlowerbox=\box71
-\pgfnodeparttwobox=\box72
-\pgfnodepartthreebox=\box73
-\pgfnodepartfourbox=\box74
-\pgfnodeparttwentybox=\box75
-\pgfnodepartnineteenbox=\box76
-\pgfnodeparteighteenbox=\box77
-\pgfnodepartseventeenbox=\box78
-\pgfnodepartsixteenbox=\box79
-\pgfnodepartfifteenbox=\box80
-\pgfnodepartfourteenbox=\box81
-\pgfnodepartthirteenbox=\box82
-\pgfnodeparttwelvebox=\box83
-\pgfnodepartelevenbox=\box84
-\pgfnodeparttenbox=\box85
-\pgfnodepartninebox=\box86
-\pgfnodeparteightbox=\box87
-\pgfnodepartsevenbox=\box88
-\pgfnodepartsixbox=\box89
-\pgfnodepartfivebox=\box90
+\pgfnodepartlowerbox=\box69
+\pgfnodeparttwobox=\box70
+\pgfnodepartthreebox=\box71
+\pgfnodepartfourbox=\box72
+\pgfnodeparttwentybox=\box73
+\pgfnodepartnineteenbox=\box74
+\pgfnodeparteighteenbox=\box75
+\pgfnodepartseventeenbox=\box76
+\pgfnodepartsixteenbox=\box77
+\pgfnodepartfifteenbox=\box78
+\pgfnodepartfourteenbox=\box79
+\pgfnodepartthirteenbox=\box80
+\pgfnodeparttwelvebox=\box81
+\pgfnodepartelevenbox=\box82
+\pgfnodeparttenbox=\box83
+\pgfnodepartninebox=\box84
+\pgfnodeparteightbox=\box85
+\pgfnodepartsevenbox=\box86
+\pgfnodepartsixbox=\box87
+\pgfnodepartfivebox=\box88
 )))
 (/usr/local/texlive/2021/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
 s/tikzlibraryarrows.code.tex
@@ -902,37 +891,37 @@ File: pgflibraryarrows.code.tex 2020/12/27 v3.1.8b (3.1.8b)
 \arrowsize=\dimen303
 )) (/usr/local/texlive/2021/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count325
-\l__pdf_internal_box=\box91
+\l__color_backend_stack_int=\count324
+\l__pdf_internal_box=\box89
 ) (./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 87.
-LaTeX Font Info:    ... okay on input line 87.
-LaTeX Info: Redefining \microtypecontext on input line 87.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Info: Redefining \microtypecontext on input line 86.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 87.
+LaTeX Info: Redefining \showhyphens on input line 86.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -941,17 +930,17 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman
 (RS)
 ) (/usr/local/texlive/2021/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count326
+\scratchcounter=\count325
 \scratchdimen=\dimen304
-\scratchbox=\box92
-\nofMPsegments=\count327
-\nofMParguments=\count328
-\everyMPshowfont=\toks53
-\MPscratchCnt=\count329
+\scratchbox=\box90
+\nofMPsegments=\count326
+\nofMParguments=\count327
+\everyMPshowfont=\toks51
+\MPscratchCnt=\count328
 \MPscratchDim=\dimen305
-\MPnumerator=\count330
-\makeMPintoPDFobject=\count331
-\everyMPtoPDFconversion=\toks54
+\MPnumerator=\count329
+\makeMPintoPDFobject=\count330
+\everyMPtoPDFconversion=\toks52
 ) (/usr/local/texlive/2021/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -960,7 +949,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 87.
+Package hyperref Info: Link coloring OFF on input line 86.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 (/usr/local/texlive/2021/texmf-dist/tex/latex/refcount/refcount.sty
@@ -970,11 +959,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count332
+\c@section@level=\count331
 )
-LaTeX Info: Redefining \ref on input line 87.
-LaTeX Info: Redefining \pageref on input line 87.
-LaTeX Info: Redefining \nameref on input line 87.
+LaTeX Info: Redefining \ref on input line 86.
+LaTeX Info: Redefining \pageref on input line 86.
+LaTeX Info: Redefining \nameref on input line 86.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -1013,49 +1002,49 @@ LaTeX Info: Redefining \nameref on input line 87.
 Package pgfplots Warning: running in backwards compatibility mode (unsuitable t
 ick labels; missing features). Consider writing \pgfplotsset{compat=1.17} into 
 your preamble.
- on input line 87.
+ on input line 86.
 
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 8
-9.
+8.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 8
-9.
+8.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-89.
+88.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-89.
+88.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 89.
+(Font)              <12> on input line 88.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 89.
+(Font)              <8> on input line 88.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 89.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 89.
+(Font)              <6> on input line 88.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 88.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/local/texlive/2021/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 89.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 88.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/usr/local/texlive/2021/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+rsfs on input line 89
+LaTeX Font Info:    Trying to load font information for U+rsfs on input line 88
 .
 (/usr/local/texlive/2021/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
@@ -1063,12 +1052,11 @@ File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-<<<<<<< HEAD
-(Font)              <10> on input line 133.
+(Font)              <10> on input line 116.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 133.
+(Font)              <7> on input line 116.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 133.
+(Font)              <5> on input line 116.
 
 Overfull \hbox (9.63388pt too wide) in paragraph at lines 151--151
 []|\T1/lmr/bx/n/10 (-20) Characteristic|  
@@ -1091,125 +1079,64 @@ Overfull \hbox (1.21739pt too wide) detected at line 231
 
 [3]
 Overfull \hbox (16.86307pt too wide) detected at line 278
-=======
-(Font)              <10> on input line 116.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 116.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 116.
-
-Overfull \hbox (13.87029pt too wide) in paragraph at lines 150--151
-[]\T1/lmr/bx/n/10 Characteristic  
- []
-
-[2]
-Overfull \hbox (2.47675pt too wide) detected at line 226
-\OML/lmm/m/it/10 ^^Y [] \OMS/lmsy/m/n/10 / [][] [][] [] [] [] [][] [] []
- []
-
-[3]
-Overfull \hbox (13.85655pt too wide) detected at line 287
->>>>>>> e3ab237ce4521f1830a2325e586ff38f12746d41
 [] \OT1/lmr/m/n/10 = []
  []
 
 
-<<<<<<< HEAD
 Overfull \hbox (12.48785pt too wide) in paragraph at lines 316--318
-=======
-Overfull \hbox (12.48785pt too wide) in paragraph at lines 324--326
->>>>>>> e3ab237ce4521f1830a2325e586ff38f12746d41
 []\T1/lmr/m/n/10 (-20) Finally, we sam-ple $\OT1/lmr/m/n/10 (-20) ^^F[]$ \T1/lm
 r/m/n/10 (-20) from $[] [] \OML/lmm/m/it/10 :$ 
  []
 
-<<<<<<< HEAD
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
 32.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [4] [5pdfTeX warning (ext4): destination with the same identifier (name{table
-.2}) has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  
-l.416 ...nvergence}\label{mcmc-model-convergence}}
-                                                  ]
+) [4] [5]
 <pics/covergence_plots.png, id=78, 807.015pt x 555.07375pt>
 File: pics/covergence_plots.png Graphic file (type png)
 <use pics/covergence_plots.png>
 Package pdftex.def Info: pics/covergence_plots.png  used on input line 457.
-=======
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 340.
-
-(/usr/local/texlive/2017/texmf-dist/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [4] [5] <pics/covergence_plots.png, id=75, 807.015pt x 555.07375pt>
-File: pics/covergence_plots.png Graphic file (type png)
-<use pics/covergence_plots.png>
-Package pdftex.def Info: pics/covergence_plots.png used on input line 465.
->>>>>>> e3ab237ce4521f1830a2325e586ff38f12746d41
 (pdftex.def)             Requested size: 469.75606pt x 323.10333pt.
-[6]
-<pics/hist_select.png, id=91, 826.08624pt x 541.02126pt>
+<pics/hist_select.png, id=80, 826.08624pt x 541.02126pt>
 File: pics/hist_select.png Graphic file (type png)
 <use pics/hist_select.png>
-<<<<<<< HEAD
 Package pdftex.def Info: pics/hist_select.png  used on input line 464.
-=======
-Package pdftex.def Info: pics/hist_select.png used on input line 472.
->>>>>>> e3ab237ce4521f1830a2325e586ff38f12746d41
 (pdftex.def)             Requested size: 469.7648pt x 307.65884pt.
-[7pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) 
-has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  
-l.468 
-       <./pics/covergence_plots.png>]
-<pics/hist_beta.png, id=98, 756.8275pt x 553.06625pt>
+<pics/hist_beta.png, id=81, 756.8275pt x 553.06625pt>
 File: pics/hist_beta.png Graphic file (type png)
 <use pics/hist_beta.png>
-<<<<<<< HEAD
 Package pdftex.def Info: pics/hist_beta.png  used on input line 471.
-=======
-Package pdftex.def Info: pics/hist_beta.png used on input line 479.
->>>>>>> e3ab237ce4521f1830a2325e586ff38f12746d41
 (pdftex.def)             Requested size: 469.75941pt x 343.28572pt.
-[8pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) 
-has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  
-l.475 
-       <./pics/hist_select.png>]
-<pics/mu_est.png, id=104, 754.82pt x 221.82875pt>
+<pics/mu_est.png, id=82, 754.82pt x 221.82875pt>
 File: pics/mu_est.png Graphic file (type png)
 <use pics/mu_est.png>
-<<<<<<< HEAD
 Package pdftex.def Info: pics/mu_est.png  used on input line 478.
 (pdftex.def)             Requested size: 469.7573pt x 138.05365pt.
-[9pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) 
-has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  
-l.498 ... of Findings}\label{summary-of-findings}}
-                                                  pdfTeX warning (ext4): destin
-ation with the same identifier (name{figure.4}) has been already used, duplicat
-e ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  
-l.498 ... of Findings}\label{summary-of-findings}}
-                                                   <./pics/hist_beta.png> <./pi
-cs/mu_est.png>] [10] [11]
-Overfull \hbox (7.18668pt too wide) detected at line 563
+<pics/adj_r_square.png, id=85, 648.4225pt x 625.33624pt>
+File: pics/adj_r_square.png Graphic file (type png)
+<use pics/adj_r_square.png>
+Package pdftex.def Info: pics/adj_r_square.png  used on input line 531.
+(pdftex.def)             Requested size: 469.76282pt x 453.03752pt.
+<pics/predict_id_plot.png, id=86, 703.62875pt x 625.33624pt>
+File: pics/predict_id_plot.png Graphic file (type png)
+<use pics/predict_id_plot.png>
+Package pdftex.def Info: pics/predict_id_plot.png  used on input line 538.
+(pdftex.def)             Requested size: 469.75392pt x 417.48457pt.
+[6] [7 <./pics/covergence_plots.png>] [8 <./pics/hist_select.png>] [9 <./pics/h
+ist_beta.png> <./pics/mu_est.png>] [10 <./pics/adj_r_square.png>] [11 <./pics/p
+redict_id_plot.png>] [12] [13]
+Overfull \hbox (7.18668pt too wide) detected at line 620
 [][]
  []
 
-[12] (./report.aux) ) 
+[14] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 35583 strings out of 478994
- 821130 string characters out of 5858184
- 1266370 words of memory out of 5000000
- 52203 multiletter control sequences out of 15000+600000
- 477044 words of font info for 154 fonts, out of 8000000 for 9000
+ 35548 strings out of 478994
+ 820734 string characters out of 5858184
+ 1265303 words of memory out of 5000000
+ 52159 multiletter control sequences out of 15000+600000
+ 477293 words of font info for 157 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  87i,15n,88p,780b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-
@@ -1234,74 +1161,10 @@ s/type1/public/lm/lmsy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/pu
 blic/lm/lmsy5.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lms
 y7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/
 msbm10.pfb>
-Output written on report.pdf (12 pages, 663830 bytes).
+Output written on report.pdf (14 pages, 793237 bytes).
 PDF statistics:
- 304 PDF objects out of 1000 (max. 8388607)
- 261 compressed objects within 3 object streams
- 69 named destinations out of 1000 (max. 500000)
- 41185 words of extra memory for PDF output out of 42996 (max. 10000000)
-=======
-Package pdftex.def Info: pics/mu_est.png used on input line 486.
-(pdftex.def)             Requested size: 469.7573pt x 138.05365pt.
-[6] [7 <./pics/covergence_plots.png>] [8 <./pics/hist_select.png>] [9 <./pics/h
-ist_beta.png> <./pics/mu_est.png>] <pics/adj_r_square.png, id=117, 648.4225pt x
- 625.33624pt>
-File: pics/adj_r_square.png Graphic file (type png)
-<use pics/adj_r_square.png>
-Package pdftex.def Info: pics/adj_r_square.png used on input line 539.
-(pdftex.def)             Requested size: 469.76282pt x 453.03752pt.
-<pics/predict_id_plot.png, id=118, 703.62875pt x 625.33624pt>
-File: pics/predict_id_plot.png Graphic file (type png)
-<use pics/predict_id_plot.png>
-Package pdftex.def Info: pics/predict_id_plot.png used on input line 546.
-(pdftex.def)             Requested size: 469.75392pt x 417.48457pt.
-[10 <./pics/adj_r_square.png>] [11 <./pics/predict_id_plot.png>] [12] [13]
-Overfull \hbox (1.17365pt too wide) detected at line 628
-[][]
- []
-
-[14]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 630.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 630.
-(./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 630.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 630.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 630.
- ) 
-Here is how much of TeX's memory you used:
- 35531 strings out of 492995
- 805230 string characters out of 6132704
- 1016867 words of memory out of 5000000
- 38298 multiletter control sequences out of 15000+600000
- 75584 words of font info for 113 fonts, out of 8000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 62i,15n,96p,900b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local
-/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2
-017/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2017/texmf-
-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc
-/dvips/lm/lm-mathex.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/
-lm-ec.enc}</usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmbx10.pfb>
-</usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/loca
-l/texlive/2017/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/
-2017/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2017/texmf
--dist/fonts/type1/public/lm/lmmi5.pfb></usr/local/texlive/2017/texmf-dist/fonts
-/type1/public/lm/lmmi7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/publ
-ic/lm/lmmib10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmm
-ib7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr10.pfb></u
-sr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/te
-xlive/2017/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2017/
-texmf-dist/fonts/type1/public/lm/lmr5.pfb></usr/local/texlive/2017/texmf-dist/f
-onts/type1/public/lm/lmr7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/p
-ublic/lm/lmri10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/l
-msy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy5.pfb><
-/usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></usr/local/
-texlive/2017/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on report.pdf (14 pages, 793143 bytes).
-PDF statistics:
- 322 PDF objects out of 1000 (max. 8388607)
- 273 compressed objects within 3 object streams
+ 324 PDF objects out of 1000 (max. 8388607)
+ 275 compressed objects within 3 object streams
  74 named destinations out of 1000 (max. 500000)
- 12523 words of extra memory for PDF output out of 14400 (max. 10000000)
->>>>>>> e3ab237ce4521f1830a2325e586ff38f12746d41
+ 41195 words of extra memory for PDF output out of 42996 (max. 10000000)
 

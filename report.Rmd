@@ -15,7 +15,6 @@ header-includes:
   - \usepackage{geometry,mathrsfs}
   - \usepackage{tikz}
   - \usepackage{pgfplots}
-  - \usepackage{float}
   - \usetikzlibrary{shapes,arrows}
 ---
 
