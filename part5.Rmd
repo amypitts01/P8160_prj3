@@ -63,7 +63,7 @@ dt = df_rm %>%
   drop_na()
 
 dt_res = dt %>% 
-  select(id, nature, season, month, wind_kt, wind_lag,lat_shift, long_shift, wind_shift) %>%
+  dplyr::select(id, nature, season, month, wind_kt, wind_lag,lat_shift, long_shift, wind_shift) %>%
   nest(data = nature:wind_shift) %>% 
   ungroup() %>% 
   mutate(beta_0 = beta[,1],
@@ -119,7 +119,7 @@ dt_res = dt_res %>%
   )
 
 dt_long <- dt_res %>% 
-  select(id, decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+  dplyr::select(id, decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
   pivot_longer(
     c(beta_0:beta_4),
     names_to = "beta",
@@ -157,9 +157,13 @@ dt_long1 %>%
   ggplot(aes(x=vals, fill = beta)) +
   geom_histogram() + 
   geom_vline(aes(xintercept = mean_beta), color="black") +
-  # geom_vline(aes(xintercept = lower_cred_int), color="red") +
-  # geom_vline(aes(xintercept = upper_cred_int), color="red") +
-  facet_wrap(~beta, scale = "free") 
+  facet_wrap(~beta, scale = "free") +
+  theme(legend.position="none") +
+  labs(
+    title = "Histograms of Estiamted Betas for all Hurricanes",
+    x = "Estimated Beta Value",
+    y = "Count"
+  )
   
 ```
 
@@ -200,6 +204,7 @@ dt_res_unique <- dt_res %>%
 
 
 ```{r}
+theme_gtsummary_compact()
 beta0_mod <- lm(beta_0 ~ decade + nature + month, data = dt_res_unique)
 #summary(beta0_mod)
 
@@ -256,11 +261,16 @@ tbl_merge(
 ### Just looking at year
 
 ```{r}
-dt_long %>% 
-  ggplot(aes(x=year, y=vals )) + #, color=beta
+dt_long %>%
+  ggplot(aes(x=decade, y=vals )) + #, color=beta
   geom_point()+
   geom_smooth(method='lm')+ #method='lm'
-  facet_wrap(~beta, scale = "free") 
+  facet_wrap(~beta, scale = "free")  +
+  labs(
+    title = "Beta Estimates by Decade",
+    y = "Beta Estimates",
+    x = "Decade"
+  )
   
 
 beta0_mod <- lm(beta_0 ~ decade , data = dt_res_unique)

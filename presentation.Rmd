@@ -75,7 +75,7 @@ Climate researchers are interested in modeling the hurricane trajectories to for
 
 
 # Data 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE,  fig.align='center'}
 dt <- as.data.table(dt)
 df_temp = dt %>%
   mutate(
@@ -240,77 +240,17 @@ Update component wise:
 
 # MCMC Model Convergence 
 
-![](covergence_plots.png)
-
-```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-
-# Initialize paramaters
-## create variables of interest
-dt = df_rm %>% 
-  janitor::clean_names() %>% 
-  group_by(id) %>% 
-  mutate(wind_lag = lag(wind_kt,1), ##previous wind speed
-         lat_shift = lag(latitude, 1) - lag(latitude, 2), ## change of lat
-         long_shift = lag(longitude, 1) - lag(longitude, 2), ## change of long
-         wind_shift = lag(wind_kt, 1) - lag(wind_kt, 2)) %>%  ##change of wind speed
-  drop_na()
-
-## group by hurricane and create design matrix for each hurricane
-d = 5  ## dimension of beta_i
-m = 681  ## number of hurricanes
-L = 1.5
-
-par(mfrow=c(3,4))
-par(mar = c(2, 2, 2, 2))
-plot(theta_chain[,2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta0", line = L, cex.lab = 0.5)
-plot(theta_chain[,m+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
-mtext("                                 Covergence Plots of Selected Parameters", side = 3, line = 0.6)
-plot(theta_chain[,m*2+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
-plot(theta_chain[,m*3+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
-plot(theta_chain[,m*4+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
-plot(theta_chain[,3406], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ1", line = L, cex.lab = 0.5)
-plot(theta_chain[,3407], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ2", line = L, cex.lab = 0.5)
-plot(theta_chain[,3408], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ3", line = L, cex.lab = 0.5)
-plot(theta_chain[,3409], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ4", line = L, cex.lab = 0.5)
-plot(theta_chain[,3410], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ5", line = L, cex.lab = 0.5)
-plot(theta_chain[,3411], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Sigma", line = L, cex.lab = 0.5)
-
-
-
-# plot(theta_trace_inverse, type = "l", cex.axis = 0.5, xlab = "", ylab = "")
-# abline(v = 5500, lty = 2, col = 2)
-# title(ylab = "Trace of ∑^-1", line = L, cex.lab = 0.5)
-```
-
+![](pics/covergence_plots.png)
 
 
 # MCMC Model Convergence 
 
-![](hist_select.png)
+![](pics/hist_select.png)
 
-```{r eval=FALSE, message=FALSE, warning=TRUE, include=FALSE}
+
+# $\Beta$ Estimates  
+
+```{r warning=FALSE, include=FALSE}
 L = 1.5
 d = 5  ## dimension of beta_i
 m = 681  ## number of hurricanes
@@ -336,44 +276,264 @@ sigma = bs_estimates[3411]
 mu = bs_estimates[3406:3410]
 beta = matrix(bs_estimates[1:n_beta], ncol = d)
 
-par(mfrow=c(2,3))
-par(mar = c(3, 2, 3, 2))
-hist(beta[,1], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-abline(v = mu[1], lty = 2, col = 2)
-title(xlab = "Beta0", cex.lab = 0.5, line = L)
-hist(beta[,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-abline(v = mu[2], lty = 2, col = 2)
-title(xlab = "Beta1", cex.lab = 0.5, line = L)
-mtext("Histograms of estimated Betas of All Hurricanes", side = 3, line = 0.6)
-hist(beta[,3], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-abline(v = mu[3], lty = 2, col = 2)
-title(xlab = "Beta2", cex.lab = 0.5, line = L)
-hist(beta[,4], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-abline(v = mu[4], lty = 2, col = 2)
-title(xlab = "Beta3", cex.lab = 0.5, line = L)
-hist(beta[,5], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-abline(v = mu[5], lty = 2, col = 2)
-title(xlab = "Beta4", cex.lab = 0.5, line = L)
+
+load("df_rm.RData")
+## create variables of interest
+dt = df_rm %>% 
+  janitor::clean_names() %>% 
+  group_by(id) %>% 
+  mutate(wind_lag = lag(wind_kt,1), ##previous wind speed
+         lat_shift = lag(latitude, 1) - lag(latitude, 2), ## change of lat
+         long_shift = lag(longitude, 1) - lag(longitude, 2), ## change of long
+         wind_shift = lag(wind_kt, 1) - lag(wind_kt, 2)) %>%  ##change of wind speed
+  drop_na()
+n_obs = nrow(dt) ## number of
+
+dt_res = dt %>% 
+  dplyr::select(id, nature, season, month, wind_kt,wind_lag,lat_shift, long_shift, wind_shift) %>%
+  nest(data = nature:wind_shift) %>% 
+  ungroup() %>% 
+  mutate(beta_0 = beta[,1],
+         beta_1 = beta[,2],
+         beta_2 = beta[,3],
+         beta_3 = beta[,4],
+         beta_4 = beta[,5]) %>% 
+  unnest(data) %>% 
+  mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift) %>%
+  group_by(id) %>% 
+  mutate(r_square = (1-sum((wind_kt_pred-wind_kt)^2)/(sum((wind_kt-mean(wind_kt))^2))),
+         n_obs = n(),
+         adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5),
+         p_value = 1-pchisq(sum((wind_kt_pred-wind_kt)^2)/sigma, n_obs))
+  
+```
+
+```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE}
+dt_res = dt_res %>% 
+  rename(year = season) %>%
+  mutate(
+    decade = (year - min(year))/10
+  )
+
+dt_long <- dt_res %>% 
+  select(id, decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+  pivot_longer(
+    c(beta_0:beta_4),
+    names_to = "beta",
+    values_to = "vals"
+  ) 
+
+mean_beta_df = dt_long %>%
+  group_by(beta) %>%
+  distinct(id, .keep_all = TRUE) %>%
+  summarize(
+    n = n(),
+    mean_beta = mean(vals),
+    sd_beta = sd(vals),
+    lower_cred_int = mean_beta - 1.96*(sd_beta/sqrt(n)),
+    upper_cred_int = mean_beta + 1.96*(sd_beta/sqrt(n))
+  )
+
+full_join(dt_long, mean_beta_df, by="beta") %>% 
+  group_by(beta) %>% 
+  distinct(id, .keep_all = TRUE) %>%
+  ggplot(aes(x=vals, fill = beta)) +
+  geom_histogram() + 
+  geom_vline(aes(xintercept = mean_beta), color="black") +
+  facet_wrap(~beta, scale = "free") +
+  theme(legend.position="none") +
+  labs(
+    title = "Histograms of Estiamted Betas for all Hurricanes",
+    x = "Estimated Beta Value",
+    y = "Count"
+  )
+  
 ```
 
 
-# $\Beta$ Estimates  
-
-![](hist_beta.png)
 
 
 # The $\mu$ and $\sigma^2$ Estiamtes 
 
+\begin{table}
+    \centering
+     \caption{Bayesian Estiamtes for $\mu$ and $\sigma^2$ }
+    \label{tab:rand_est_mod1}
+\end{table}
+![](pics/mu_est.png)
 
 
 
 # Model Preformance 
 
+```{r message=FALSE, warning=FALSE, include=FALSE}
+r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
+adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
+```
 
-# Understanding Seasonal differnces in Hurricane Wind Speed
+The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square`.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+dt_rsquare = dt_res %>% 
+  dplyr::select(id, r_square, adj_r_square, p_value, n_obs) %>% 
+  distinct() %>% 
+  arrange(n_obs)
+
+n_lowp = dt_rsquare %>% filter(p_value < 0.05) %>% 
+  nrow()
+
+d_high = dt_rsquare %>% 
+  filter(adj_r_square >=0.6 & adj_r_square <= 1) %>% 
+  nrow()
+
+d_moderate = dt_rsquare %>% 
+  filter(adj_r_square >= 0.2 & adj_r_square< 0.6) %>% 
+  nrow()
+
+d_low = dt_rsquare %>% 
+  filter(adj_r_square < 0.2) %>% 
+  nrow()
+
+
+label_1 = c("$R_{adj}^2$", "Count of Hurricanes","Percentage($\\%$)")
+
+tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
+       count = c(d_high, d_moderate, d_low),
+       prop = c(round(d_high/681,3)*100, round(d_moderate/681,3)*100, 
+                round(d_low/681,3)*100)) %>% 
+  knitr::kable(escape = F, col.names = label_1, 
+        caption = "$R_{adj}^2$ for each hurricane") 
+# %>% 
+#   kable_styling(latex_options = "hold_position")
+
+
+```
+
+# Moodel Preformance 
+```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE}
+## visualize some hurricane prediction
+dt_rsquare %>% 
+  ggplot(aes(x = n_obs, y = adj_r_square))+
+  geom_point()+
+  geom_vline(xintercept = 40, linetype = 2)+
+  geom_hline(yintercept = 0.5, linetype = 2)+
+  #geom_vline(xintercept = 20, linetype = 1)+
+  geom_hline(yintercept = 0, linetype = 1)+
+  labs(
+    title = "Adjusted R Squared Value for each Hurricane",
+    subtitle = "Vertical dotted line at 40, Horizontal dotted line at 0.5",
+    y = "Adjusted R Squared",
+    x = "Number of Observations"
+  )
+```
+
+
+# Model Performance 
+
+```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE,  fig.align='center'}
+dt_res %>% filter(id %in% c("DOG.1950","JANET.1955","FRANCES.1986",
+                            "BARBARA.1954","GINGER.1967", "ARLENE.1971",
+                            "NICOLE.2010","JERRY.2007","TEN.2005")) %>% 
+  ungroup() %>% 
+  mutate(adj_r_square = round(adj_r_square,3),
+         id = factor(paste0(id, "(",adj_r_square,")")),
+         id = reorder(id, adj_r_square)) %>% 
+  group_by(id) %>% 
+  mutate(time = 1:n()) %>%
+  ggplot(aes(y = wind_kt, x = time))+
+  geom_line(aes(color = "observation"))+
+  geom_line(aes(y = wind_kt_pred, color = "prediction"))+
+  scale_colour_manual(name = NULL,
+values = c( "observation" = 1, "prediction" = 2))+
+  facet_wrap(.~id, nrow = 3, scales = "free")+
+  labs(x = "time",
+       y = "wind speed",
+       title = "Observed Wind Speed vs. Baysian Model Estimates")
+```
+
+
+
+# Understanding Seasonal Differnces 
+
+```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE,  fig.align='center'}
+dt_long %>% 
+  ggplot(aes(x=year, y=vals, color=beta )) +
+  geom_point()+
+  facet_grid(beta~month, scale = "free_y") +
+  theme(axis.text.x = element_text(angle = -45)) +
+  theme(legend.position="none") +
+  labs(
+    title = "Beta Estimates by Start Month and Year",
+    y = "Beta Estimates",
+    x = "Year"
+  )
+```
+
+Typical Hurricane season is June to November 
+
+# Understanding Nature of Hurricane Differnces 
+
+```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE,  fig.align='center'}
+dt_long %>% 
+  ggplot(aes(x=nature, y=vals, color=beta )) +
+  geom_boxplot()+
+  facet_wrap(~beta, scale = "free")+
+  theme(legend.position="none") +
+  labs(
+    title = "Beta Estimates by Nature of the Hurricane",
+    y = "Beta Estimates",
+    x = "Nature of Hurricane"
+  )
+```
+
+# Modeling Seasonal, and Nature Difference 
+
+\begin{columns}
+  \begin{column}{0.53\textwidth}
+  \textbf{Model:} \\ 
+  For each $\beta$ value we fit a different linear model.
+  $$
+  \begin{aligned}
+  Y_{ij} &= \alpha_{0j} + \alpha_{1j}\times \textrm{Decade}_i \\
+  &+ \alpha_{(k+1)j}I(\textrm{Nature} = k)_i \\
+  &+ \alpha_{(l+5)j}I(\textrm{Month} = l)_i + \epsilon_{ij}\\
+  \end{aligned} 
+  $$
+  Where $i$ is the hurricane, $j$ is the Beta model, $k \in (ET,\ NR,\ SS,\ TS)$ making DS the reference group. Let $l \in $(April - December). 
+  
+  \end{column}
+  \begin{column}{0.47\textwidth}
+  \textbf{Results:}
+  \begin{itemize}
+    \item Due to length each model estimate were omitted 
+    \item No Nature Indicators were significant 
+    \item No Month Indicators were significant 
+    \item For the $\beta_1$ model the decade estimated is significant -0.003 (-0.002, -0.004)
+  \end{itemize}
+  Thus Month and Nature don't have a linear association with each beta value. 
+  \end{column}
+\end{columns}
 
 
 # Exploring if wind speeds has increased over the years
+
+Model: $Y_i = \alpha_{0i}+\alpha_{1i} \times\textrm{Decade}$ where $Y_i$ is each $\beta_i$ and $i \in (0,\dots,4)$. 
+\begin{columns}
+  \begin{column}{0.55\textwidth}
+   \includegraphics{pics/beta_by_year.png}
+  \end{column}
+  \begin{column}{0.45\textwidth}
+  \centering 
+  \footnotesize{\textbf{Linear Model Output for Each $\beta$}} \\
+    \includegraphics{pics/model_decade.png}
+  \end{column}
+\end{columns}
+
+\begin{itemize}
+  \item \small{$\beta_1$: Indicates a decrease in the change of wind speed over years}
+  \item \small{$\beta_3$: Indicates an increase in the impact of change in longitude over years}
+\end{itemize}
+
 
 
 # Deaths and Damages Data Exploration 
