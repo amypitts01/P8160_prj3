@@ -39,7 +39,7 @@ theta_chain <- rbind(
 d = 5
 n_theta = 3426
 
-bs_estimates = apply(theta_chain[5001:10000,], 2, mean)
+bs_estimates = apply(theta_chain[5501:10000,], 2, mean)
 mu = bs_estimates[3406:3410]
 sigma = bs_estimates[3411]
 cov_m = matrix(0,5,5)
@@ -63,7 +63,7 @@ dt = df_rm %>%
   drop_na()
 
 dt_res = dt %>% 
-  select(id, nature, season, month, wind_kt, wind_lag,lat_shift, long_shift, wind_shift) %>%
+  dplyr::select(id, nature, season, month, wind_kt, wind_lag,lat_shift, long_shift, wind_shift) %>%
   nest(data = nature:wind_shift) %>% 
   ungroup() %>% 
   mutate(beta_0 = beta[,1],
@@ -119,7 +119,7 @@ dt_res = dt_res %>%
   )
 
 dt_long <- dt_res %>% 
-  select(id, decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+  dplyr::select(id, decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
   pivot_longer(
     c(beta_0:beta_4),
     names_to = "beta",
@@ -157,9 +157,13 @@ dt_long1 %>%
   ggplot(aes(x=vals, fill = beta)) +
   geom_histogram() + 
   geom_vline(aes(xintercept = mean_beta), color="black") +
-  # geom_vline(aes(xintercept = lower_cred_int), color="red") +
-  # geom_vline(aes(xintercept = upper_cred_int), color="red") +
-  facet_wrap(~beta, scale = "free") 
+  facet_wrap(~beta, scale = "free") +
+  theme(legend.position="none") +
+  labs(
+    title = "Histograms of Estiamted Betas for all Hurricanes",
+    x = "Estimated Beta Value",
+    y = "Count"
+  )
   
 ```
 
@@ -191,9 +195,17 @@ dt_long %>%
 
 ```
 
+Using only the unique ID to get the first month of each huricane 
+```{r}
+
+dt_res_unique <- dt_res %>%
+  distinct(id, .keep_all = TRUE)
+```
+
 
 ```{r}
-beta0_mod <- lm(beta_0 ~ decade + nature + month, data = dt_res)
+theme_gtsummary_compact()
+beta0_mod <- lm(beta_0 ~ decade + nature + month, data = dt_res_unique)
 #summary(beta0_mod)
 
 tab1 = beta0_mod %>%
@@ -202,7 +214,7 @@ tab1 = beta0_mod %>%
   ) %>%
   bold_p(t=0.05)
 
-beta1_mod <- lm(beta_1 ~ decade + nature + month, data = dt_res)
+beta1_mod <- lm(beta_1 ~ decade + nature + month, data = dt_res_unique)
 #summary(beta1_mod)
 
 tab2 = beta1_mod %>%
@@ -211,7 +223,7 @@ tab2 = beta1_mod %>%
   ) %>%
   bold_p(t=0.05)
 
-beta2_mod <- lm(beta_2 ~ decade + nature + month, data = dt_res)
+beta2_mod <- lm(beta_2 ~ decade + nature + month, data = dt_res_unique)
 #summary(beta2_mod)
 
 tab3 = beta2_mod %>%
@@ -220,7 +232,7 @@ tab3 = beta2_mod %>%
   ) %>%
   bold_p(t=0.05)
 
-beta3_mod <- lm(beta_3 ~ decade + nature + month, data = dt_res)
+beta3_mod <- lm(beta_3 ~ decade + nature + month, data = dt_res_unique)
 #summary(beta3_mod)
 
 tab4 = beta3_mod %>%
@@ -229,7 +241,7 @@ tab4 = beta3_mod %>%
   ) %>%
   bold_p(t=0.05)
 
-beta4_mod <- lm(beta_4 ~ decade + nature + month, data = dt_res)
+beta4_mod <- lm(beta_4 ~ decade + nature + month, data = dt_res_unique)
 #summary(beta4_mod)
 
 tab5 = beta4_mod %>%
@@ -249,18 +261,23 @@ tbl_merge(
 ### Just looking at year
 
 ```{r}
-dt_long %>% 
-  ggplot(aes(x=year, y=vals )) + #, color=beta
+dt_long %>%
+  ggplot(aes(x=decade, y=vals )) + #, color=beta
   geom_point()+
   geom_smooth(method='lm')+ #method='lm'
-  facet_wrap(~beta, scale = "free") 
+  facet_wrap(~beta, scale = "free")  +
+  labs(
+    title = "Beta Estimates by Decade",
+    y = "Beta Estimates",
+    x = "Decade"
+  )
   
 
-beta0_mod <- lm(beta_0 ~ decade , data = dt_res)
-beta1_mod <- lm(beta_1 ~ decade , data = dt_res)
-beta2_mod <- lm(beta_2 ~ decade , data = dt_res)
-beta3_mod <- lm(beta_3 ~ decade , data = dt_res)
-beta4_mod <- lm(beta_4 ~ decade , data = dt_res)
+beta0_mod <- lm(beta_0 ~ decade , data = dt_res_unique)
+beta1_mod <- lm(beta_1 ~ decade , data = dt_res_unique)
+beta2_mod <- lm(beta_2 ~ decade , data = dt_res_unique)
+beta3_mod <- lm(beta_3 ~ decade , data = dt_res_unique)
+beta4_mod <- lm(beta_4 ~ decade , data = dt_res_unique)
 tab1 = beta0_mod %>%
   tbl_regression(   
     estimate_fun = function(x) style_ratio(x, digits = 3)

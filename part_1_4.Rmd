@@ -1,6 +1,6 @@
 ---
 title: "Part_1-4"
-author: "Ruiqi Yan (ry2417)"
+author: "Tianchuan Gao, Ruiqi Yan, Jiacheng Wu"
 date: "5/4/2022"
 output: 
   pdf_document
@@ -440,78 +440,82 @@ theta_trace_inverse = apply(theta_chain, 1, trace_inverse)
 ### Convergence trace plots
 
 ```{r}
-L = 1.5
-par(mfrow=c(3,4))
-par(mar = c(2, 2, 2, 2))
-plot(theta_chain[,2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+L = 0.7
+cex = 0.6
+cex_lab = 0.9
+par(mfrow=c(3,4),mgp = c(0.5,0.1,0), tck = -0.01)
+par(mar = c(2, 2, 2, 0.3))
+plot(theta_chain[,2], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta0", line = L, cex.lab = 0.5)
-plot(theta_chain[,m+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(beta[0*2]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,m+2], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
+title(ylab = expression(beta[12]), line = L, cex.lab = cex_lab)
 mtext("                                 Covergence Plots of Selected Parameters", side = 3, line = 0.6)
-plot(theta_chain[,m*2+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+plot(theta_chain[,m*2+2], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
-plot(theta_chain[,m*3+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(beta[22]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,m*3+2], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
-plot(theta_chain[,m*4+2], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(beta[32]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,m*4+2], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Beta1", line = L, cex.lab = 0.5)
-plot(theta_chain[,3406], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(beta[42]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,3406], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ1", line = L, cex.lab = 0.5)
-plot(theta_chain[,3407], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(mu[0]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,3407], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ2", line = L, cex.lab = 0.5)
-plot(theta_chain[,3408], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(mu[1]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,3408], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ3", line = L, cex.lab = 0.5)
-plot(theta_chain[,3409], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(mu[2]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,3409], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ4", line = L, cex.lab = 0.5)
-plot(theta_chain[,3410], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(mu[3]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,3410], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "µ5", line = L, cex.lab = 0.5)
-plot(theta_chain[,3411], type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(mu[4]), line = L, cex.lab = cex_lab)
+plot(theta_chain[,3411], type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Sigma", line = L, cex.lab = 0.5)
-plot(theta_trace_inverse, type = "l", cex.axis = 0.5, xlab = "", ylab = "")
+title(ylab = expression(sigma^2), line = L, cex.lab = cex_lab)
+plot(theta_trace_inverse, type = "l", cex.axis = cex, xlab = "", ylab = "")
 abline(v = 5500, lty = 2, col = 2)
-title(ylab = "Trace of ∑^-1", line = L, cex.lab = 0.5)
+title(ylab = expression("Trace of "*Sigma^-1), line = L, cex.lab = cex_lab)
 ```
 
 ### Histograms
 
 ```{r}
+L = 1
+cex = 0.7
 par(mfrow=c(3,4))
-par(mar = c(3, 1, 3, 1))
-hist(theta_chain[5501:10000,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "Beta0", line = L)
-hist(theta_chain[5501:10000,m+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+par(mar = c(3, 1, 3, 1), mgp = c(0.1,0.1,-0.2),tck = -0.01)
+hist(theta_chain[5501:10000,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(beta[0*2]), line = L)
+hist(theta_chain[5501:10000,m+2], nclass = 70, main = NULL, xlab = "", ylab = "", cex.axis = cex)
 mtext("                                 Histograms of Selected Parameters", side = 3, line = 0.6)
-title(cex.lab = 0.5, xlab = "Beta1", line = L)
-hist(theta_chain[5501:10000,m*2+2], nclass = 50, main = NULL, cex.axis = 0.5, xlab = "", ylab = "")
-title(cex.lab = 0.5, xlab = "Beta2", line = L)
-hist(theta_chain[5501:10000,m*3+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "Beta3", line = L)
-hist(theta_chain[5501:10000,m*4+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "Beta4", line = L)
-hist(theta_chain[5501:10000,3406], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "µ1", line = L)
-hist(theta_chain[5501:10000,3407], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "µ2", line = L)
-hist(theta_chain[5501:10000,3408], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "µ3", line = L)
-hist(theta_chain[5501:10000,3409], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "µ4", line = L)
-hist(theta_chain[5501:10000,3410], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "µ5", line = L)
-hist(theta_chain[5501:10000,3411], nclass = 50, main = NULL, xlab = "", ylab  = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "Sigma", line = L)
-hist(theta_trace_inverse, nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
-title(cex.lab = 0.5, xlab = "Trace of ∑^-1", line = L)
+title(cex.lab = cex_lab, xlab = expression(beta[1*2]), line = L)
+hist(theta_chain[5501:10000,m*2+2], nclass = 50, main = NULL, cex.axis = cex, xlab = "", ylab = "")
+title(cex.lab = cex_lab, xlab = expression(beta[2*2]), line = L)
+hist(theta_chain[5501:10000,m*3+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(beta[3*2]), line = L)
+hist(theta_chain[5501:10000,m*4+2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(beta[4*2]), line = L)
+hist(theta_chain[5501:10000,3406], nclass = 60, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(mu[0]), line = L)
+hist(theta_chain[5501:10000,3407], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(mu[1]), line = L)
+hist(theta_chain[5501:10000,3408], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(mu[2]), line = L)
+hist(theta_chain[5501:10000,3409], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(mu[3]), line = L)
+hist(theta_chain[5501:10000,3410], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(mu[4]), line = L)
+hist(theta_chain[5501:10000,3411], nclass = 50, main = NULL, xlab = "", ylab  = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression(sigma^2), line = L)
+hist(theta_trace_inverse, nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
+title(cex.lab = cex_lab, xlab = expression("Trace of "*Sigma^-1), line = L)
 ```
 
 ### Estimates (burn-in first 5500 runs)
@@ -535,53 +539,74 @@ beta = matrix(bs_estimates[1:n_beta], ncol = d)
 ```
 
 ```{r}
-par(mfrow=c(2,3))
+cex = 0.8
+cex_lab = 1
+par(mfrow=c(2,3),mgp = c(0.1,0.1,-0.3),tck = -0.01)
 par(mar = c(3, 2, 3, 2))
-hist(beta[,1], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+hist(beta[,1], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
 abline(v = mu[1], lty = 2, col = 2)
-title(xlab = "Beta0", cex.lab = 0.5, line = L)
-hist(beta[,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = expression(beta[0]), cex.lab = cex_lab, line = L)
+hist(beta[,2], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
 abline(v = mu[2], lty = 2, col = 2)
-title(xlab = "Beta1", cex.lab = 0.5, line = L)
-mtext("Histograms of estimated Betas of All Hurricanes", side = 3, line = 0.6)
-hist(beta[,3], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = expression(beta[1]), cex.lab = cex_lab, line = L)
+mtext(expression("Histograms of estimated "*hat(beta)*" of All Hurricanes"), side = 3, line = 0.6)
+hist(beta[,3], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
 abline(v = mu[3], lty = 2, col = 2)
-title(xlab = "Beta2", cex.lab = 0.5, line = L)
-hist(beta[,4], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = expression(beta[2]), cex.lab = cex_lab, line = L)
+hist(beta[,4], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
 abline(v = mu[4], lty = 2, col = 2)
-title(xlab = "Beta3", cex.lab = 0.5, line = L)
-hist(beta[,5], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = 0.5)
+title(xlab = expression(beta[3]), cex.lab = cex_lab, line = L)
+hist(beta[,5], nclass = 50, main = NULL, xlab = "", ylab = "", cex.axis = cex)
 abline(v = mu[5], lty = 2, col = 2)
-title(xlab = "Beta4", cex.lab = 0.5, line = L)
+title(xlab = expression(beta[4]), cex.lab = cex_lab, line = L)
 ```
 
-### Chart of the estimates of mu, sigma and inverseCov
+### Chart of the estimates of $\mu$, $\sigma^2$ and covaraince matrix
 
 ```{r}
-output1 = t(rbind(round(mu[1], 2), round(mu[2], 2), round(mu[3], 2), round(mu[4], 2), round(mu[5], 2), round(sigma, 2)))
-colnames(output1) = c("$\\boldsymbol \\mu_0$", "$\\boldsymbol \\mu_1$", "$\\boldsymbol \\mu_2$", "$\\boldsymbol \\mu_3$", "$\\boldsymbol \\mu_4$", "$\\boldsymbol \\sigma^2$")
+sigmap_m = round(cov_m[lower.tri(cov_m, diag = T)],3)
+output1 = t(rbind(round(mu[1], 2), round(mu[2], 2), round(mu[3], 2), round(mu[4], 2), round(mu[5], 2), round(sigma, 2),sigmap_m[1],sigmap_m[6], sigmap_m[10], sigmap_m[13], sigmap_m[15]))
+colnames(output1) = c("$\\mu_0$", "$\\mu_1$", "$\\mu_2$", "$\\mu_3$", "$\\mu_4$", "$\\sigma^2$","$\\sigma_{00}^2$","$\\sigma_{11}^2$","$\\sigma_{22}^2$","$\\sigma_{33}^2$","$\\sigma_{44}^2$")
 rownames(output1) = "Estimates"
-output1 %>% knitr::kable(caption = "Bayesian Estimates for $\\boldsymbol \\mu$ and $\\boldsymbol \\sigma^2$", escape = FALSE) %>% 
+output1 %>% knitr::kable(caption = "Bayesian Estimates for $\\boldsymbol \\mu$ and $\\sigma^2$", escape = FALSE) %>% 
   kable_styling(latex_options = "hold_position")
 ```
 
 ```{r}
-sigmap = bs_estimates[3412:3426]
-row1 = c(round(sigmap[1], 2), round(sigmap[2], 2), round(sigmap[4], 2), round(sigmap[7], 2), round(sigmap[11], 2))
-row2 = c(round(sigmap[2], 2), round(sigmap[3], 2), round(sigmap[5], 2), round(sigmap[8], 2), round(sigmap[12], 2)) 
-row3 = c(round(sigmap[4], 2), round(sigmap[5], 2), round(sigmap[6], 2), round(sigmap[9], 2), round(sigmap[13], 2))
-row4 = c(round(sigmap[7], 2), round(sigmap[8], 2), round(sigmap[9], 2), round(sigmap[10], 2), round(sigmap[14], 2))
-row5 = c(round(sigmap[11], 2), round(sigmap[12], 2), round(sigmap[13], 2), round(sigmap[14], 2), round(sigmap[15], 2))
-output2 = rbind(row1, row2, row3, row4, row5)
-colnames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", 
-                      "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", 
-                      "$\\boldsymbol \\beta_4$")
-rownames(output2) = c("$\\boldsymbol \\beta_0$", "$\\boldsymbol \\beta_1$", 
-                      "$\\boldsymbol \\beta_2$", "$\\boldsymbol \\beta_3$", 
-                      "$\\boldsymbol \\beta_4$")
-output2 %>% knitr::kable(escape = FALSE, booktabs = T, 
-                         caption = "Bayesian Estimate for $\\Sigma^{-1}$") %>% 
-  kable_styling(latex_options = "hold_position")
+sigmap = round(bs_estimates[3412:3426],2)
+cor = cov2cor(cov_m)
+sigmap_c = round(cor[lower.tri(cor, diag = T)],3)
+```
+
+$$
+\hat{\Sigma}^{-1} = 
+\begin{bmatrix}
+`r sigmap[1]` & `r sigmap[2]` & `r sigmap[3]` & `r sigmap[4]` & `r sigmap[5]`\\
+`r sigmap[2]` & `r sigmap[6]` & `r sigmap[7]` & `r sigmap[8]` & `r sigmap[9]`\\
+`r sigmap[3]` & `r sigmap[7]` & `r sigmap[10]` & `r sigmap[11]` & `r sigmap[12]`\\
+`r sigmap[4]` & `r sigmap[8]` & `r sigmap[11]` & `r sigmap[13]` & `r sigmap[14]`\\
+`r sigmap[5]` & `r sigmap[9]` & `r sigmap[12]` & `r sigmap[14]` & `r sigmap[15]`
+\end{bmatrix} \text{ }
+\hat{\rho} = 
+\begin{bmatrix}
+`r sigmap_c[1]` & `r sigmap_c[2]` & `r sigmap_c[3]` & `r sigmap_c[4]` & `r sigmap_c[5]`\\
+`r sigmap_c[2]` & `r sigmap_c[6]` & `r sigmap_c[7]` & `r sigmap_c[8]` & `r sigmap_c[9]`\\
+`r sigmap_c[3]` & `r sigmap_c[7]` & `r sigmap_c[10]` & `r sigmap_c[11]` & `r sigmap_c[12]`\\
+`r sigmap_c[4]` & `r sigmap_c[8]` & `r sigmap_c[11]` & `r sigmap_c[13]` & `r sigmap_c[14]`\\
+`r sigmap_c[5]` & `r sigmap_c[9]` & `r sigmap_c[12]` & `r sigmap_c[14]` & `r sigmap_c[15]`
+\end{bmatrix}
+$$
+
+```{r}
+#
+#\hat{\Sigma} = 
+#\begin{bmatrix}
+#`r sigmap_m[1]` & `r sigmap_m[2]` & `r sigmap_m[3]` & `r sigmap_m[4]` & `r sigmap_m[5]`\\
+#`r sigmap_m[2]` & `r sigmap_m[6]` & `r sigmap_m[7]` & `r sigmap_m[8]` & `r sigmap_m[9]`\\
+#`r sigmap_m[3]` & `r sigmap_m[7]` & `r sigmap_m[10]` & `r sigmap_m[11]` & `r sigmap_m[12]`\\
+#`r sigmap_m[4]` & `r sigmap_m[8]` & `r sigmap_m[11]` & `r sigmap_m[13]` & `r sigmap_m[14]`\\
+#`r sigmap_m[5]` & `r sigmap_m[9]` & `r sigmap_m[12]` & `r sigmap_m[14]` & `r sigmap_m[15]`
+#\end{bmatrix}
 ```
 
 
@@ -603,24 +628,23 @@ dt_res = dt %>%
   mutate(r_square = (1-sum((wind_kt_pred-wind_kt)^2)/(sum((wind_kt-mean(wind_kt))^2))),
          n_obs = n(),
          adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5),
-         p_value = 1-pchisq(sum((wind_kt_pred-wind_kt)^2)/sigma, n_obs-5))
+         p_value = 1-pchisq(sum((wind_kt_pred-wind_kt)^2)/sigma, n_obs))
   
 ```
 
 
 ```{r}
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
-p_value = 1-pchisq(sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sigma, n_obs-n_beta)
 adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
 ```
 
-The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square` and P-value for goodness-of-fit test of all observations is `r p_value`. 
-
+The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square`.
 
 ```{r}
 dt_rsquare = dt_res %>% 
-  dplyr::select(id, r_square, adj_r_square, p_value) %>% 
-  distinct()
+  dplyr::select(id, r_square, adj_r_square, p_value, n_obs) %>% 
+  distinct() %>% 
+  arrange(n_obs)
 
 n_lowp = dt_rsquare %>% filter(p_value < 0.05) %>% 
   nrow()
@@ -653,14 +677,20 @@ tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
 Furthermore, we check the model performance of individual hurricane. Even though most of the estimated models track hurricanes well with great adjusted $R^2$, some estimated models track the hurricanes extremely bad. `r round((d_low+d_moderate)/681,3)*100`% of the estimated models do not track the hurricane well and have adjusted $R^2$ less than 0.6. Few models have negative adjusted $R^2$. Table 2 show the distribution of the adjusted $R^2$ of the estimated Baysian models for individual hurricane.
 
 
-We also perform the goodness-of-fit test for individual estimated model. `r n_lowp` of the estimated models have p-value less than 0.05, implying that those models do not fit well.   
-
 ```{r}
 ## visualize some hurricane prediction
+dt_rsquare %>% 
+  ggplot(aes(x = n_obs, y = adj_r_square))+
+  geom_point()+
+  geom_vline(xintercept = 40, linetype = 2)+
+  geom_hline(yintercept = 0.5, linetype = 2)+
+  geom_vline(xintercept = 20, linetype = 1)+
+  geom_hline(yintercept = 0, linetype = 1)
 
-dt_res %>% filter(id %in% c("DOG.1950","JANET.1955","KING.1950",
+
+dt_res %>% filter(id %in% c("DOG.1950","JANET.1955","FRANCES.1986",
                             "BARBARA.1954","GINGER.1967", "ARLENE.1971",
-                            "ALFA.1973","JERRY.2007","JENNY.1969")) %>% 
+                            "NICOLE.2010","JERRY.2007","TEN.2005")) %>% 
   ungroup() %>% 
   mutate(adj_r_square = round(adj_r_square,3),
          id = factor(paste0(id, "(",adj_r_square,")")),
@@ -677,5 +707,11 @@ values = c( "observation" = 1, "prediction" = 2))+
        y = "wind speed",
        title = "Observed Wind Speed vs. Baysian Model Estimates")
 ```
+
+
+We also perform the goodness-of-fit test for individual estimated model. We used residuals of Bayesian estimates, $r_{ij}$, of the $j^{th}$ observation in $i^{th}$ hurricane, to calculate the test statistics. $\chi^2_{stat} = \frac{\sum_{j=1}^{n_i}r_{ij}^2}{\sigma^2}$, where $\sigma^2$ is the estimate $\sigma^2$ from MCMC. Based on the normal assumption in intro, $\chi^2_{stat}\sim\chi^2_{n_i}$, where $n_i$ is the number of observation for $i^{th}$ hurricane. The estimated models of `r n_lowp` hurricanes have p-value less than 0.05, implying that those models do not fit well. 
+
+
+
 
 

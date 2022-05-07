@@ -5,10 +5,13 @@ title: |
 author: |
   | Amy Pitts, Jiacheng Wu, Jimmy Kelliher,
   | Ruiqi Yan & Tianchuan Gao
-date: "2022-04-09"
+date: "2022-05-09"
 output:
   beamer_presentation:
-    colortheme: "dolphin"
+    theme: "Madrid"
+    fonttheme: "structurebold"
+    incremental: false
+    latex_engine: xelatex
 header-includes:
 - \usepackage{caption}
 - \captionsetup[figure]{labelformat=empty}
@@ -23,11 +26,23 @@ library(gtsummary)
 
 dt = read.csv("hurrican703.csv")
 load("df_rm.RData")
+
+load("mcmc_chain_1.RData")
+load("mcmc_chain_2.RData")
+load("mcmc_chain_3.RData")
+load("mcmc_chain_4.RData")
+load("mcmc_chain_5.RData")
+load("mcmc_chain_6.RData")
+
+# saving all data
+theta_chain = rbind(theta_chain_1, theta_chain_2, theta_chain_3, 
+                    theta_chain_4, theta_chain_5, theta_chain_6)
+
 ```
 
 # Motivation
 
-Climate researchers are interested in modeling the hurricane trajectories to forcase the windspeed.
+Climate researchers are interested in modeling the hurricane trajectories to forecast the wind speed.
 
 ## Data 
 
@@ -45,22 +60,28 @@ Climate researchers are interested in modeling the hurricane trajectories to for
 - **Wind.kt**: Maximum wind speed (in Knot) at each check point
 
 
-# Overview
+# Outline
 
-- Exploration into the Data 
-- Bayesian modeling of hurricane wind speed
-  - Model Equation
-  - Posterior Derivation 
-  - MCMC Algorithm 
-- How Month, Year, and the Nature of the hurricane affect wind speed
-  - Explore seasonal differences
-  - Explore if wind speeds is increasing over years
-- Exploring wind speeds impact on death and damages
-  - As well as the characteristic of a hurricane associated with damages and deaths
+\begin{enumerate}
+  \item Exploration into the Data 
+  \item  Bayesian modeling of hurricane wind speed
+    \begin{itemize}
+      \item Model Equation
+      \item Posterior Derivation 
+      \item MCMC Algorithm 
+    \end{itemize}
+  \item  How Month, Year, and the Nature of the hurricane affect wind speed
+    \begin{itemize}
+      \item Explore seasonal differences
+      \item  Explore if wind speeds is increasing over years
+    \end{itemize}
+  \item Exploring wind speeds impact on death and damages
+  \item  As well as the characteristic of a hurricane associated with damages and deaths
+\end{enumerate}
 
 
 # Data 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE,  fig.align='center'}
 dt <- as.data.table(dt)
 df_temp = dt %>%
   mutate(
@@ -98,6 +119,7 @@ mapMonth
 
 - We are only concerned about observations that occurred on 6 hour intervals. hour 0, 6, 12, and 18. 
 - In addition we will exclude all hurricane IDs that have less then 7 observations. 
+- We used the lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed to build $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$ and lag of wind speed as $Y_{i}(t-6)$
 
 Through this process we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. 
 
@@ -105,45 +127,421 @@ Through this process we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations so we
 
 To model the wind speed of the $i^{th}$ hurricane at time $t$ we will use
 $$
-Y_i(t+6) = \beta_{0,i}+\beta_{1,i}Y_i(t)+\beta_{2,i}\Delta_{i,1}(t)+\beta_{3,i}\Delta_{i,2}(t)+\beta_{4,i}\Delta_{i,3}(t) + \epsilon_i(t)
+\scriptsize{
+Y_i(t) = \beta_{0,i}+\beta_{1,i}Y_i(t-6)+\beta_{2,i}\Delta_{i,1}(t)+\beta_{3,i}\Delta_{i,2}(t)+\beta_{4,i}\Delta_{i,3}(t) + \epsilon_i(t)}
 $$
 Where 
 
-- $\Delta_{i,1}(t)$, $\Delta_{i,2}(t)$ and $\Delta_{i,3}(t)$ are changes in latitude longitude and wind speed respectively between $t-6$ and $t$
+- $\Delta_{i,1}(t)$, $\Delta_{i,2}(t)$ and $\Delta_{i,3}(t)$ are changes in latitude longitude and wind speed respectively between $t-12$ and $t-6$
 - $\epsilon_i(t) \sim N(0, \sigma^2)$ independent across $t$
-- Let $\beta_i = ( \beta_{0,i},  \beta_{1,i},  \beta_{2,i}, \beta_{3,i}, \beta_{4,i}) \sim \mathcal{N}(\mu, \Sigma)$ be multivariate normal distribution where $\mu \in \mathbb{R}^d$ and $\Sigma \in \mathbb{R}^{d \times d}$.
+- Let $\beta_i = ( \beta_{0,i},  \beta_{1,i},  \beta_{2,i}, \beta_{3,i}, \beta_{4,i})^T \sim \mathcal{N}(\mu, \Sigma)$ be multivariate normal distribution where $\mu \in \mathbb{R}^d$ and $\Sigma \in \mathbb{R}^{d \times d}$.
 
-**Prior Distributions**: 
+**Prior Distributions Assumptions**: 
 
 - For $\sigma^2$ we assume $\pi(\sigma^2) \propto \frac{1}{\sigma^2}$
 - For $\mu$ we assume $\pi(\mu) \propto 1$
 - For $\Sigma$ we assume $\pi\left(\Sigma^{-1}\right) \propto \left|\Sigma \right|^{-(d+1)}\exp\left\{ -\frac{1}{2} \Sigma^{-1}\right\}$
 
 
-**Goal**: Estimate $\Theta = (\mu^T, \sigma^2, \Sigma)$
+**Goal**: Estimate $\Theta = (\boldsymbol B, \boldsymbol \mu, \Sigma^{-1}, \sigma^{2})$
+
+# Likelihood \& Prior Function
+**Likelihood** Let $X_i = (\boldsymbol 1, Y_{i}(t-6),\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t))$
+\[ \scriptsize{
+L(\boldsymbol Y \mid \boldsymbol \theta) \propto \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}} \exp \left\{-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}}
+\]
+where $m$ is the number of hurricane and $n_i$ is the number of observations for $i^{th}$ hurricane
+
+
+**Prior** Let $\boldsymbol\theta=(\boldsymbol B, \boldsymbol \mu, \Sigma^{-1}, \sigma^{2})$
+$$
+\scriptsize{
+\begin{aligned}
+\pi\left(\boldsymbol\theta \right) & \propto\left(\sigma^{2}\right)^{-1} \left|\Sigma^{-1}\right|^{d+1} \exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right)\right\} 
+\prod_{i=1}^{m}\left|\Sigma^{-1}\right|^{\frac{1}{2}}\exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu \right)^{T} \Sigma^{-1}(\boldsymbol \beta_{i}-\boldsymbol \mu)\right\}
+\end{aligned}
+}
+$$
+where $d$ is the dimension of $\boldsymbol \mu$
+
+
 
 # Posterior Calculation
+
+**Posterior**
+$$
+\scriptsize{
+\begin{aligned}
+\pi(\boldsymbol \theta \mid \boldsymbol Y) & \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}\left|\Sigma^{-1}\right|^{d+1+\frac{m}{2}} 
+\exp \left\{-\frac{1}{2} \operatorname{tr}\left(\Sigma^{-1}\right) \right\}\\
+&\times \exp \left\{-\frac{1}{2} \sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\right\} 
+ \exp \left\{-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}
+\end{aligned}
+}
+$$
+**Conditional Posterior**
+$$
+\scriptsize{
+\begin{aligned}
+&\boldsymbol \beta_i:
+\pi(\boldsymbol \beta_i \mid \boldsymbol \theta_{(-\boldsymbol \beta_i)} \boldsymbol Y) \propto \exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}\\
+&\boldsymbol \mu:
+\pi\left(\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y\right)  \sim \mathcal{N}(\bar{\beta},\Sigma/m), \bar{\beta} = \left(\bar{\beta}_{0,.},\bar{\beta}_{1,.},\bar{\beta}_{2,.},\bar{\beta}_{3,.},\bar{\beta}_{4,.}\right)^T\\
+&\sigma^2: \pi\left(\sigma^{2} \mid \boldsymbol \theta_{(-\sigma^{2})}, \boldsymbol Y\right) \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}
+\times \exp \left\{-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\} \\
+&\Sigma^{-1}:
+\pi\left(\Sigma^{-1} \mid \boldsymbol \theta_{\left(-\Sigma^{-1}\right)},\boldsymbol Y\right) \sim \mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T}\right)^{-1} \right)
+\end{aligned}
+}
+$$
+
 
 
 # MCMC Algorithm 
 
+We apply hybrid algorithm consisting with Metropolis-Hastings steps and Gibbs steps.
+
+Update component wise: 
+
+- Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$, for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution.
+- Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $\mathcal{N}\left(\bar{\beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\beta}^{(t+1)}$ is the average of $\beta_{i}^{(t+1)}$ over all hurricanes.
+- Next, MH step to generate $\sigma^{2^{\prime}}$ from $U\left(\sigma^{2^{(t)}}-a_{\sigma^2},\sigma^{2^{(t)}}+a_{\sigma^2}\right)$.
+- Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\scriptsize{\mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right)}$ 
+
+
 
 # Initial Starting Values
 
+\begin{columns}
+  \begin{column}{0.47\textwidth}
+    \textbf{Initial Values:}
+    \begin{itemize}
+    \item $\boldsymbol \beta_{i}$: Fit OLS multivariate linear regression (MLR) for $i^{th}$ hurricane and use the coefficients as $\boldsymbol \beta_{i}^{(0)}$
+    \item $\boldsymbol \mu$: Average over all $\boldsymbol \beta_{i}^{(0)}$ as $\boldsymbol \mu^{(0)}$ 
+    \item $\sigma^2$: $\hat{\sigma}^2_i$ is the mean square residuals of the OLS model for $i^{th}$ hurricane. Take the mean over all $\hat{\sigma}^2_i$ as $\sigma^{2^{(0)}}$
+    \item $\Sigma^{-1}$: Generate the covariance matrix of $\boldsymbol \beta_{i}^{(0)}$ and take the inverse of the matrix as $\Sigma^{-1^{(0)}}$
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+  \centering 
+   \begin{table}
+    \centering
+    \caption{Range of Search Window and Acceptance Rate for paraemters used MH step}
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{|c|c|c|} \hline 
+     & Search Window& Acceptance Rate (\%) \\ \hline 
+        $\beta_0$ & 1.1 & 45.87 - 51.36\\ \hline 
+        $\beta_1$ & (0.04, 0.1) & 31.67 - 63.68\\ \hline 
+        $\beta_2$ & (0.8, 1.0) & 38.60 - 45.60\\ \hline 
+        $\beta_3$ & (0.5, 0.6) & 33.20 - 61.32\\ \hline 
+        $\beta_4$ & (0.4, 0.5) & 34.95 - 60.45\\ \hline 
+        $\sigma^2$ & 2.0 & 44.83\\ \hline 
+    \end{tabular}
+    }
+\end{table}
+  \end{column}
+\end{columns}
+
 
 # MCMC Model Convergence 
 
+![](pics/covergence_plots.png)
+
 
 # MCMC Model Convergence 
 
-
-# Beta Estimates  
-
-
-# Understanding Seasonal differnces in Hurricane Wind Speed
+![](pics/hist_select.png)
 
 
-# Exploring if wind speeds has increased over the years
+# $\Beta$ Estimates  
+
+```{r warning=FALSE, include=FALSE}
+L = 1.5
+d = 5  ## dimension of beta_i
+m = 681  ## number of hurricanes
+n_beta = m*d  ## total number of beta
+n_theta = n_beta+d+1+15  ## total number of parameters
+mu_ind = (n_beta+1):(n_beta+d) ## index of mu
+sigma_ind = n_beta+d+1 ## index of sigma
+cov_m_ind = (n_beta+d+2):n_theta ## index of elements of inverse covariance matrix
+
+## take average over 5501-10000 as estimates
+bs_estimates = unname(apply(theta_chain[5501:10000,], 2, mean))
+
+
+inv_cov_m = matrix(0,5,5)
+inv_cov_m[lower.tri(inv_cov_m, diag = TRUE)] = bs_estimates[cov_m_ind]
+inv_cov_m[upper.tri(inv_cov_m)] = t(inv_cov_m)[upper.tri(inv_cov_m)]
+
+
+cov_m = solve(inv_cov_m)
+
+## estimates
+sigma = bs_estimates[3411]
+mu = bs_estimates[3406:3410]
+beta = matrix(bs_estimates[1:n_beta], ncol = d)
+
+
+load("df_rm.RData")
+## create variables of interest
+dt = df_rm %>% 
+  janitor::clean_names() %>% 
+  group_by(id) %>% 
+  mutate(wind_lag = lag(wind_kt,1), ##previous wind speed
+         lat_shift = lag(latitude, 1) - lag(latitude, 2), ## change of lat
+         long_shift = lag(longitude, 1) - lag(longitude, 2), ## change of long
+         wind_shift = lag(wind_kt, 1) - lag(wind_kt, 2)) %>%  ##change of wind speed
+  drop_na()
+n_obs = nrow(dt) ## number of
+
+dt_res = dt %>% 
+  dplyr::select(id, nature, season, month, wind_kt,wind_lag,lat_shift, long_shift, wind_shift) %>%
+  nest(data = nature:wind_shift) %>% 
+  ungroup() %>% 
+  mutate(beta_0 = beta[,1],
+         beta_1 = beta[,2],
+         beta_2 = beta[,3],
+         beta_3 = beta[,4],
+         beta_4 = beta[,5]) %>% 
+  unnest(data) %>% 
+  mutate(wind_kt_pred = beta_0+beta_1*wind_lag+beta_2*lat_shift+beta_3*long_shift+beta_4*wind_shift) %>%
+  group_by(id) %>% 
+  mutate(r_square = (1-sum((wind_kt_pred-wind_kt)^2)/(sum((wind_kt-mean(wind_kt))^2))),
+         n_obs = n(),
+         adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-5),
+         p_value = 1-pchisq(sum((wind_kt_pred-wind_kt)^2)/sigma, n_obs))
+  
+```
+
+```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE}
+dt_res = dt_res %>% 
+  rename(year = season) %>%
+  mutate(
+    decade = (year - min(year))/10
+  )
+
+dt_long <- dt_res %>% 
+  select(id, decade, year, nature, month, beta_0, beta_1, beta_2, beta_3, beta_4) %>%
+  pivot_longer(
+    c(beta_0:beta_4),
+    names_to = "beta",
+    values_to = "vals"
+  ) 
+
+mean_beta_df = dt_long %>%
+  group_by(beta) %>%
+  distinct(id, .keep_all = TRUE) %>%
+  summarize(
+    n = n(),
+    mean_beta = mean(vals),
+    sd_beta = sd(vals),
+    lower_cred_int = mean_beta - 1.96*(sd_beta/sqrt(n)),
+    upper_cred_int = mean_beta + 1.96*(sd_beta/sqrt(n))
+  )
+
+full_join(dt_long, mean_beta_df, by="beta") %>% 
+  group_by(beta) %>% 
+  distinct(id, .keep_all = TRUE) %>%
+  ggplot(aes(x=vals, fill = beta)) +
+  geom_histogram() + 
+  geom_vline(aes(xintercept = mean_beta), color="black") +
+  facet_wrap(~beta, scale = "free") +
+  theme(legend.position="none") +
+  labs(
+    title = "Histograms of Estiamted Betas for all Hurricanes",
+    x = "Estimated Beta Value",
+    y = "Count"
+  )
+  
+```
+
+
+
+
+# The $\mu$ and $\sigma^2$ Estiamtes 
+
+\begin{table}
+    \centering
+     \caption{Bayesian Estiamtes for $\mu$ and $\sigma^2$ }
+    \label{tab:rand_est_mod1}
+\end{table}
+![](pics/mu_est.png)
+
+
+
+# Model Performance 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
+adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
+```
+
+The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square`.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+dt_rsquare = dt_res %>% 
+  dplyr::select(id, r_square, adj_r_square, p_value, n_obs) %>% 
+  distinct() %>% 
+  arrange(n_obs)
+
+n_lowp = dt_rsquare %>% filter(p_value < 0.05) %>% 
+  nrow()
+
+d_high = dt_rsquare %>% 
+  filter(adj_r_square >=0.6 & adj_r_square <= 1) %>% 
+  nrow()
+
+d_moderate = dt_rsquare %>% 
+  filter(adj_r_square >= 0.2 & adj_r_square< 0.6) %>% 
+  nrow()
+
+d_low = dt_rsquare %>% 
+  filter(adj_r_square < 0.2) %>% 
+  nrow()
+
+
+label_1 = c("$R_{adj}^2$", "Count of Hurricanes","Percentage($\\%$)")
+
+tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
+       count = c(d_high, d_moderate, d_low),
+       prop = c(round(d_high/681,3)*100, round(d_moderate/681,3)*100, 
+                round(d_low/681,3)*100)) %>% 
+  knitr::kable(escape = F, col.names = label_1, 
+        caption = "$R_{adj}^2$ for each hurricane") 
+# %>% 
+#   kable_styling(latex_options = "hold_position")
+
+
+```
+
+# Model Performance 
+```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE}
+## visualize some hurricane prediction
+dt_rsquare %>% 
+  ggplot(aes(x = n_obs, y = adj_r_square))+
+  geom_point()+
+  geom_vline(xintercept = 40, linetype = 2)+
+  geom_hline(yintercept = 0.5, linetype = 2)+
+  #geom_vline(xintercept = 20, linetype = 1)+
+  geom_hline(yintercept = 0, linetype = 1)+
+  labs(
+    title = "Adjusted R Squared Value for each Hurricane",
+    subtitle = "Vertical dotted line at 40, Horizontal dotted line at 0.5",
+    y = "Adjusted R Squared",
+    x = "Number of Observations"
+  )
+```
+
+
+# Model Performance 
+
+```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE,  fig.align='center'}
+dt_res %>% filter(id %in% c("DOG.1950","JANET.1955","FRANCES.1986",
+                            "BARBARA.1954","GINGER.1967", "ARLENE.1971",
+                            "NICOLE.2010","JERRY.2007","TEN.2005")) %>% 
+  ungroup() %>% 
+  mutate(adj_r_square = round(adj_r_square,3),
+         id = factor(paste0(id, "(",adj_r_square,")")),
+         id = reorder(id, adj_r_square)) %>% 
+  group_by(id) %>% 
+  mutate(time = 1:n()) %>%
+  ggplot(aes(y = wind_kt, x = time))+
+  geom_line(aes(color = "observation"))+
+  geom_line(aes(y = wind_kt_pred, color = "prediction"))+
+  scale_colour_manual(name = NULL,
+values = c( "observation" = 1, "prediction" = 2))+
+  facet_wrap(.~id, nrow = 3, scales = "free")+
+  labs(x = "time",
+       y = "wind speed",
+       title = "Observed Wind Speed vs. Baysian Model Estimates")
+```
+
+
+
+# Understanding Seasonal Differences 
+
+```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE,  fig.align='center'}
+dt_long %>% 
+  ggplot(aes(x=year, y=vals, color=beta )) +
+  geom_point()+
+  facet_grid(beta~month, scale = "free_y") +
+  theme(axis.text.x = element_text(angle = -45)) +
+  theme(legend.position="none") +
+  labs(
+    title = "Beta Estimates by Start Month and Year",
+    y = "Beta Estimates",
+    x = "Year"
+  )
+```
+
+Typical Hurricane season is June to November 
+
+# Understanding Nature of Hurricane Differences 
+
+```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE,  fig.align='center'}
+dt_long %>% 
+  ggplot(aes(x=nature, y=vals, color=beta )) +
+  geom_boxplot()+
+  facet_wrap(~beta, scale = "free")+
+  theme(legend.position="none") +
+  labs(
+    title = "Beta Estimates by Nature of the Hurricane",
+    y = "Beta Estimates",
+    x = "Nature of Hurricane"
+  )
+```
+
+# Modeling Seasonal, and Nature Difference 
+
+\begin{columns}
+  \begin{column}{0.53\textwidth}
+  \textbf{Model:} \\ 
+  For each $\beta$ value we fit a different linear model.
+  $$
+  \begin{aligned}
+  Y_{ij} &= \alpha_{0j} + \alpha_{1j}\times \textrm{Decade}_i \\
+  &+ \alpha_{(k+1)j}I(\textrm{Nature} = k)_i \\
+  &+ \alpha_{(l+5)j}I(\textrm{Month} = l)_i + \epsilon_{ij}\\
+  \end{aligned} 
+  $$
+  Where $i$ is the hurricane, $j$ is the Beta model, $k \in (ET,\ NR,\ SS,\ TS)$ making DS the reference group. Let $l \in $(April - December). 
+  
+  \end{column}
+  \begin{column}{0.47\textwidth}
+  \textbf{Results:}
+  \begin{itemize}
+    \item Due to length each model estimate were omitted 
+    \item No Nature Indicators were significant 
+    \item No Month Indicators were significant 
+    \item For the $\beta_1$ model the decade estimated is significant -0.003 (-0.002, -0.004)
+  \end{itemize}
+  Thus Month and Nature don't have a linear association with each beta value. 
+  \end{column}
+\end{columns}
+
+
+# Exploring if wind speeds have increased over the years
+
+Model: $Y_i = \alpha_{0i}+\alpha_{1i} \times\textrm{Decade}$ where $Y_i$ is each $\beta_i$ and $i \in (0,\dots,4)$. 
+\begin{columns}
+  \begin{column}{0.55\textwidth}
+   \includegraphics{pics/beta_by_year.png}
+  \end{column}
+  \begin{column}{0.45\textwidth}
+  \centering 
+  \footnotesize{\textbf{Linear Model Output for Each $\beta$}} \\
+    \includegraphics{pics/model_decade.png}
+  \end{column}
+\end{columns}
+
+\begin{itemize}
+  \item \small{$\beta_1$: Indicates a decrease in the change of wind speed over years}
+  \item \small{$\beta_3$: Indicates an increase in the impact of change in longitude over years}
+\end{itemize}
+
+
+
+# Deaths and Damages Data Exploration 
 
 
 # Hurricane Deaths
@@ -154,6 +552,11 @@ Where
 
 
 # Conclusions 
+
+- Largers Samples give better estimates 
+- High dim sample space, burn in takes longer than expected 
+  - very sensitive to starting values
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 8, fig.asp=0.8, fig.align='center'}
 # figure
