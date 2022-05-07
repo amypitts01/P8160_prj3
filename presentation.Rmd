@@ -119,7 +119,7 @@ mapMonth
 
 - We are only concerned about observations that occurred on 6 hour intervals. hour 0, 6, 12, and 18. 
 - In addition we will exclude all hurricane IDs that have less then 7 observations. 
-- We used a lag ($t$ to $t-6$) for the latitude, longitude and wind speed. 
+- We used the lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed to build $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$ and lag of wind speed as $Y_{i}(t-6)$
 
 Through this process we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. 
 
@@ -128,14 +128,13 @@ Through this process we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations so we
 To model the wind speed of the $i^{th}$ hurricane at time $t$ we will use
 $$
 \scriptsize{
-Y_i(t+6) = \beta_{0,i}+\beta_{1,i}Y_i(t)+\beta_{2,i}\Delta_{i,1}(t)+\beta_{3,i}\Delta_{i,2}(t)+\beta_{4,i}\Delta_{i,3}(t) + \epsilon_i(t)
-}
+Y_i(t) = \beta_{0,i}+\beta_{1,i}Y_i(t-6)+\beta_{2,i}\Delta_{i,1}(t)+\beta_{3,i}\Delta_{i,2}(t)+\beta_{4,i}\Delta_{i,3}(t) + \epsilon_i(t)}
 $$
 Where 
 
-- $\Delta_{i,1}(t)$, $\Delta_{i,2}(t)$ and $\Delta_{i,3}(t)$ are changes in latitude longitude and wind speed respectively between $t-6$ and $t$
+- $\Delta_{i,1}(t)$, $\Delta_{i,2}(t)$ and $\Delta_{i,3}(t)$ are changes in latitude longitude and wind speed respectively between $t-12$ and $t-6$
 - $\epsilon_i(t) \sim N(0, \sigma^2)$ independent across $t$
-- Let $\beta_i = ( \beta_{0,i},  \beta_{1,i},  \beta_{2,i}, \beta_{3,i}, \beta_{4,i}) \sim \mathcal{N}(\mu, \Sigma)$ be multivariate normal distribution where $\mu \in \mathbb{R}^d$ and $\Sigma \in \mathbb{R}^{d \times d}$.
+- Let $\beta_i = ( \beta_{0,i},  \beta_{1,i},  \beta_{2,i}, \beta_{3,i}, \beta_{4,i})^T \sim \mathcal{N}(\mu, \Sigma)$ be multivariate normal distribution where $\mu \in \mathbb{R}^d$ and $\Sigma \in \mathbb{R}^{d \times d}$.
 
 **Prior Distributions Assumptions**: 
 
@@ -147,9 +146,9 @@ Where
 **Goal**: Estimate $\Theta = (\boldsymbol B, \boldsymbol \mu, \Sigma^{-1}, \sigma^{2})$
 
 # Likelihood \& Prior Function
-**Likelihood**
+**Likelihood** Let $X_i = (\boldsymbol 1, Y_{i}(t-6),\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t))$
 \[ \scriptsize{
-L(\boldsymbol Y \mid \boldsymbol \theta) \propto \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}} \exp \left\{-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\} }
+L(\boldsymbol Y \mid \boldsymbol \theta) \propto \prod_{i=1}^{m}\left(\sigma^{2}\right)^{-\frac{n_{i}}{2}} \exp \left\{-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}}
 \]
 where $m$ is the number of hurricane and $n_i$ is the number of observations for $i^{th}$ hurricane
 
@@ -187,7 +186,7 @@ $$
 &\boldsymbol \beta_i:
 \pi(\boldsymbol \beta_i \mid \boldsymbol \theta_{(-\boldsymbol \beta_i)} \boldsymbol Y) \propto \exp \left\{-\frac{1}{2}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)^{T} \Sigma^{-1}\left(\boldsymbol \beta_{i}-\boldsymbol \mu\right)-\frac{1}{2 \sigma^{2}}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\}\\
 &\boldsymbol \mu:
-\pi\left(\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y\right)  \sim N(\bar{\boldsymbol \beta},\Sigma/m) \\
+\pi\left(\boldsymbol \mu \mid \boldsymbol \theta_{(-\boldsymbol \mu)}, \boldsymbol Y\right)  \sim \mathcal{N}(\bar{\beta},\Sigma/m), \bar{\beta} = \left(\bar{\beta}_{0,.},\bar{\beta}_{1,.},\bar{\beta}_{2,.},\bar{\beta}_{3,.},\bar{\beta}_{4,.}\right)^T\\
 &\sigma^2: \pi\left(\sigma^{2} \mid \boldsymbol \theta_{(-\sigma^{2})}, \boldsymbol Y\right) \propto \left(\sigma^{2}\right)^{-\left(1+\frac{\sum_{i=1}^{m} n_{i}}{2} \right)}
 \times \exp \left\{-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{m}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)^{T}\left(\boldsymbol Y_{i}-\boldsymbol X_{i} \boldsymbol \beta_{i}\right)\right\} \\
 &\Sigma^{-1}:
@@ -204,8 +203,8 @@ We apply hybrid algorithm consisting with Metropolis-Hastings steps and Gibbs st
 
 Update component wise: 
 
-- Sampling proposed $\beta_{ij}^{\prime}$, $j = 0,1...4$ for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{ij}^{(t)}-a_{ij},\beta_{ij}^{(t)}+a_{ij}\right)$, where $a_{ij}$ is the search window for $\beta_{ij}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{ij}^{\prime}$ depends on the ratio of posterior distribution.
-- Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $N \left(\bar{\boldsymbol \beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\boldsymbol \beta}^{(t+1)}$ is the average over $\boldsymbol \beta_i^{(t+1)}$.
+- Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$, for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution.
+- Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $\mathcal{N}\left(\bar{\beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\beta}^{(t+1)}$ is the average of $\beta_{i}^{(t+1)}$ over all hurricanes.
 - Next, MH step to generate $\sigma^{2^{\prime}}$ from $U\left(\sigma^{2^{(t)}}-a_{\sigma^2},\sigma^{2^{(t)}}+a_{\sigma^2}\right)$.
 - Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\scriptsize{\mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right)}$ 
 
@@ -217,10 +216,10 @@ Update component wise:
   \begin{column}{0.47\textwidth}
     \textbf{Initial Values:}
     \begin{itemize}
-    \item $\boldsymbol \beta_{i}$: Fit multivariate linear regression (MLR) for $i^{th}$ hurricane and use the coefficients as $\boldsymbol \beta_{i0}$
-    \item $\boldsymbol \mu$: Average over all $\boldsymbol \beta_{i0}$ as $\boldsymbol \mu_0$ 
-    \item $\sigma^2$: $\hat{\sigma}^2_i$ is the mean square residuals of the MLR model on $i^{th}$ hurricane. Take the mean over all $\hat{\sigma}^2_i$ as $\sigma^2_0$
-    \item $\Sigma^{-1}$: Generate the covaraiance matrix of $\boldsymbol \beta_{i0}$ and take the inverse of the matrix as $\Sigma^{-1}_0$
+    \item $\boldsymbol \beta_{i}$: Fit OLS multivariate linear regression (MLR) for $i^{th}$ hurricane and use the coefficients as $\boldsymbol \beta_{i}^{(0)}$
+    \item $\boldsymbol \mu$: Average over all $\boldsymbol \beta_{i}^{(0)}$ as $\boldsymbol \mu^{(0)}$ 
+    \item $\sigma^2$: $\hat{\sigma}^2_i$ is the mean square residuals of the OLS model for $i^{th}$ hurricane. Take the mean over all $\hat{\sigma}^2_i$ as $\sigma^{2^{(0)}}$
+    \item $\Sigma^{-1}$: Generate the covariance matrix of $\boldsymbol \beta_{i}^{(0)}$ and take the inverse of the matrix as $\Sigma^{-1^{(0)}}$
     \end{itemize}
   \end{column}
   \begin{column}{0.5\textwidth}
