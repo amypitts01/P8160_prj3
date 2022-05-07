@@ -22,15 +22,9 @@ header-includes:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(ggplot2)
-library(tidyverse)
-library(data.table)
-library(maps)
-library(gtsummary)
 
-dt = read.csv("hurrican703.csv")
+source("report_r_code.R")
 
-load("df_rm.RData")
 theme_gtsummary_compact()
 ```
 
@@ -240,7 +234,7 @@ Convergence was reach in each of the parameters of interest. Thus we can take th
 The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the intercept of the wind speed model.  The average $\beta_1$ estimate for the hurricanes is 0.915 which represents the lagged wind speed impact model. This positive estimate indicated that a larger previous wind speed will indicate a higher wind speed for the next time point. The $\beta_2$ estimate is -0.136 which represents the impact of the change in latitude. The $\beta_3$ estimate is -0.395 which represents the impact of the change in longitude. Both of the impact of change in latitude and longitude have negative beta estimated values indicating that a larger change in direction corresponds with a decrease in wind speeds.  Thus hurricane speed and wind speed seem to be inversely correlated. The $\beta_4$ estimate is 0.481 which represents the impact of the change in wind speed. This positive value indicated that a larger change in wind speed corresponds with a larger wind speed value. 
 
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics{pics/covergence_plots.png}
     \caption{Convergence Plot of the Selected Parameters after 10,000 Iterations}
@@ -248,7 +242,7 @@ The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the i
 \end{figure}
 
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics{pics/hist_select.png}
     \caption{Histogram Plot of the Selected Parameters not including the 5,500 burn in period results}
@@ -256,7 +250,7 @@ The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the i
 \end{figure}
 
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics{pics/hist_beta.png}
     \caption{Bayesian Estiamtes for the $\beta$ values for all Hurricane}
@@ -264,7 +258,7 @@ The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the i
 \end{figure}
 
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics{pics/mu_est.png}
     \caption{Bayesian Estiamtes for $\mu$ and $\sigma^2$}
@@ -273,17 +267,85 @@ The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the i
 
 
 
-
 ## 3.2 MCMC Model Performance 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
+adj_r_square = 1-(1-r_square)*(n_obs-1)/(n_obs-n_beta)
+
+dt_rsquare = dt_res %>% 
+  dplyr::select(id, r_square, adj_r_square, p_value, n_obs) %>% 
+  distinct() %>% 
+  arrange(n_obs)
+
+n_lowp = dt_rsquare %>% filter(p_value < 0.05) %>% 
+  nrow()
+
+d_high = dt_rsquare %>% 
+  filter(adj_r_square >=0.6 & adj_r_square <= 1) %>% 
+  nrow()
+
+d_moderate = dt_rsquare %>% 
+  filter(adj_r_square >= 0.2 & adj_r_square< 0.6) %>% 
+  nrow()
+
+d_low = dt_rsquare %>% 
+  filter(adj_r_square < 0.2) %>% 
+  nrow()
+
+
+```
+
+The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square`. We can also look at the adjusted $R^2$ value for each individual hurricane. Table 2 displays the values grouped by the adjusted $R^2$ showing the number of hurricanes and the percentage. We see that most hurricanes do well with a adjusted $R^2$ above 0.6. Even though most of the estimated models track hurricanes well with great adjusted $R^2$, some estimated models track the hurricanes extremely bad. `r round((d_low+d_moderate)/681,3)*100`% of the estimated models do not track the hurricane well and have adjusted $R^2$ less than 0.6. Few models have negative adjusted $R^2$. We also perform the goodness-of-fit test for individual estimated model. The estimated models of `r n_lowp` hurricanes have p-value less than 0.05, implying that those models do not fit well. 
+
+Figure \ref{fig:adj_r} shows the adjusted $R^2$ for each hurricane by their number of observations. This plot shows that with more observations the better our model with do. The to the right of the vertical line shows that 40 or more observations give us an adjusted $R^2$ values above 0.5.
+
+Figure \ref{fig:pred_id} displays 9 randomly selected hurricanes actual wind speeds and predicted wind speeds. We see that for all of them the lines are very similar with some slight derivations away when the number of observations are small. In DOG 1950 we see very good model prediction and for this particular hurricane we have a lot of observations. However, for JERRY 2007 we do not have as many observations and see deviations at the begging and end of the storm. 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+label_1 = c("$R_{adj}^2$", "Count of Hurricanes","Percentage($\\%$)")
+
+tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
+       count = c(d_high, d_moderate, d_low),
+       prop = c(round(d_high/681,3)*100, round(d_moderate/681,3)*100, 
+                round(d_low/681,3)*100)) %>% 
+  knitr::kable(escape = F, col.names = label_1, 
+        caption = "$R_{adj}^2$ for each hurricane") 
+# %>% 
+#   kable_styling(latex_options = "hold_position")
+
+```
+
+
+
+\begin{figure}
+    \centering
+    \includegraphics{pics/adj_r_square.png}
+    \caption{Adjusted R squared for each Hurricane plotted by the number of observations.}
+    \label{fig:adj_r}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{pics/predict_id_plot.png}
+    \caption{The predicted wind speeds verses the actual observed wind speeds for 9 randomly selected hurricanes. }
+    \label{fig:pred_id}
+\end{figure}
+
 
 
 ## 3.3 Seasonal Differences and Yearly Trends Results 
 
 
+
 ## 3.5 Death and Damages Results 
 
 
+
 # 4. Discussion 
+
 
 ## 4.1. Summary of Findings
 
