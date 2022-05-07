@@ -415,7 +415,7 @@ tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
 
 ```
 
-# Moodel Performance 
+# Model Performance 
 ```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE}
 ## visualize some hurricane prediction
 dt_rsquare %>% 
