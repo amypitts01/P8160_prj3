@@ -5,7 +5,7 @@ title: |
 author: |
   | Amy Pitts, Jiacheng Wu, Jimmy Kelliher,
   | Ruiqi Yan & Tianchuan Gao
-date: "2022-04-09"
+date: "2022-05-09"
 output:
   beamer_presentation:
     theme: "Madrid"
@@ -370,7 +370,7 @@ full_join(dt_long, mean_beta_df, by="beta") %>%
 
 
 
-# Model Preformance 
+# Model Performance 
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
@@ -415,7 +415,7 @@ tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
 
 ```
 
-# Moodel Preformance 
+# Moodel Performance 
 ```{r echo=FALSE, fig.height=6, message=TRUE, warning=FALSE}
 ## visualize some hurricane prediction
 dt_rsquare %>% 
@@ -477,7 +477,7 @@ dt_long %>%
 
 Typical Hurricane season is June to November 
 
-# Understanding Nature of Hurricane Differnces 
+# Understanding Nature of Hurricane Differences 
 
 ```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE,  fig.align='center'}
 dt_long %>% 
@@ -521,7 +521,7 @@ dt_long %>%
 \end{columns}
 
 
-# Exploring if wind speeds has increased over the years
+# Exploring if wind speeds have increased over the years
 
 Model: $Y_i = \alpha_{0i}+\alpha_{1i} \times\textrm{Decade}$ where $Y_i$ is each $\beta_i$ and $i \in (0,\dots,4)$. 
 \begin{columns}
