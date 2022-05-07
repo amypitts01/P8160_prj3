@@ -176,9 +176,11 @@ where $M$ is total number of observation for all hurricanes. If the $\log(u)$ is
 
 Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right).$ 
 
+For the MCMC process we will run 10,000 iterations using the code shown in Appendix B. 
+
 ## 2.4  Initial Starting Values for MCMC 
 
-To initiate the MCMC process we need to specify the starting values. The choice of starting value is important to help with the converence time of our algorithm. For each paramater we will chose the start values to be: 
+To initiate the MCMC process we need to specify the starting values. The choice of starting value is important to help with the convergence time of our algorithm. For each parameter we will chose the start values to be: 
  \begin{itemize}
     \item $\boldsymbol \beta_{i}$: Fit multivariate linear regression (MLR) for $i^{th}$ hurricane and use the coefficients as $\boldsymbol \beta_{i0}$
     \item $\boldsymbol \mu$: Average over all $\boldsymbol \beta_{i0}$ as $\boldsymbol \mu_0$ 
@@ -230,20 +232,45 @@ We are also going to consider 5 different models just using decade as a predicto
 # 3. Results 
 
 ## 3.1 MCMC Model Convergence 
-Using the starting values describe above we can now examine the model performance. We are particular interested in the parameter convergence. 
+Using the starting values describe above we can now examine the model performance. We are particular interested in the parameter convergence. Below we can see Figure \ref{fig:converge} that displays each of the parameters of iterations over the 10,000 iterations. Wee see that each parameter reaches a convergence at around 5,500 iterations. Therefore, we will make 5,500 iterations our burn in period. Figure \ref{fig:hist_select} displays the histogram results from the selected parameters excluding the burn in period. We see that each of the distributions is relatively normal with some skewed results for $\Sigma^{-1}$ and heavy tails in $\mu_0$. 
+
+Convergence was reach in each of the parameters of interest. Thus we can take the average estimate excluding the burn in period. When we do this we are left with the $\mu_i$ values, $\sigma^2$ values, $\Sigma^2$ matrix, and a $\beta_i$ estimate for each hurricane. Figure \ref{fig:mu_est} displays the $\mu_i$ values, $\sigma^2$ values, $\Sigma^2$ matrix results.  We see that the $\mu_2$, $\mu_3$ estimate are negative while the others are positive. Figure \ref{fig:beta_est} displays the $\beta_i$ estimates for each hurricane in a histogram. 
+
+The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the intercept of the wind speed model.  The average $\beta_1$ estimate for the hurricanes is 0.915 which represents the lagged wind speed impact model. This positive estimate indicated that a larger previous wind speed will indicate a higher wind speed for the next time point. The $\beta_2$ estimate is -0.136 which represents the impact of the change in latitude. The $\beta_3$ estimate is -0.395 which represents the impact of the change in longitude. Both of the impact of change in latitude and longitude have negative beta estimated values indicating that a larger change in direction corresponds with a decrease in wind speeds.  Thus hurricane speed and wind speed seem to be inversely correlated. The $\beta_4$ estimate is 0.481 which represents the impact of the change in wind speed. This positive value indicated that a larger change in wind speed corresponds with a larger wind speed value. 
 
 
-![](pics/covergence_plots.png)
-
-
-![](pics/hist_select.png)
-
-\begin{table}
+\begin{figure}[H]
     \centering
-     \caption{Bayesian Estiamtes for $\mu$ and $\sigma^2$ }
-    \label{tab:rand_est_mod1}
-\end{table}
-![](pics/mu_est.png)
+    \includegraphics{pics/covergence_plots.png}
+    \caption{Convergence Plot of the Selected Parameters after 10,000 Iterations}
+    \label{fig:converge}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{pics/hist_select.png}
+    \caption{Histogram Plot of the Selected Parameters not including the 5,500 burn in period results}
+    \label{fig:hist_select}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{pics/hist_beta.png}
+    \caption{Bayesian Estiamtes for the $\beta$ values for all Hurricane}
+    \label{fig:beta_est}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{pics/mu_est.png}
+    \caption{Bayesian Estiamtes for $\mu$ and $\sigma^2$}
+    \label{fig:mu_est}
+\end{figure}
+
+
 
 
 ## 3.2 MCMC Model Performance 

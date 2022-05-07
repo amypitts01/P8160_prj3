@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 MAY 2022 13:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 MAY 2022 15:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1548,45 +1548,50 @@ Overfull \hbox (12.48785pt too wide) in paragraph at lines 323--325
 r/m/n/10 (-20) from $[] [] \OML/lmm/m/it/10 :$ 
  []
 
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 336.
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 339.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [4] [5] <pics/covergence_plots.png, id=71, 807.015pt x 555.07375pt>
+) [4] [5] <pics/covergence_plots.png, id=75, 807.015pt x 555.07375pt>
 File: pics/covergence_plots.png Graphic file (type png)
 <use pics/covergence_plots.png>
-Package pdftex.def Info: pics/covergence_plots.png used on input line 425.
+Package pdftex.def Info: pics/covergence_plots.png used on input line 463.
 (pdftex.def)             Requested size: 469.75606pt x 323.10333pt.
-<pics/hist_select.png, id=73, 826.08624pt x 541.02126pt>
+<pics/hist_select.png, id=77, 826.08624pt x 541.02126pt>
 File: pics/hist_select.png Graphic file (type png)
 <use pics/hist_select.png>
-Package pdftex.def Info: pics/hist_select.png used on input line 427.
+Package pdftex.def Info: pics/hist_select.png used on input line 470.
 (pdftex.def)             Requested size: 469.7648pt x 307.65884pt.
-[6 <./pics/covergence_plots.png>] <pics/mu_est.png, id=84, 754.82pt x 221.82875
-pt>
+<pics/hist_beta.png, id=78, 756.8275pt x 553.06625pt>
+File: pics/hist_beta.png Graphic file (type png)
+<use pics/hist_beta.png>
+Package pdftex.def Info: pics/hist_beta.png used on input line 477.
+(pdftex.def)             Requested size: 469.75941pt x 343.28572pt.
+<pics/mu_est.png, id=79, 754.82pt x 221.82875pt>
 File: pics/mu_est.png Graphic file (type png)
 <use pics/mu_est.png>
-Package pdftex.def Info: pics/mu_est.png used on input line 435.
+Package pdftex.def Info: pics/mu_est.png used on input line 484.
 (pdftex.def)             Requested size: 469.7573pt x 138.05365pt.
-[7 <./pics/hist_select.png> <./pics/mu_est.png>] [8] [9]
-Overfull \hbox (1.17365pt too wide) detected at line 517
+[6] [7 <./pics/covergence_plots.png>] [8 <./pics/hist_select.png>] [9 <./pics/h
+ist_beta.png> <./pics/mu_est.png>] [10]
+Overfull \hbox (1.17365pt too wide) detected at line 569
 [][]
  []
 
-[10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 519.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 519.
+[11]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 571.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 571.
 (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 519.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 519.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 519.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 571.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 571.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 571.
  ) 
 Here is how much of TeX's memory you used:
- 35487 strings out of 492995
- 804598 string characters out of 6132704
- 1015311 words of memory out of 5000000
- 38279 multiletter control sequences out of 15000+600000
- 75086 words of font info for 107 fonts, out of 8000000 for 9000
+ 35508 strings out of 492995
+ 804864 string characters out of 6132704
+ 1015589 words of memory out of 5000000
+ 38287 multiletter control sequences out of 15000+600000
+ 75418 words of font info for 111 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,15n,96p,900b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local
@@ -1610,10 +1615,10 @@ ublic/lm/lmri10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/l
 msy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy5.pfb><
 /usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></usr/local/
 texlive/2017/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on report.pdf (10 pages, 587742 bytes).
+Output written on report.pdf (11 pages, 663360 bytes).
 PDF statistics:
- 284 PDF objects out of 1000 (max. 8388607)
- 245 compressed objects within 3 object streams
- 64 named destinations out of 1000 (max. 500000)
- 12508 words of extra memory for PDF output out of 14400 (max. 10000000)
+ 298 PDF objects out of 1000 (max. 8388607)
+ 256 compressed objects within 3 object streams
+ 68 named destinations out of 1000 (max. 500000)
+ 12513 words of extra memory for PDF output out of 14400 (max. 10000000)
 
