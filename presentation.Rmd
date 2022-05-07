@@ -42,7 +42,7 @@ theta_chain = rbind(theta_chain_1, theta_chain_2, theta_chain_3,
 
 # Motivation
 
-Climate researchers are interested in modeling the hurricane trajectories to forcase the windspeed.
+Climate researchers are interested in modeling the hurricane trajectories to forecast the wind speed.
 
 ## Data 
 
@@ -62,16 +62,22 @@ Climate researchers are interested in modeling the hurricane trajectories to for
 
 # Outline
 
-1. Exploration into the Data 
-2. Bayesian modeling of hurricane wind speed
-  - Model Equation
-  - Posterior Derivation 
-  - MCMC Algorithm 
-3. How Month, Year, and the Nature of the hurricane affect wind speed
-  - Explore seasonal differences
-  - Explore if wind speeds is increasing over years
-4. Exploring wind speeds impact on death and damages
-  - As well as the characteristic of a hurricane associated with damages and deaths
+\begin{enumerate}
+  \item Exploration into the Data 
+  \item  Bayesian modeling of hurricane wind speed
+    \begin{itemize}
+      \item Model Equation
+      \item Posterior Derivation 
+      \item MCMC Algorithm 
+    \end{itemize}
+  \item  How Month, Year, and the Nature of the hurricane affect wind speed
+    \begin{itemize}
+      \item Explore seasonal differences
+      \item  Explore if wind speeds is increasing over years
+    \end{itemize}
+  \item Exploring wind speeds impact on death and damages
+  \item  As well as the characteristic of a hurricane associated with damages and deaths
+\end{enumerate}
 
 
 # Data 
@@ -453,7 +459,7 @@ values = c( "observation" = 1, "prediction" = 2))+
 
 
 
-# Understanding Seasonal Differnces 
+# Understanding Seasonal Differences 
 
 ```{r echo=FALSE, fig.height=6, message=FALSE, warning=FALSE,  fig.align='center'}
 dt_long %>% 

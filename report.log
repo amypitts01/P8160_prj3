@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  23 APR 2022 15:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 MAY 2022 13:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1521,37 +1521,99 @@ File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 ) [1
 
 {/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (13.87029pt too wide) in paragraph at lines 147--148
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 132.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 132.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 132.
+
+Overfull \hbox (13.87029pt too wide) in paragraph at lines 149--150
 []\T1/lmr/bx/n/10 Characteristic  
  []
 
-[2] [3] [4] [5]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 230.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 230.
+[2]
+Overfull \hbox (2.47675pt too wide) detected at line 225
+\OML/lmm/m/it/10 ^^Y [] \OMS/lmsy/m/n/10 / [][] [][] [] [] [] [][] [] []
+ []
+
+[3]
+Overfull \hbox (13.85655pt too wide) detected at line 286
+[] \OT1/lmr/m/n/10 = []
+ []
+
+
+Overfull \hbox (12.48785pt too wide) in paragraph at lines 323--325
+[]\T1/lmr/m/n/10 (-20) Finally, we sam-ple $\OT1/lmr/m/n/10 (-20) ^^F[]$ \T1/lm
+r/m/n/10 (-20) from $[] [] \OML/lmm/m/it/10 :$ 
+ []
+
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 336.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+) [4] [5] <pics/covergence_plots.png, id=71, 807.015pt x 555.07375pt>
+File: pics/covergence_plots.png Graphic file (type png)
+<use pics/covergence_plots.png>
+Package pdftex.def Info: pics/covergence_plots.png used on input line 425.
+(pdftex.def)             Requested size: 469.75606pt x 323.10333pt.
+<pics/hist_select.png, id=73, 826.08624pt x 541.02126pt>
+File: pics/hist_select.png Graphic file (type png)
+<use pics/hist_select.png>
+Package pdftex.def Info: pics/hist_select.png used on input line 427.
+(pdftex.def)             Requested size: 469.7648pt x 307.65884pt.
+[6 <./pics/covergence_plots.png>] <pics/mu_est.png, id=84, 754.82pt x 221.82875
+pt>
+File: pics/mu_est.png Graphic file (type png)
+<use pics/mu_est.png>
+Package pdftex.def Info: pics/mu_est.png used on input line 435.
+(pdftex.def)             Requested size: 469.7573pt x 138.05365pt.
+[7 <./pics/hist_select.png> <./pics/mu_est.png>] [8] [9]
+Overfull \hbox (1.17365pt too wide) detected at line 517
+[][]
+ []
+
+[10]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 519.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 519.
 (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 230.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 230.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 230.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 519.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 519.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 519.
  ) 
 Here is how much of TeX's memory you used:
- 35253 strings out of 492995
- 800628 string characters out of 6132704
- 1014596 words of memory out of 5000000
- 38147 multiletter control sequences out of 15000+600000
- 43690 words of font info for 56 fonts, out of 8000000 for 9000
+ 35487 strings out of 492995
+ 804598 string characters out of 6132704
+ 1015311 words of memory out of 5000000
+ 38279 multiletter control sequences out of 15000+600000
+ 75086 words of font info for 107 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,7n,96p,900b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</usr/local/
-texlive/2017/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/local/texlive/20
-17/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/2017/texmf-d
-ist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/t
-ype1/public/lm/lmr12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public
-/lm/lmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmri10.
-pfb>
-Output written on report.pdf (5 pages, 160319 bytes).
+ 62i,15n,96p,900b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local
+/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2
+017/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2017/texmf-
+dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc
+/dvips/lm/lm-mathex.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/
+lm-ec.enc}</usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmbx10.pfb>
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/loca
+l/texlive/2017/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/
+2017/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2017/texmf
+-dist/fonts/type1/public/lm/lmmi5.pfb></usr/local/texlive/2017/texmf-dist/fonts
+/type1/public/lm/lmmi7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/publ
+ic/lm/lmmib10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmm
+ib7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr10.pfb></u
+sr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/te
+xlive/2017/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2017/
+texmf-dist/fonts/type1/public/lm/lmr5.pfb></usr/local/texlive/2017/texmf-dist/f
+onts/type1/public/lm/lmr7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/p
+ublic/lm/lmri10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/l
+msy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy5.pfb><
+/usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></usr/local/
+texlive/2017/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on report.pdf (10 pages, 587742 bytes).
 PDF statistics:
- 133 PDF objects out of 1000 (max. 8388607)
- 118 compressed objects within 2 object streams
- 35 named destinations out of 1000 (max. 500000)
- 10357 words of extra memory for PDF output out of 12000 (max. 10000000)
+ 284 PDF objects out of 1000 (max. 8388607)
+ 245 compressed objects within 3 object streams
+ 64 named destinations out of 1000 (max. 500000)
+ 12508 words of extra memory for PDF output out of 14400 (max. 10000000)
 
