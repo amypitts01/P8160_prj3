@@ -249,10 +249,6 @@ Update component wise:
 ![](pics/covergence_plots.png)
 
 
-# MCMC Model Convergence 
-
-![](pics/hist_select.png)
-
 
 # $\Beta$ Estimates  
 
