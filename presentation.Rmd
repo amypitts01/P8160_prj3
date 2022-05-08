@@ -23,6 +23,7 @@ library(tidyverse)
 library(data.table)
 library(maps)
 library(gtsummary)
+library(glmnet)
 
 dt = read.csv("hurrican703.csv")
 load("df_rm.RData")
@@ -541,22 +542,100 @@ Model: $Y_i = \alpha_{0i}+\alpha_{1i} \times\textrm{Decade}$ where $Y_i$ is each
 
 
 
-# Deaths and Damages Data Exploration 
+# Deaths and Damages - Data Exploration 
 
+\begin{center}
+Distribution of Continuous Variables (Standardized)
+\end{center}
+```{r, echo = FALSE, message = FALSE}
+load("q6charts.RData")
+load("q6output.RData")
+hurr <-
+  read_csv("hurricanoutcome2.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  mutate(damage = as.numeric(str_replace(damage, "\\$", ""))) %>%
+  dplyr::select(-c(hurrican_id, season, month, nature))
 
-# Hurricane Deaths
+gtsummary::tbl_summary(
+    as_tibble(apply(hurr, 2, scale))
+  , statistic = list(all_continuous() ~ "({min}, {p25}, {p50}, {p75}, {max})")
+)
+```
+Note: For each characteristic, values denote the minimum, 25th percentile, median, 75th percentile, and maximum, respectively.
 
+# Deaths and Damages - Prediction and Inference
 
-# Hurricane Damages
+- Model Selection
+  - Poisson regression with total population as offset
+    - $y_i \sim \text{Poisson}(\mu_i)$
+    - $\log(\mu_i) = \mathbf{x}_i' \gamma$
+  - penalized regression via lasso
+  - optimal $\lambda$ selected via leave-one-out cross validation
+    - feasible with small $n$
+    - non-random
 
+- Post-selection Inference
+  - bootstrap smoothing as proposed by Efron (2014)
+    - fit full model via Poisson-family GLM to obtain $\hat{\boldsymbol\mu}$
+    - for single bootstrap $b$, draw $\mathbf{y}_b^* \sim \text{Poisson}(\hat{\boldsymbol\mu})$
+    - execute lasso with $\mathbf{y}_b^*$ as output to obtain distribution of $\hat{\gamma}_b^*$
+    - compute empirical standard error of $\hat{\gamma}_b^*$
 
+# Hurricane Deaths - Model Selection
+
+```{r, echo = FALSE}
+plot(cv_deaths, main = "Cross Validation for Deaths Model\n")
+```
+
+# Hurricane Deaths - Inference
+
+```{r, echo = FALSE}
+output_deaths %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    #, format = "simple"
+    , d = 4
+  )
+```
+
+# Hurricane Damages - Model Selection
+
+```{r, echo = FALSE}
+plot(cv_damage, main = "Cross Validation for Damage Model\n")
+```
+
+# Hurricane Damages - Inference
+
+```{r, echo = FALSE}
+output_damage %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    #, format = "simple"
+    , d = 4
+  )
+```
 
 # Conclusions 
 
-- Largers Samples give better estimates 
-- High dim sample space, burn in takes longer than expected 
+- Hurricanes with more observations enjoy better MCMC estimates
+- With such a high-dimensional parameter space:
+  - burn-in takes longer than expected
   - very sensitive to starting values
-
+- Estimated $\beta$ coefficients generally prove useful in predicting damage and deaths
+  - particularly, $(\beta_1, \beta_2, \beta_3)$ are always selected
+  - however, $\beta_2$ is only inferentially significant in the damage model
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 8, fig.asp=0.8, fig.align='center'}
 # figure
