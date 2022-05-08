@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  7 MAY 2022 16:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  8 MAY 2022 04:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1052,91 +1052,91 @@ File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 116.
+(Font)              <10> on input line 137.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 116.
+(Font)              <7> on input line 137.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 116.
+(Font)              <5> on input line 137.
 
-Overfull \hbox (9.63388pt too wide) in paragraph at lines 151--151
+Overfull \hbox (9.63388pt too wide) in paragraph at lines 172--172
 []|\T1/lmr/bx/n/10 (-20) Characteristic|  
  []
 
 
-Overfull \hbox (3.9753pt too wide) in alignment at lines 149--155
+Overfull \hbox (3.9753pt too wide) in alignment at lines 170--176
  [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (3.9753pt too wide) in alignment at lines 155--186
+Overfull \hbox (3.9753pt too wide) in alignment at lines 176--207
  [] [] [] [] [] [] [] 
  []
 
 [2]
-Overfull \hbox (1.21739pt too wide) detected at line 231
+Overfull \hbox (1.21739pt too wide) detected at line 252
 [][]
  []
 
 [3]
-Overfull \hbox (16.86307pt too wide) detected at line 278
+Overfull \hbox (16.86307pt too wide) detected at line 299
 [] \OT1/lmr/m/n/10 = []
  []
 
-
-Overfull \hbox (12.48785pt too wide) in paragraph at lines 316--318
+[4]
+Overfull \hbox (12.48785pt too wide) in paragraph at lines 337--339
 []\T1/lmr/m/n/10 (-20) Finally, we sam-ple $\OT1/lmr/m/n/10 (-20) ^^F[]$ \T1/lm
 r/m/n/10 (-20) from $[] [] \OML/lmm/m/it/10 :$ 
  []
 
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
-32.
+53.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [4] [5]
-<pics/covergence_plots.png, id=78, 807.015pt x 555.07375pt>
+) [5]
+<pics/covergence_plots.png, id=75, 807.015pt x 555.07375pt>
 File: pics/covergence_plots.png Graphic file (type png)
 <use pics/covergence_plots.png>
-Package pdftex.def Info: pics/covergence_plots.png  used on input line 457.
+Package pdftex.def Info: pics/covergence_plots.png  used on input line 476.
 (pdftex.def)             Requested size: 469.75606pt x 323.10333pt.
-<pics/hist_select.png, id=80, 826.08624pt x 541.02126pt>
+<pics/hist_select.png, id=77, 826.08624pt x 541.02126pt>
 File: pics/hist_select.png Graphic file (type png)
 <use pics/hist_select.png>
-Package pdftex.def Info: pics/hist_select.png  used on input line 464.
+Package pdftex.def Info: pics/hist_select.png  used on input line 483.
 (pdftex.def)             Requested size: 469.7648pt x 307.65884pt.
-<pics/hist_beta.png, id=81, 756.8275pt x 553.06625pt>
+<pics/hist_beta.png, id=78, 756.8275pt x 553.06625pt>
 File: pics/hist_beta.png Graphic file (type png)
 <use pics/hist_beta.png>
-Package pdftex.def Info: pics/hist_beta.png  used on input line 471.
+Package pdftex.def Info: pics/hist_beta.png  used on input line 490.
 (pdftex.def)             Requested size: 469.75941pt x 343.28572pt.
-<pics/mu_est.png, id=82, 754.82pt x 221.82875pt>
+<pics/mu_est.png, id=79, 754.82pt x 221.82875pt>
 File: pics/mu_est.png Graphic file (type png)
 <use pics/mu_est.png>
-Package pdftex.def Info: pics/mu_est.png  used on input line 478.
+Package pdftex.def Info: pics/mu_est.png  used on input line 497.
 (pdftex.def)             Requested size: 469.7573pt x 138.05365pt.
-<pics/adj_r_square.png, id=85, 648.4225pt x 625.33624pt>
+[6] [7 <./pics/covergence_plots.png>] [8 <./pics/hist_select.png>] [9 <./pics/h
+ist_beta.png> <./pics/mu_est.png>]
+<pics/adj_r_square.png, id=116, 648.4225pt x 625.33624pt>
 File: pics/adj_r_square.png Graphic file (type png)
 <use pics/adj_r_square.png>
-Package pdftex.def Info: pics/adj_r_square.png  used on input line 531.
+Package pdftex.def Info: pics/adj_r_square.png  used on input line 550.
 (pdftex.def)             Requested size: 469.76282pt x 453.03752pt.
-<pics/predict_id_plot.png, id=86, 703.62875pt x 625.33624pt>
+<pics/predict_id_plot.png, id=117, 703.62875pt x 625.33624pt>
 File: pics/predict_id_plot.png Graphic file (type png)
 <use pics/predict_id_plot.png>
-Package pdftex.def Info: pics/predict_id_plot.png  used on input line 538.
+Package pdftex.def Info: pics/predict_id_plot.png  used on input line 557.
 (pdftex.def)             Requested size: 469.75392pt x 417.48457pt.
-[6] [7 <./pics/covergence_plots.png>] [8 <./pics/hist_select.png>] [9 <./pics/h
-ist_beta.png> <./pics/mu_est.png>] [10 <./pics/adj_r_square.png>] [11 <./pics/p
-redict_id_plot.png>] [12] [13]
-Overfull \hbox (7.18668pt too wide) detected at line 620
+[10] [11 <./pics/adj_r_square.png>] [12 <./pics/predict_id_plot.png>] [13]
+Overfull \hbox (7.18668pt too wide) detected at line 639
 [][]
  []
 
 [14] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 35548 strings out of 478994
- 820734 string characters out of 5858184
- 1265303 words of memory out of 5000000
+ 35546 strings out of 478994
+ 820732 string characters out of 5858184
+ 1265310 words of memory out of 5000000
  52159 multiletter control sequences out of 15000+600000
- 477293 words of font info for 157 fonts, out of 8000000 for 9000
+ 477210 words of font info for 156 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  87i,15n,88p,780b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-
@@ -1161,10 +1161,10 @@ s/type1/public/lm/lmsy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/pu
 blic/lm/lmsy5.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lms
 y7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/
 msbm10.pfb>
-Output written on report.pdf (14 pages, 793237 bytes).
+Output written on report.pdf (14 pages, 795671 bytes).
 PDF statistics:
- 324 PDF objects out of 1000 (max. 8388607)
- 275 compressed objects within 3 object streams
+ 325 PDF objects out of 1000 (max. 8388607)
+ 276 compressed objects within 3 object streams
  74 named destinations out of 1000 (max. 500000)
  41195 words of extra memory for PDF output out of 42996 (max. 10000000)
 
