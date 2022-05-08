@@ -1,0 +1,89 @@
+---
+title: |
+  | P8160 - Project 3
+  | Baysian modeling of hurrican trajectories
+author: |
+  | Amy Pitts, Jiacheng Wu, Jimmy Kelliher,
+  | Ruiqi Yan & Tianchuan Gao
+date: "2022-05-09"
+output:
+  beamer_presentation:
+    theme: "Madrid"
+    fonttheme: "structurebold"
+    incremental: false
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(data.table)
+library(maps)
+library(gtsummary)
+library(glmnet)
+```
+
+
+
+# Deaths and Damages Data Exploration 
+
+```{r}
+load("q6charts.RData")
+load("q6output.RData")
+hurr <-
+  read_csv("hurricanoutcome2.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  mutate(damage = as.numeric(str_replace(damage, "\\$", ""))) %>%
+  dplyr::select(-c(hurrican_id, season, month, nature))
+
+gtsummary::tbl_summary(
+    as_tibble(apply(hurr, 2, scale))
+  , statistic = list(all_continuous() ~ "({min}, {p25}, {p50}, {p75}, {max})")
+)
+```
+
+# Hurricane Deaths - Model Selection
+
+```{r}
+plot(cv_deaths, main = "Cross Validation for Deaths Model\n")
+```
+
+# Hurricane Deaths - Inference
+
+```{r}
+output_deaths %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    #, format = "simple"
+    , d = 4
+  )
+```
+
+# Hurricane Damages - Model Selection
+
+```{r}
+plot(cv_damage, main = "Cross Validation for Damage Model\n")
+```
+
+# Hurricane Damages - Inference
+
+```{r}
+output_damage %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    #, format = "simple"
+    , d = 4
+  )
+```
