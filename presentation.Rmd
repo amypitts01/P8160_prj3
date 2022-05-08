@@ -625,6 +625,7 @@ output_damage %>%
 
 # Conclusions 
 
+-  Based on the estimated $\mu$, on average, the increase of previous wind speed and larger increase of speed in previous time interval are corresponding with increase of current wind speed, while the wind will be slower when the hurricane moves further to north and east. 
 - Hurricanes with more observations enjoy better MCMC estimates
 - With such a high-dimensional parameter space:
   - burn-in takes longer than expected
