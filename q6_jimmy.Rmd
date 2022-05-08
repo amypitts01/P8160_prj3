@@ -458,6 +458,6 @@ output_deaths
 
 ```{r}
 save(output_damage, output_deaths, file = "q6output.RData")
-load("q6output.RData")
+save(cv_damage, cv_deaths, file = "q6charts.RData")
+#load("q6output.RData")
 ```
-
