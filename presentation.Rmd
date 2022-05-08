@@ -521,7 +521,7 @@ dt_long %>%
 \end{columns}
 
 
-# Exploring if wind speeds have increased over the years
+# Exploring wind speeds over the years
 
 Model: $Y_i = \alpha_{0i}+\alpha_{1i} \times\textrm{Decade}$ where $Y_i$ is each $\beta_i$ and $i \in (0,\dots,4)$. 
 \begin{columns}
@@ -633,6 +633,7 @@ output_damage %>%
 - With such a high-dimensional parameter space:
   - burn-in takes longer than expected
   - very sensitive to starting values
+- There does not seem to be a Nature or Month effect on wind speeds 
 - Estimated $\beta$ coefficients generally prove useful in predicting damage and deaths
   - particularly, $(\beta_1, \beta_2, \beta_3)$ are always selected
   - however, $\beta_2$ is only inferentially significant in the damage model
