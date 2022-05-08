@@ -1,0 +1,108 @@
+---
+title: "Topics in Advanced Statistical Computing"
+author: "Project 3; Problem 6"
+date: "Jimmy Kelliher (UNI: jmk2303)"
+output:
+  pdf_document:
+    extra_dependencies: ["bbm"]
+---
+
+```{r setup, include = FALSE}
+# load necessary packages
+library(tidyverse)
+library(gtsummary)
+library(glmnet)
+
+# set seed for reproducibility
+set.seed(8160)
+
+# set knitr defaults
+knitr::opts_chunk$set(
+    echo      = TRUE
+  , warning   = FALSE
+  , fig.align = "center"
+  , fig.width = 7
+  , fig.asp   = .6
+  , out.width = "90%"
+)
+
+# set theme defaults
+theme_set(
+  theme_bw() +
+  theme(
+    legend.position = "right"
+    , plot.title    = element_text(hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5)
+    , plot.caption  = element_text(hjust = 0.0)
+  )
+)
+
+# set color scale defaults
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill   = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete   = scale_fill_viridis_d
+```
+
+
+
+```{r}
+load("q6output.RData")
+
+output_damage %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    , format = "simple"
+    , d = 4
+  )
+
+output_deaths %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    , format = "simple"
+    , d = 4
+  )
+```
+
+
+
+
+
+```{r}
+load("q6charts.RData")
+
+plot(cv_damage, main = "Cross Validation for Damage Model\n")
+plot(cv_deaths, main = "Cross Validation for Deaths Model\n")
+```
+
+
+
+
+
+
+```{r}
+hurr <-
+  read_csv("hurricanoutcome2.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  mutate(damage = as.numeric(str_replace(damage, "\\$", ""))) %>%
+  dplyr::select(-c(hurrican_id, season, month, nature))
+
+gtsummary::tbl_summary(
+    as_tibble(apply(hurr, 2, scale))
+  , statistic = list(all_continuous() ~ "({min}, {p25}, {p50}, {p75}, {max})")
+)
+```
