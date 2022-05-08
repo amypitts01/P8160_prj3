@@ -203,9 +203,9 @@ We apply hybrid algorithm consisting with Metropolis-Hastings steps and Gibbs st
 
 Update component wise: 
 
-- Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$, for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution.
+- Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$, for $i^{th}$ hurricane from proposed distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposed is symmetric, the acceptance probability is the ratio of posterior distribution.
 - Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $\mathcal{N}\left(\bar{\beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\beta}^{(t+1)}$ is the average of $\beta_{i}^{(t+1)}$ over all hurricanes.
-- Next, MH step to generate $\sigma^{2^{\prime}}$ from $U\left(\sigma^{2^{(t)}}-a_{\sigma^2},\sigma^{2^{(t)}}+a_{\sigma^2}\right)$.
+- Next, Random-walk Metropolis to generate $\sigma^{2^{\prime}}$ with step size from $U\left(-a_{\sigma^2},-a_{\sigma^2}\right)$ and compare the ratio of posterior distribution with $u \sim U(0,1)$
 - Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\scriptsize{\mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right)}$ 
 
 
