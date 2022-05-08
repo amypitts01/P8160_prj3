@@ -518,12 +518,12 @@ df_rm <- df_temp %>% filter(!(ID %in% c(id_get_rid)))
 ### Calculating the log posterior functions
 
 ```{r eval=FALSE, include=TRUE}
-## log posterior for beta of hurricane j
+## log posterior for beta_j of jth hurricane
+
 log_posterior_beta = function(beta, sigma, mu, sigma_p,j){
   x = obs_list$x_matrix[[j]]
   y = obs_list$y_obs[[j]]
-  return(-t(y - x %*% beta) %*% (y - x %*% beta)/
-           (2*sigma)-(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
+  return(-t(y - x %*% beta) %*% (y - x %*% beta)/(2*sigma)-(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
 }
 
 ## log posterior for sigma
@@ -532,12 +532,7 @@ log_posterior_sigma = function(beta_frame, sigma){
   if(sigma <= 0){
     return(-Inf)
   } else{
-    log_lik = -(n_obs/2)*log(sigma)-
-      sum((dt$wind_kt-beta_frame[,1]
-           -dt$wind_lag*beta_frame[,2]
-           -dt$lat_shift*beta_frame[,3]
-           -dt$long_shift*beta_frame[,4]
-           -dt$wind_shift*beta_frame[,5])^2/(2*sigma))
+    log_lik = -(n_obs/2)*log(sigma)-sum((dt$wind_kt-beta_frame[,1]-dt$wind_lag*beta_frame[,2]-dt$lat_shift*beta_frame[,3]-dt$long_shift*beta_frame[,4]-dt$wind_shift*beta_frame[,5])^2/(2*sigma))
     log_prior = -log(sigma)
     return(log_lik + log_prior)
   }
@@ -547,128 +542,45 @@ log_posterior_sigma = function(beta_frame, sigma){
 ### The MCMC algorithm
 
 ```{r eval=FALSE, include=TRUE}
-blockwisemixedMH <- function(a, theta_0, nrep=10000){
-  theta = theta_0
-  sigma_p = matrix(0,d,d)
-  sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta_0[cov_m_ind]
-  sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
-  theta_chain_mix = matrix(0, nrow = nrep, ncol = n_theta)
-  for(i in 1:nrep){
-    sigma_m = solve(sigma_p)
-    # update beta by block of each hurricane
-    for(j in 1:m){
-      ind =  c(j, j+m, j+m*2, j+m*3, j+m*4)
-      prop = theta
-      prop[ind] = prop[ind]+2*(runif(5)-0.5)*a[1:5]
-      if(log(runif(1)) < (log_posterior_beta(prop, sigma_p, j) - 
-                          log_posterior_beta(theta, sigma_p, j))){
-        theta[ind] = prop[ind]
-      }
-    }
-    # update mu
-    beta = matrix(theta[1:n_beta], nrow = d, byrow = T)
-    beta_mean = rowMeans(beta)
-    mu = mvrnorm(1,beta_mean,Sigma = sigma_m/m)
-    theta[mu_ind] = mu
-    # update sigma
-    prop = theta
-    prop[sigma_ind] = prop[sigma_ind]+2*(runif(1)-0.5)*a[6]
-    if(log(runif(1)) < (log_posterior_sigma(prop) - log_posterior_sigma(theta))){
-      theta[sigma_ind] = prop[sigma_ind]
-    }
-    # update inverse sigma matrix
-    beta_mu = beta-mu
-    S = solve(diag(d)+beta_mu%*%t(beta_mu))
-    sigma_p = rWishart(1,df = 3*d+3+m,Sigma = S)
-    sigma_p = apply(sigma_p,2,c)
-    theta[cov_m_ind] = sigma_p[lower.tri(sigma_p, diag = T)]
-    theta_chain_mix[i,] = theta
-  }
-  return(theta_chain_mix)
-}
-
-componentwisemixedMH <- function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
-  sigma_p = cov_0
-  beta    = beta_0
-  mu      = colMeans(beta)
-  sigma   = sigma_0
-  theta_chain_mix <- matrix(0, nrow = nrep, ncol = n_theta)
-  for(i in 1:nrep){
-    sigma_m = solve(sigma_p)
-    # update beta by block of each hurricane
-    for(j in 1:m){
-      for(k in 1:5){
-        prop = beta[j,]
-        prop[k] = prop[k]+2*(runif(1)-0.5)*a[(k-1)*681+j]
-        if(log(runif(1)) < (log_posterior_beta(prop, sigma, mu, sigma_p,j) -
-                            log_posterior_beta(beta[j,], sigma, mu, sigma_p,j))){
-          beta[j,k] = prop[k]
-        }
-      }
-    }
-    # update mu
-    beta_mean = colMeans(beta)
-    mu = mvrnorm(1,beta_mean,Sigma = sigma_m/m)
-    # update sigma
-    beta_frame = matrix(rep(c(beta),times = rep_time), ncol = d)
-    prop = sigma
-    prop = prop+2*(runif(1)-0.5)*a_sigma
-    if(log(runif(1)) < (log_posterior_sigma(beta_frame, prop) - 
-                        log_posterior_sigma(beta_frame, sigma))){
-      sigma = prop
-    }
-    # update inverse sigma matrix
-    beta_mu = t(beta)-mu
-    S = solve(diag(d)+beta_mu%*%t(beta_mu))
-    sigma_p = rWishart(1,df = 3*d+3+m,Sigma = S)
-    sigma_p = apply(sigma_p,2,c)
-    theta_chain_mix[i,] = c(c(beta),mu,sigma,sigma_p[lower.tri(sigma_p, diag = T)])
-  }
-  return(theta_chain_mix)
-}
-
-numCores <- detectCores()
-registerDoParallel(numCores)
-componentwisemixedMH_2 <- function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
-  sigma_p = cov_0
+componentwisemixedMH=function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
+  sigma_p = cov_0 #inverse covariance matrix
   beta = beta_0
   mu = colMeans(beta)
   sigma = sigma_0
   theta_chain_mix = matrix(0, nrow = nrep, ncol = n_theta)
   for(i in 1:nrep){
-    sigma_m = solve(sigma_p)
-    # update beta by block of each hurricane
-    beta_new = foreach(j = 1:m, .combine = rbind) %dopar% {
-      beta_j = beta[j,]
+    sigma_m = solve(sigma_p) #current covariance matrix
+    # sampling beta for jth hurricane
+    for(j in 1:m){
+      #component_wise for each beta_kj in beta_j
       for(k in 1:5){
-        prop = beta_j
-        prop[k] = prop[k]+2*(runif(1)-0.5)*a[(k-1)*681+j]
-        if(log(runif(1)) < (log_posterior_beta(prop, sigma, mu, sigma_p,j) -
-                            log_posterior_beta(beta[j,], sigma, mu, sigma_p,j))){
-          beta_j[k] = prop[k]
-          }
+        prop = beta[j,] 
+        # random walk with uniform step size for beta_k,j
+        prop[k] = prop[k]+2*(runif(1)-0.5)*a[(k-1)*681+j] 
+        # accepting or rejecting 
+        if(log(runif(1)) < (log_posterior_beta(prop, sigma, mu, sigma_p,j) - log_posterior_beta(beta[j,], sigma, mu, sigma_p,j))){
+          beta[j,k] = prop[k]
+        }
       }
-      beta_j
     }
-    beta = beta_new
-    # update mu
-    beta_mean = colMeans(beta)
+    # sampling mu from mvn
+    beta_mean = colMeans(beta) #average over current beta_i
     mu = mvrnorm(1,beta_mean,Sigma = sigma_m/m)
-    # update sigma
+    # random walk for sigma^2 with uniform step size
     beta_frame = matrix(rep(c(beta),times = rep_time), ncol = d)
     prop = sigma
     prop = prop+2*(runif(1)-0.5)*a_sigma
-    if(log(runif(1)) < (log_posterior_sigma(beta_frame, prop) - 
-                        log_posterior_sigma(beta_frame, sigma))){
+    # accepting or rejecting 
+    if(log(runif(1)) < (log_posterior_sigma(beta_frame, prop) - log_posterior_sigma(beta_frame, sigma))){
       sigma = prop
     }
-    # update inverse sigma matrix
+    # sampling inverse sigma matrix from wishart
     beta_mu = t(beta)-mu
-    S = solve(diag(d)+beta_mu%*%t(beta_mu))
+    S = solve(diag(d)+beta_mu%*%t(beta_mu)) # V matrix in wishart
     sigma_p = rWishart(1,df = 3*d+3+m,Sigma = S)
-    sigma_p = apply(sigma_p,2,c)
-    theta_chain_mix[i,] = c(c(beta), mu, sigma, 
-                            sigma_p[lower.tri(sigma_p, diag = T)] )
+    sigma_p = apply(sigma_p,2,c) # extract the inverse covariance matrix sample 
+    #store new samples
+    theta_chain_mix[i,] = c(c(beta),mu,sigma,sigma_p[lower.tri(sigma_p, diag = T)])
   }
   return(theta_chain_mix)
 }
