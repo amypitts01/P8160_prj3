@@ -16,6 +16,7 @@ header-includes:
   - \usepackage{tikz}
   - \usepackage{pgfplots}
   - \usetikzlibrary{shapes,arrows}
+  - \usepackage{float}
 ---
 
 ```{r setup, include=FALSE}
@@ -55,12 +56,13 @@ For this project, we aim to examine the factors that could predict the wind spee
 ## 2.1. Data Cleaning and Exploratory Analysis
 
 ```{r message=FALSE, warning=TRUE, include=FALSE}
-temp = table(dt$ID) %>% as.data.frame() 
+temp = table(dt1$ID) %>% as.data.frame() 
 ```
 
-There are `r length(unique(dt$ID))` unique hurricanes in this dataset all the occurred in the north american region between the years `r range(dt$Season)[1]` to `r range(dt$Season)[2]`. Data on the storm's location (longitude & latitude) and maximum wind speed were recorded every 6 hours. The number of observations we have for each storm range from `r range(temp$Freq)[1]` to `r range(temp$Freq)[2]` with a mean value of `r round(mean(temp$Freq))` observations per hurricane. Data is also collected on the storms month, and the nature of the hurricane; (Extra Tropical (ET), Disturbance (DS), Not Rated (NR), Sub Tropical (SS), and Tropical Storm (TS)). 
+There are `r length(unique(dt1$ID))` unique hurricanes in this dataset all the occurred in the North American region between the years `r range(dt1$Season)[1]` to `r range(dt1$Season)[2]`. Data on the storm's location (longitude & latitude) and maximum wind speed were recorded every 6 hours. The number of observations we have for each storm range from `r range(temp$Freq)[1]` to `r range(temp$Freq)[2]` with a mean value of `r round(mean(temp$Freq))` observations per hurricane. Data is also collected on the storm's month, and the nature of the hurricane; (Extra-Tropical (ET), Disturbance (DS), Not Rated (NR), Sub Tropical (SS), and Tropical Storm (TS)). 
 
-To conduct our analysis we require at least 7 observations for each unique hurricane. In addition, we are only concerned about observations that occurred on 6 hour intervals. The dataset includes a couple observations between the 6 hour time periods. For our analysis we are only going to include observations that are recorded on hour 0, 6, 12, and 18. In addition we will exclude all hurricane IDs that have less then 7 observations. Through this process we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. In addition we also created variables of lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed as $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$ and lag of wind speed as $Y_{i}(t-6)$. 
+To conduct our analysis we require at least 7 observations for each unique hurricane. In addition, we are only concerned about observations that occurred at 6-hour intervals. The dataset includes a couple of observations between the 6-hour periods. For our analysis, we are only going to include observations that are recorded on hours 0, 6, 12, and 18. In addition, we will exclude all hurricane IDs that have less than 7 observations. Through this process we remove `r (dim(dt1)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. In addition we also created variables of lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed as $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$ and lag of wind speed as $Y_{i}(t-6)$. 
+
 
 \begin{center}
 \textit{Table 1: Data Characteristics shown by the Nature of the Hurricane variable}
@@ -77,7 +79,7 @@ df_rm %>%
 ```
 
 
-## 2.2 Bayesian Model for Hurricane Trajectories
+## 2.2. Bayesian Model for Hurricane Trajectories
 
 Climate researchers are interested in modeling the hurricane trajectories to forecast the winds peed. To model the wind speed of the $i^{th}$ hurricane at time $t$ we will use
 $$
@@ -133,8 +135,8 @@ To see a more detailed description of each conditional posterior please see Appe
 
 
 
-## 2.3 Markov Chain Monte Carlo (MCMC) Algorithm
-Due to the complexity of the above posterior distribution we will use a Markov chain Monte Carlo (MCMC) process. Since we could generate full conditional posterior distribution for some parameters but not all we will instead apply hybrid algorithm consisting with Metropolis-Hastings (MH) steps and Gibbs steps. We will preform a MH step for $\beta_{j,i}$, $\sigma^2$ and sample from the $\Sigma^{-1^{(t+1)}}$ distribution. We will also describe a gibbs step for $\mu$ using the  $\beta_{j,i}$ gathered. 
+## 2.3. Markov Chain Monte Carlo (MCMC) Algorithm
+Due to the complexity of the above posterior distribution, we will use a Markov chain Monte Carlo (MCMC) process. Since we could generate full conditional posterior distribution for some parameters but not all we will instead apply a hybrid algorithm consisting of Metropolis-Hastings (MH) steps and Gibbs steps. We will perform a MH step for $\beta_{j,i}$, $\sigma^2$ and sample from the $\Sigma^{-1^{(t+1)}}$ distribution. We will also describe a Gibbs step for $\mu$ using the $\beta_{j,i}$ gathered. 
 
 
 First is the MH steps for $\beta_{j,i}$. Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$ for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \Theta$ could be cancelled out, so the ratio simplified to be:
@@ -174,7 +176,7 @@ Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\mathrm{Wishart}\left(3d+3+m,\le
 
 For the MCMC process we will run 10,000 iterations using the code shown in Appendix B. 
 
-## 2.4  Initial Starting Values for MCMC 
+## 2.4.  Initial Starting Values for MCMC 
 
 To initiate the MCMC process we need to specify the starting values. The choice of starting value is important to help with the convergence time of our algorithm. For each parameter we will chose the start values to be: 
  \begin{itemize}
@@ -186,7 +188,7 @@ To initiate the MCMC process we need to specify the starting values. The choice 
 
 There is a MH step in the MCMC algorithm so the choice of search window is important. The acceptance rate of the MH step is around 0.317 to 0.637, so the search window of our algorithm is appropriate. We tune the search windows multiple times to achieve this result. Table 1 demonstrates the range of search windows $a$ and associated acceptance rates for $\boldsymbol \beta$ and $\sigma^2$.
 
-\begin{table}
+\begin{table}[H]
   \centering
   \caption{Range of Search Window and Acceptance Rate for paraemters used MH step}
   \begin{tabular}{|c|c|c|} \hline 
@@ -202,13 +204,13 @@ There is a MH step in the MCMC algorithm so the choice of search window is impor
 
 
 
-## 2.5 MCMC Model Performance 
+## 2.5. MCMC Model Performance 
 
-To assess the quality of the proposed model we will assess the overall adjusted  $R^2$ value from the Bayesian model. In addition the model performance will be assessed for each hurricane by the adjusted $R^2$ value as well as a goodness of fit test. The goodness of fit test we will use residuals of Bayesian estimates, $r_{ij}$, of the $j^{th}$ observation in $i^{th}$ hurricane, to calculate the test statistics. $\chi^2_{stat} = \frac{\sum_{j=1}^{n_i}r_{ij}^2}{\sigma^2}$, where $\sigma^2$ is the estimate $\sigma^2$ from MCMC. Based on the normal assumption in intro, $\chi^2_{stat}\sim\chi^2_{n_i}$, where $n_i$ is the number of observation for $i^{th}$ hurricane. Visual inspection can also be used for each individual hurricane plotting their observed wind speed with the model's predicted wind speed. 
+To assess the quality of the proposed model we will assess the overall adjusted  $R^2$ value from the Bayesian model. In addition, the model performance will be assessed for each hurricane by the adjusted $R^2$ value as well as a goodness of fit test. For the goodness of fit test we will use residuals of Bayesian estimates, $r_{ij}$, of the $j^{th}$ observation in $i^{th}$ hurricane, to calculate the test statistics. $\chi^2_{stat} = \frac{\sum_{j=1}^{n_i}r_{ij}^2}{\sigma^2}$, where $\sigma^2$ is the estimate $\sigma^2$ from MCMC. Based on the normal assumption in intro, $\chi^2_{stat}\sim\chi^2_{n_i}$, where $n_i$ is the number of observation for $i^{th}$ hurricane. Visual inspection can also be used for each hurricane plotting their observed wind speed with the model's predicted wind speed. 
 
-## 2.6 Models to Explore Seasonal Differences and Yearly Trends 
+## 2.6. Models to Explore Seasonal Differences and Yearly Trends 
 
-In the dataset information about the hurricanes start month, year and the nature of the hurricane is recorded. It is of interested to explore how these three variables affect the wind speed. Specifically we are interested in exploring the seasonal differences, and if there any evidence supporting the statement that "the hurricane wind speed has been increasing over years". To do visual inspection can first be used to help us understand how these three variables impact the beta estimates. Then we can see if there is a linear trend given the three variables using each $\beta$ estimates gained from the Bayesian model described above. 
+In the dataset information about the hurricanes start month, year, and the nature of the hurricane is recorded. It is interesting to explore how these three variables affect wind speed. Specifically, we are interested in exploring the seasonal differences, and if there is any evidence supporting the statement that "the hurricane wind speed has been increasing over years". To do visual inspection can first be used to help us understand how these three variables impact the beta estimates. Then we can see if there is a linear trend given the three variables using each $\beta$ estimate gained from the Bayesian model described above. 
 For each $\beta$ value we fit a different linear model. We can first fit a model using the three variables (month, year, and nature) as predictors and the 5 different $\beta$ values as the outcome. This will result in 5 different linear models, one for each $\beta$ value. 
 $$
 Y_{ji} = \alpha_{0j} + \alpha_{1j}\times \textrm{Decade}_i 
@@ -220,55 +222,58 @@ Where $i$ is the hurricane, $j$ is the Beta model (0 through 4), $k \in (ET,\ NR
 We are also going to consider 5 different models just using decade as a predictor.  $Y_i = \alpha_{0i}+\alpha_{1i} \times\textrm{Decade}$ where $Y_i$ is each $\beta_i$ and $i \in (0,\dots,4)$.  
 
 
-## 2.7 Models to Explore Death and Damages 
+## 2.7. Models to Explore Death and Damages 
 
 \textbf{FILL IN}
 
 
 # 3. Results 
 
-## 3.1 MCMC Model Convergence 
-Using the starting values describe above we can now examine the model performance. We are particular interested in the parameter convergence. Below we can see Figure \ref{fig:converge} that displays each of the parameters of iterations over the 10,000 iterations. Wee see that each parameter reaches a convergence at around 5,500 iterations. Therefore, we will make 5,500 iterations our burn in period. Figure \ref{fig:hist_select} displays the histogram results from the selected parameters excluding the burn in period. We see that each of the distributions is relatively normal with some skewed results for $\Sigma^{-1}$ and heavy tails in $\mu_0$. 
+## 3.1. MCMC Model Convergence 
+Using the starting values describe above we can now examine the model performance. We are particularly interested in parameter convergence. Below we can see Figure \ref{fig:converge} that displays each of the parameters of iterations over the 10,000 iterations. We see that each parameter reaches a convergence at around 5,500 iterations. Therefore, we will make 5,500 iterations of our burn-in period. Figure \ref{fig:hist_select} displays the histogram results from the selected parameters excluding the burn-in period. We see that each of the distributions is relatively normal with some skewed results for $\Sigma^{-1}$ and heavy tails in $\mu_0$. 
 
-Convergence was reach in each of the parameters of interest. Thus we can take the average estimate excluding the burn in period. When we do this we are left with the $\mu_i$ values, $\sigma^2$ values, $\Sigma^2$ matrix, and a $\beta_i$ estimate for each hurricane. Figure \ref{fig:mu_est} displays the $\mu_i$ values, $\sigma^2$ values, $\Sigma^2$ matrix results.  We see that the $\mu_2$, $\mu_3$ estimate are negative while the others are positive. Figure \ref{fig:beta_est} displays the $\beta_i$ estimates for each hurricane in a histogram. 
+Convergence was reached in each of the parameters of interest. Thus we can take the average estimate excluding the burn-in period. When we do this we are left with the $\mu_i$ values, $\sigma^2$ values, $\Sigma^2$ matrix, and a $\beta_i$ estimate for each hurricane. Figure \ref{fig:mu_est} displays the $\mu_i$ values, $\sigma^2$ values, $\Sigma^2$ matrix results.  We see that the $\mu_2$, $\mu_3$ estimates are negative while the others are positive. Figure \ref{fig:beta_est} displays the $\beta_i$ estimates for each hurricane in a histogram. 
 
-The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the intercept of the wind speed model.  The average $\beta_1$ estimate for the hurricanes is 0.915 which represents the lagged wind speed impact model. This positive estimate indicated that a larger previous wind speed will indicate a higher wind speed for the next time point. The $\beta_2$ estimate is -0.136 which represents the impact of the change in latitude. The $\beta_3$ estimate is -0.395 which represents the impact of the change in longitude. Both of the impact of change in latitude and longitude have negative beta estimated values indicating that a larger change in direction corresponds with a decrease in wind speeds.  Thus hurricane speed and wind speed seem to be inversely correlated. The $\beta_4$ estimate is 0.481 which represents the impact of the change in wind speed. This positive value indicated that a larger change in wind speed corresponds with a larger wind speed value. 
+The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the intercept of the wind speed model.  The average $\beta_1$ estimate for the hurricanes is 0.915 which represents the lagged wind speed impact model. This positive estimate indicated that a larger previous wind speed will indicate a higher wind speed for the next time point. The $\beta_2$ estimate is -0.136 which represents the impact of the change in latitude. The $\beta_3$ estimate is -0.395 which represents the impact of the change in longitude. Both the impact of change in latitude and longitude have negative beta estimated values indicating that a larger change in direction corresponds with a decrease in wind speeds.  Thus hurricane speed and wind speed seem to be inversely correlated. The $\beta_4$ estimate is 0.481 which represents the impact of the change in wind speed. This positive value indicated that a larger change in wind speed corresponds with a larger wind speed value.
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/covergence_plots.png}
+    \includegraphics[width=0.5\textwidth]{pics/covergence_plots.png}
     \caption{Convergence Plot of the Selected Parameters after 10,000 Iterations}
     \label{fig:converge}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/hist_select.png}
+    \includegraphics[width=0.5\textwidth]{pics/hist_select.png}
     \caption{Histogram Plot of the Selected Parameters not including the 5,500 burn in period results}
     \label{fig:hist_select}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/hist_beta.png}
+    \includegraphics[width=0.5\textwidth]{pics/hist_beta.png}
     \caption{Bayesian Estiamtes for the $\beta$ values for all Hurricane}
     \label{fig:beta_est}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/mu_est.png}
+    \includegraphics[width=0.8\textwidth]{pics/mu_est.png}
     \caption{Bayesian Estiamtes for $\mu$ and $\sigma^2$}
     \label{fig:mu_est}
 \end{figure}
+```
 
 
-
-## 3.2 MCMC Model Performance 
+## 3.2. MCMC Model Performance 
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 r_square = (1-sum((dt_res$wind_kt_pred-dt_res$wind_kt)^2)/sum((dt_res$wind_kt-mean(dt_res$wind_kt))^2))
@@ -297,9 +302,9 @@ d_low = dt_rsquare %>%
 
 ```
 
-The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square`. We can also look at the adjusted $R^2$ value for each individual hurricane. Table 2 displays the values grouped by the adjusted $R^2$ showing the number of hurricanes and the percentage. We see that most hurricanes do well with a adjusted $R^2$ above 0.6. Even though most of the estimated models track hurricanes well with great adjusted $R^2$, some estimated models track the hurricanes extremely bad. `r round((d_low+d_moderate)/681,3)*100`% of the estimated models do not track the hurricane well and have adjusted $R^2$ less than 0.6. Few models have negative adjusted $R^2$. We also perform the goodness-of-fit test for individual estimated model. The estimated models of `r n_lowp` hurricanes have p-value less than 0.05, implying that those models do not fit well. 
+The overall adjusted $R^2$ of the estimated Bayesian model is `r adj_r_square`. We can also look at the adjusted $R^2$ value for each hurricane. Table 2 displays the values grouped by the adjusted $R^2$ showing the number of hurricanes and the percentage. We see that most hurricanes do well with an adjusted $R^2$ above 0.6. Even though most of the estimated models track hurricanes well with great adjusted $R^2$, some estimated models track the hurricanes extremely bad. `r round((d_low+d_moderate)/681,3)*100`% of the estimated models do not track the hurricane well and have adjusted $R^2$ less than 0.6. Few models have negative adjusted $R^2$. We also perform the goodness-of-fit test for the individual estimated model. The estimated models of `r n_lowp` hurricanes have a p-value less than 0.05, implying that those models do not fit well. 
 
-Figure \ref{fig:adj_r} shows the adjusted $R^2$ for each hurricane by their number of observations. This plot shows that with more observations the better our model with do. The to the right of the vertical line shows that 40 or more observations give us an adjusted $R^2$ values above 0.5.
+Figure \ref{fig:adj_r} shows the adjusted $R^2$ for each hurricane by the number of observations. This plot shows that with more observations the better our model with do. The to the right of the vertical line shows that 40 or more observations give us adjusted $R^2$ values above 0.5.
 
 Figure \ref{fig:pred_id} displays 9 randomly selected hurricanes actual wind speeds and predicted wind speeds. We see that for all of them the lines are very similar with some slight derivations away when the number of observations are small. In DOG 1950 we see very good model prediction and for this particular hurricane we have a lot of observations. However, for JERRY 2007 we do not have as many observations and see deviations at the begging and end of the storm. 
 
@@ -320,46 +325,88 @@ tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
 ```
 
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/adj_r_square.png}
+    \includegraphics[width=0.5\textwidth]{pics/adj_r_square.png}
     \caption{Adjusted R squared for each Hurricane plotted by the number of observations.}
     \label{fig:adj_r}
 \end{figure}
+```
 
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/predict_id_plot.png}
+    \includegraphics[width=0.5\textwidth]{pics/predict_id_plot.png}
     \caption{The predicted wind speeds verses the actual observed wind speeds for 9 randomly selected hurricanes. }
     \label{fig:pred_id}
 \end{figure}
+```
 
 
+## 3.3. Seasonal Differences and Yearly Trends Results 
+Using the model output obtained in the Bayesian MCMC algorithm we can now explore how the hurricane's start month, nature, and year affect the wind speed. Particularly we are interested in if there are any seasonal differences and if there is evidence to support the statement that "the hurricane wind speed has been increasing over years". 
 
-## 3.3 Seasonal Differences and Yearly Trends Results 
+We can first explore if there are the seasonal difference. Visually inspecting the $\beta$ values obtained from the MCMC process with respect to year, month and nature we can look at Figure \ref{fig:vis_inspect_year} and \ref{fig:vis_inspect_nature}. Looking at the beta estimates over the years grouped by month and the betas, Figure \ref{fig:vis_inspect_year}, we can see that the majority of the hurricanes fall within the June through November months. We can also see that looking at December in the later years there seem to be more Hurricanes. This time spent is what is conventionally accepted as hurricane season. Within each month there does not seem to be any obvious change in the beta estimates over the years. Looking at the Nature of the hurricane by the beta's box plot, Figure \ref{fig:vis_inspect_nature}, we see that all the box plots for the nature seem to be relatively similar within each beta estimate. This indicates that there don't seem to be drastic differences between the 5 different hurricane natures. However, looking at the beta1 section we see that the Extra-Tropical (ET) box seems to be much larger than the disturbance (DS), not rated (NR), and subtropical (SS) nature types. This visually implies that the extratropical hurricane has increased the importance of previous time wind speed impacting the next wind speed prediction. 
 
+Fitting the linear model using decade, month, and nature as predictors results in 5 different models, one for each $\beta$ vector. The model output can be seen in Appendix C, due to the length it was not included in the main body. To summarize the results no nature, or month indicators were significant. The $\beta_1$ model had the decade estimates as significant -0.003 (-0.002, -0.004). Thus month and nature don't have a linear association within each beta vector when adjusting for the year. 
 
+Just exploring the decade variable we can address the question of does "the hurricane wind speed has been increasing over years"? To do this we can do a visual inspection as well as a linear association test. Figure \ref{fig:year_model} explore this question by showing a visual inspection on the left and a linear model on the right. The model output just shows the estimates related to the decade using each beta vector as an outcome. The results are the $\beta_1$ and $\beta_3$ decade estimates are the only significant ones. The $\beta_1$ decade estimates indicate a  decrease in the change of wind speed over years. The $\beta_3$ decade estimates Indicate an increase in the impact of change in longitude over years. None of the other decade estimates are significant. 
+
+```{=latex}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pics/year_month_dot.png}
+    \caption{Exploring the Beta estimates by month and year.  }
+    \label{fig:vis_inspect_year}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pics/nature_box.png}
+    \caption{Exploring the Beta estimates by nature of the hurricanes }
+    \label{fig:vis_inspect_nature}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pics/year_model_visual}
+    \caption{Exploring how wind speed has changed over the years }
+    \label{fig:year_model}
+\end{figure}
+```
 
 ## 3.5 Death and Damages Results 
+
+\large{\textbf{Summarize the death and damages here}}
 
 
 
 # 4. Discussion 
-
+To be able to take appropriate actions and minimize casualties it is crucial for research to predict the behaviors of hurricanes. To do this we proposed a Bayesian model that predicts the wind speeds of hurricanes. Due to the complexity and number of parameters we implemented a Markov Chain Monte Carlo algorithm to estimate each parameter. Using the parameter estimates obtained in the MCMC process we are able to explore if wind speed differs between month, year and by the nature of the hurricane. We can also used the MCMC estimates to understand death and damages of hurricanes. 
 
 ## 4.1. Summary of Findings
+The MCMC process we developed reached convergence at around 5,500 iterations. Looking at all the estimates excluding the burn in period the distributions all look relatively normal. We are able to take the averages of the iteration for each of the parameters. Exploring the $beta$ estimates for each of the hurricanes we are able to see that the some beta values are negative and some are positive Both the impact of change in latitude and longitude have negative beta estimated values indicating that a larger change in direction corresponds with a decrease in wind speeds. The positive beta estimates indicate that a higher previous wind speed has positive effect on the next time's wind speed, and that a larger in change also has a positive effect on the next time's wind speed. 
+
+Overall, our model predicts wind speeds well when observing the adjusted $R^2$ value. Taking a look at a select few hurricanes we also see that our model does well comparing the actual wind speeds against the observed wind speeds. We also observed a trend in a higher number of observation corresponding to better predicting ability. Therefore, to have the best ability to predict hurricanes movements having a lot of observations is the best. 
+
+Exploring how the decade, month and nature of the hurricane play in role in wind speed it was found that month and nature do not have a significant effect on each of the beta values when adjusting for the decade. When fitting a model with just the decade we do see that there does seem to be a linear trend for beta1 (corresponding to previous wind speed) and beta3 (corresponding to the impact of change in longitude). Because one of these is estimates is positive and the other is negative there does not seem to be conclusive evidence that wind speed has increased over the years. 
+
+
+\large{\textbf{Summarize the death and damages here}}
 
 
 ## 4.2. Limitations
+Due to some hurricanes only having a few observations we had to exclude them from the model. This might have introduced biased into our model due to the systematic exclusion. For example, the hurricanes with limited observations might have been smaller hurricanes that lasted for less amount of time. Therefore, our model might be more powerful at predicting bigger more destructive hurricanes that last for a longer amount of time. This should be kept in mind when using our algorithm. However, we would like to argue that being able to predict bigger more destructive hurricanes is of more interest to public health officials. 
+
+Another limitations is we only have up to year 2013. As climate change become an ever increasing problem storms in years closer to 2022 might be more extreme compared to in 2013. To be able to have a full grasp on how hurricanes behave using data from years closer to 2022 is imporant to be able to predict this years hurricane behaviors. 
 
 
-
-## 4.3 Future Work
-
-
-
-## 4.4. Group Contributions
+## 4.3. Group Contributions
 
 
 
@@ -422,7 +469,231 @@ $$
 
 
 
+# Appendix B 
+The code associated with the MCMC algorithm. 
+
+### Cleaning the data 
+```{r eval=FALSE, include=TRUE}
+# load the data 
+dt = read.csv("hurrican703.csv")
+
+# clean the original data 
+df_temp = dt %>%
+  mutate( # Factoring the Nature and Months Variable 
+    Nature = factor(Nature),
+    Month = factor(Month, levels = c(month.name)),
+  ) %>%  # Seperating the day and time to usable info
+  tidyr::separate(
+    time, c('Date', 'Time'), 
+                       sep = ' ', extra = 'merge') %>% 
+  tidyr::separate(
+    Date, c('year_num', 'month_num', 'day'), 
+                       sep = '-', extra = 'merge') %>% 
+  tidyr::separate(
+    Time, c('hour', 'min', 'sec'), 
+                       sep =':', extra = 'merge')  %>%
+  select(ID, Nature, Latitude, Longitude, Wind.kt, 
+         Season, Month, day, hour, min) %>% # selecting relevent columns
+  filter(min == "00") %>% 
+  filter(hour %in% c("00", "06", "12", "18")) %>% # observations on every 6 hours 
+  mutate(
+    hour = as.numeric(hour),
+    day = as.numeric(day)
+  )
+
+# find the id's with limited observations
+temp = table(df_temp$ID) %>% as.data.frame()
+
+# eliminate anyone that has less or equal to 7
+id_get_rid <- temp %>% arrange(Freq) %>% filter(Freq < 7) %>% pull(Var1)
+df_rm <- df_temp %>% filter(!(ID %in% c(id_get_rid))) 
+
+# figuring out the percentage we are removing 
+(dim(dt)[1]-dim(df_rm)[1]) / dim(dt)[1]
+```
 
 
+### Calculating the log posterior functions
+
+```{r eval=FALSE, include=TRUE}
+## log posterior for beta of hurricane j
+log_posterior_beta = function(beta, sigma, mu, sigma_p,j){
+  x = obs_list$x_matrix[[j]]
+  y = obs_list$y_obs[[j]]
+  return(-t(y - x %*% beta) %*% (y - x %*% beta)/
+           (2*sigma)-(1/2)*t(beta-mu)%*%sigma_p%*%(beta-mu))
+}
+
+## log posterior for sigma
+log_posterior_sigma = function(beta_frame, sigma){
+  ## make sure sigma is positive
+  if(sigma <= 0){
+    return(-Inf)
+  } else{
+    log_lik = -(n_obs/2)*log(sigma)-
+      sum((dt$wind_kt-beta_frame[,1]
+           -dt$wind_lag*beta_frame[,2]
+           -dt$lat_shift*beta_frame[,3]
+           -dt$long_shift*beta_frame[,4]
+           -dt$wind_shift*beta_frame[,5])^2/(2*sigma))
+    log_prior = -log(sigma)
+    return(log_lik + log_prior)
+  }
+}
+```
+
+### The MCMC algorithm
+
+```{r eval=FALSE, include=TRUE}
+blockwisemixedMH <- function(a, theta_0, nrep=10000){
+  theta = theta_0
+  sigma_p = matrix(0,d,d)
+  sigma_p[lower.tri(sigma_p, diag = TRUE)] = theta_0[cov_m_ind]
+  sigma_p[upper.tri(sigma_p)] = t(sigma_p)[upper.tri(sigma_p)]
+  theta_chain_mix = matrix(0, nrow = nrep, ncol = n_theta)
+  for(i in 1:nrep){
+    sigma_m = solve(sigma_p)
+    # update beta by block of each hurricane
+    for(j in 1:m){
+      ind =  c(j, j+m, j+m*2, j+m*3, j+m*4)
+      prop = theta
+      prop[ind] = prop[ind]+2*(runif(5)-0.5)*a[1:5]
+      if(log(runif(1)) < (log_posterior_beta(prop, sigma_p, j) - 
+                          log_posterior_beta(theta, sigma_p, j))){
+        theta[ind] = prop[ind]
+      }
+    }
+    # update mu
+    beta = matrix(theta[1:n_beta], nrow = d, byrow = T)
+    beta_mean = rowMeans(beta)
+    mu = mvrnorm(1,beta_mean,Sigma = sigma_m/m)
+    theta[mu_ind] = mu
+    # update sigma
+    prop = theta
+    prop[sigma_ind] = prop[sigma_ind]+2*(runif(1)-0.5)*a[6]
+    if(log(runif(1)) < (log_posterior_sigma(prop) - log_posterior_sigma(theta))){
+      theta[sigma_ind] = prop[sigma_ind]
+    }
+    # update inverse sigma matrix
+    beta_mu = beta-mu
+    S = solve(diag(d)+beta_mu%*%t(beta_mu))
+    sigma_p = rWishart(1,df = 3*d+3+m,Sigma = S)
+    sigma_p = apply(sigma_p,2,c)
+    theta[cov_m_ind] = sigma_p[lower.tri(sigma_p, diag = T)]
+    theta_chain_mix[i,] = theta
+  }
+  return(theta_chain_mix)
+}
+
+componentwisemixedMH <- function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
+  sigma_p = cov_0
+  beta    = beta_0
+  mu      = colMeans(beta)
+  sigma   = sigma_0
+  theta_chain_mix <- matrix(0, nrow = nrep, ncol = n_theta)
+  for(i in 1:nrep){
+    sigma_m = solve(sigma_p)
+    # update beta by block of each hurricane
+    for(j in 1:m){
+      for(k in 1:5){
+        prop = beta[j,]
+        prop[k] = prop[k]+2*(runif(1)-0.5)*a[(k-1)*681+j]
+        if(log(runif(1)) < (log_posterior_beta(prop, sigma, mu, sigma_p,j) -
+                            log_posterior_beta(beta[j,], sigma, mu, sigma_p,j))){
+          beta[j,k] = prop[k]
+        }
+      }
+    }
+    # update mu
+    beta_mean = colMeans(beta)
+    mu = mvrnorm(1,beta_mean,Sigma = sigma_m/m)
+    # update sigma
+    beta_frame = matrix(rep(c(beta),times = rep_time), ncol = d)
+    prop = sigma
+    prop = prop+2*(runif(1)-0.5)*a_sigma
+    if(log(runif(1)) < (log_posterior_sigma(beta_frame, prop) - 
+                        log_posterior_sigma(beta_frame, sigma))){
+      sigma = prop
+    }
+    # update inverse sigma matrix
+    beta_mu = t(beta)-mu
+    S = solve(diag(d)+beta_mu%*%t(beta_mu))
+    sigma_p = rWishart(1,df = 3*d+3+m,Sigma = S)
+    sigma_p = apply(sigma_p,2,c)
+    theta_chain_mix[i,] = c(c(beta),mu,sigma,sigma_p[lower.tri(sigma_p, diag = T)])
+  }
+  return(theta_chain_mix)
+}
+
+numCores <- detectCores()
+registerDoParallel(numCores)
+componentwisemixedMH_2 <- function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
+  sigma_p = cov_0
+  beta = beta_0
+  mu = colMeans(beta)
+  sigma = sigma_0
+  theta_chain_mix = matrix(0, nrow = nrep, ncol = n_theta)
+  for(i in 1:nrep){
+    sigma_m = solve(sigma_p)
+    # update beta by block of each hurricane
+    beta_new = foreach(j = 1:m, .combine = rbind) %dopar% {
+      beta_j = beta[j,]
+      for(k in 1:5){
+        prop = beta_j
+        prop[k] = prop[k]+2*(runif(1)-0.5)*a[(k-1)*681+j]
+        if(log(runif(1)) < (log_posterior_beta(prop, sigma, mu, sigma_p,j) -
+                            log_posterior_beta(beta[j,], sigma, mu, sigma_p,j))){
+          beta_j[k] = prop[k]
+          }
+      }
+      beta_j
+    }
+    beta = beta_new
+    # update mu
+    beta_mean = colMeans(beta)
+    mu = mvrnorm(1,beta_mean,Sigma = sigma_m/m)
+    # update sigma
+    beta_frame = matrix(rep(c(beta),times = rep_time), ncol = d)
+    prop = sigma
+    prop = prop+2*(runif(1)-0.5)*a_sigma
+    if(log(runif(1)) < (log_posterior_sigma(beta_frame, prop) - 
+                        log_posterior_sigma(beta_frame, sigma))){
+      sigma = prop
+    }
+    # update inverse sigma matrix
+    beta_mu = t(beta)-mu
+    S = solve(diag(d)+beta_mu%*%t(beta_mu))
+    sigma_p = rWishart(1,df = 3*d+3+m,Sigma = S)
+    sigma_p = apply(sigma_p,2,c)
+    theta_chain_mix[i,] = c(c(beta), mu, sigma, 
+                            sigma_p[lower.tri(sigma_p, diag = T)] )
+  }
+  return(theta_chain_mix)
+}
+
+
+## calculate the number of unique value
+numunique <- function(x){ length(unique(x)) }
+
+##
+trace_inverse <- function(x){
+  m = matrix(0,5,5)
+  m[lower.tri(m, diag = TRUE)] = x[cov_m_ind]
+  m[upper.tri(m)] = t(m)[upper.tri(m)]
+  return(sum(diag(m)))
+}
+
+```
+
+
+# Appendix C 
+The Model Estimates from Section 3.3. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{pics/linear_est_all.png}
+    \caption{The Linear estimates for each beta vector model to explore the effect of nature, month and decade on the wind speed. This corresponds with section 3.3}
+    \label{fig:linear_est_all}
+\end{figure}
 
 

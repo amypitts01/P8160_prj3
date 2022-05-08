@@ -328,6 +328,51 @@ dt_res%>%
 ```
 
 
+```{r}
+dt_res_unique <- dt_res_unique %>%
+  mutate(
+    nature = factor(nature, levels = c("ET", "DS", "NR", "SS", "TS"))
+  )
+
+beta0_mod <- lm(beta_0 ~ nature , data = dt_res_unique)
+beta1_mod <- lm(beta_1 ~ nature , data = dt_res_unique)
+beta2_mod <- lm(beta_2 ~ nature , data = dt_res_unique)
+beta3_mod <- lm(beta_3 ~ nature , data = dt_res_unique)
+beta4_mod <- lm(beta_4 ~ nature , data = dt_res_unique)
+tab1 = beta0_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+tab2 = beta1_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+tab3 = beta2_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+tab4 = beta3_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+tab5 = beta4_mod %>%
+  tbl_regression(   
+    estimate_fun = function(x) style_ratio(x, digits = 3)
+  ) %>%
+  bold_p(t=0.05)
+
+
+
+tbl_stack(
+  list(tab1, tab2, tab3, tab4, tab5),
+  group_header  = c("beta0", "beta1", "beta2", "beta3", "beta4")
+) 
+```
 
 
 

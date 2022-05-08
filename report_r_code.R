@@ -6,6 +6,7 @@ library(maps)
 library(gtsummary)
 
 dt = read.csv("hurrican703.csv")
+dt1 <- dt
 
 load("df_rm.RData")
 
