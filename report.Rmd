@@ -338,7 +338,37 @@ tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
 
 
 ## 3.3 Seasonal Differences and Yearly Trends Results 
+Using the model output obtained in the Bayesian MCMC algorithm we can now explore how the hurricane's start month, nature, and year affect the wind speed. Particularly we are interesting in if there are any seasonal difference and if there is evidence to support the statement that "the hurricane wind speed has been increasing over years". 
 
+We can first explore if there are seasonal difference. Visually inspecting the $\beta$ values obtained from the MCMC process with respect to year, month and nature we can look at Figure \ref{fig:vis_inspect_year} and \ref{fig:vis_inspect_nature}. Looking at the beta estimates over the years grouped by month and the betas, Figure \ref{fig:vis_inspect_year}, we can see that the majority of the hurricanes fall within the June through November months. We can also see that looking at December in the later years there seems to be more Hurricanes. This time spend is what is conventionally accepted as hurricane season. Within each month there does not seem to be any obvious change in the beta estimates over the years. Looking at the Nature of the hurricane by the beta's box plot, Figure \ref{fig:vis_inspect_nature}, we see that all the box plots for the nature seem to be relatively similar within each beta estimates. This indicates that there doesn't seem to be drastic differences between the 5 different hurricane natures. However, looking at beta1 section we see that the Extra Tropical (ET) box seems to be much larger than the disturbance (DS), not rated (NR) and sub tropical (SS) nature types. This visually implies that the extra tropical hurricane has increased importance of previous time wind speed impacting the next wind speed prediction. 
+
+Fitting the linear model using decade, month and nature as predictors results in 5 different model, one for each $\beta$ vector. The model output can be seen in Appendix C, due to the length it was not included in the main body. To summarize the results no nature, or month indicators were significant. The $\beta_1$ model had the decade estimates as significant -0.003 (-0.002, -0.004). Thus month and nature don't have a linear association within each beta vector when adjusting for the year. 
+
+Just exploring the decade variable we can address the question of does "the hurricane wind speed has been increasing over years"? To do this we can do a visual inspection as well as a linear association test. Figure \ref{fig:year_model} explore this question by showing a visual inspection on the left and a linear model on the right. The model output just shows the estimates related to the decade using each beta vector as an outcome. The results are the $\beta_1$ and $\beta_3$ decade estimate are the only ones that are significant. 
+
+
+\begin{figure}
+    \centering
+    \includegraphics{pics/year_month_dot.png}
+    \caption{Exploring the Beta estimates by month and year.  }
+    \label{fig:vis_inspect_year}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics{pics/nature_box.png}
+    \caption{Exploring the Beta estimates by nature of the hurricanes }
+    \label{fig:vis_inspect_nature}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics{pics/year_model_visual}
+    \caption{Exploring how wind speed has changed over the years }
+    \label{fig:year_model}
+\end{figure}
 
 
 ## 3.5 Death and Damages Results 
@@ -422,7 +452,20 @@ $$
 
 
 
+# Appendix B 
+The code associated with the MCMC algorithm. 
 
 
+
+
+# Appendix C 
+The Model Estimates from Section 3.3. 
+
+\begin{figure}
+    \centering
+    \includegraphics{pics/linear_est_all.png}
+    \caption{The Linear estimates for each beta vector model to explore the effect of nature, month and decade on the wind speed. This corresponds with section 3.3}
+    \label{fig:linear_est_all}
+\end{figure}
 
 
