@@ -16,6 +16,7 @@ header-includes:
   - \usepackage{tikz}
   - \usepackage{pgfplots}
   - \usetikzlibrary{shapes,arrows}
+  - \usepackage{float}
 ---
 
 ```{r setup, include=FALSE}
@@ -186,7 +187,7 @@ To initiate the MCMC process we need to specify the starting values. The choice 
 
 There is a MH step in the MCMC algorithm so the choice of search window is important. The acceptance rate of the MH step is around 0.317 to 0.637, so the search window of our algorithm is appropriate. We tune the search windows multiple times to achieve this result. Table 1 demonstrates the range of search windows $a$ and associated acceptance rates for $\boldsymbol \beta$ and $\sigma^2$.
 
-\begin{table}
+\begin{table}[H]
   \centering
   \caption{Range of Search Window and Acceptance Rate for paraemters used MH step}
   \begin{tabular}{|c|c|c|} \hline 
@@ -234,38 +235,41 @@ Convergence was reach in each of the parameters of interest. Thus we can take th
 
 The average $\beta_0$ estimate for the hurricanes is 3.80 which represents the intercept of the wind speed model.  The average $\beta_1$ estimate for the hurricanes is 0.915 which represents the lagged wind speed impact model. This positive estimate indicated that a larger previous wind speed will indicate a higher wind speed for the next time point. The $\beta_2$ estimate is -0.136 which represents the impact of the change in latitude. The $\beta_3$ estimate is -0.395 which represents the impact of the change in longitude. Both of the impact of change in latitude and longitude have negative beta estimated values indicating that a larger change in direction corresponds with a decrease in wind speeds.  Thus hurricane speed and wind speed seem to be inversely correlated. The $\beta_4$ estimate is 0.481 which represents the impact of the change in wind speed. This positive value indicated that a larger change in wind speed corresponds with a larger wind speed value. 
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/covergence_plots.png}
+    \includegraphics[width=0.5\textwidth]{pics/covergence_plots.png}
     \caption{Convergence Plot of the Selected Parameters after 10,000 Iterations}
     \label{fig:converge}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/hist_select.png}
+    \includegraphics[width=0.5\textwidth]{pics/hist_select.png}
     \caption{Histogram Plot of the Selected Parameters not including the 5,500 burn in period results}
     \label{fig:hist_select}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/hist_beta.png}
+    \includegraphics[width=0.5\textwidth]{pics/hist_beta.png}
     \caption{Bayesian Estiamtes for the $\beta$ values for all Hurricane}
     \label{fig:beta_est}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/mu_est.png}
+    \includegraphics[width=0.8\textwidth]{pics/mu_est.png}
     \caption{Bayesian Estiamtes for $\mu$ and $\sigma^2$}
     \label{fig:mu_est}
 \end{figure}
-
+```
 
 
 ## 3.2 MCMC Model Performance 
@@ -320,21 +324,23 @@ tibble(adj_r = c("0.6-1", "0.2-0.6","< 0.2"),
 ```
 
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/adj_r_square.png}
+    \includegraphics[width=0.5\textwidth]{pics/adj_r_square.png}
     \caption{Adjusted R squared for each Hurricane plotted by the number of observations.}
     \label{fig:adj_r}
 \end{figure}
+```
 
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/predict_id_plot.png}
+    \includegraphics[width=0.5\textwidth]{pics/predict_id_plot.png}
     \caption{The predicted wind speeds verses the actual observed wind speeds for 9 randomly selected hurricanes. }
     \label{fig:pred_id}
 \end{figure}
-
+```
 
 
 ## 3.3 Seasonal Differences and Yearly Trends Results 
@@ -344,32 +350,34 @@ We can first explore if there are seasonal difference. Visually inspecting the $
 
 Fitting the linear model using decade, month and nature as predictors results in 5 different model, one for each $\beta$ vector. The model output can be seen in Appendix C, due to the length it was not included in the main body. To summarize the results no nature, or month indicators were significant. The $\beta_1$ model had the decade estimates as significant -0.003 (-0.002, -0.004). Thus month and nature don't have a linear association within each beta vector when adjusting for the year. 
 
-Just exploring the decade variable we can address the question of does "the hurricane wind speed has been increasing over years"? To do this we can do a visual inspection as well as a linear association test. Figure \ref{fig:year_model} explore this question by showing a visual inspection on the left and a linear model on the right. The model output just shows the estimates related to the decade using each beta vector as an outcome. The results are the $\beta_1$ and $\beta_3$ decade estimate are the only ones that are significant. 
+Just exploring the decade variable we can address the question of does "the hurricane wind speed has been increasing over years"? To do this we can do a visual inspection as well as a linear association test. Figure \ref{fig:year_model} explore this question by showing a visual inspection on the left and a linear model on the right. The model output just shows the estimates related to the decade using each beta vector as an outcome. The results are the $\beta_1$ and $\beta_3$ decade estimate are the only ones that are significant. The $\beta_1$ decade estimates indicates a  decrease in the change of wind speed over years. The $\beta_3$ decade estimates Indicates an increase in the impact of change in longitude over years. None of the other decade estimates are significant. 
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/year_month_dot.png}
+    \includegraphics[width=0.7\textwidth]{pics/year_month_dot.png}
     \caption{Exploring the Beta estimates by month and year.  }
     \label{fig:vis_inspect_year}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/nature_box.png}
+    \includegraphics[width=0.7\textwidth]{pics/nature_box.png}
     \caption{Exploring the Beta estimates by nature of the hurricanes }
     \label{fig:vis_inspect_nature}
 \end{figure}
+```
 
-
-\begin{figure}
+```{=latex}
+\begin{figure}[H]
     \centering
-    \includegraphics{pics/year_model_visual}
+    \includegraphics[width=0.7\textwidth]{pics/year_model_visual}
     \caption{Exploring how wind speed has changed over the years }
     \label{fig:year_model}
 \end{figure}
-
+```
 
 ## 3.5 Death and Damages Results 
 
@@ -461,7 +469,7 @@ The code associated with the MCMC algorithm.
 # Appendix C 
 The Model Estimates from Section 3.3. 
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics{pics/linear_est_all.png}
     \caption{The Linear estimates for each beta vector model to explore the effect of nature, month and decade on the wind speed. This corresponds with section 3.3}
