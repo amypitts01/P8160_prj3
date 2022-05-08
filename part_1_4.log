@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  6 MAY 2022 15:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  7 MAY 2022 16:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -661,35 +661,35 @@ Overfull \hbox (1.17365pt too wide) detected at line 251
  []
 
 [2]
-Overfull \hbox (13.85655pt too wide) detected at line 272
+Overfull \hbox (13.85655pt too wide) detected at line 273
 [] \OT1/lmr/m/n/10 = []
  []
 
 
-Overfull \hbox (8.04344pt too wide) in paragraph at lines 311--313
+Overfull \hbox (8.04344pt too wide) in paragraph at lines 313--315
 []\T1/lmr/m/n/10 (-20) Finally, we sam-ple $\OT1/lmr/m/n/10 (-20) ^^F[]$ \T1/lm
 r/m/n/10 (-20) from $[] []$ 
  []
 
 [3]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-46.
+48.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<part_1_4_files/figure-latex/unnamed-chunk-10-1.pdf, id=63, 466.74374pt x 313.1
+<part_1_4_files/figure-latex/unnamed-chunk-10-1.pdf, id=62, 466.74374pt x 313.1
 7pt>
 File: part_1_4_files/figure-latex/unnamed-chunk-10-1.pdf Graphic file (type pdf
 )
 <use part_1_4_files/figure-latex/unnamed-chunk-10-1.pdf>
 Package pdftex.def Info: part_1_4_files/figure-latex/unnamed-chunk-10-1.pdf  us
-ed on input line 390.
+ed on input line 392.
 (pdftex.def)             Requested size: 466.75684pt x 313.17877pt.
 [4pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.393 ...subsection{Histograms}\label{histograms}}
+l.395 ...subsection{Histograms}\label{histograms}}
                                                   ]
 <part_1_4_files/figure-latex/unnamed-chunk-11-1.pdf, id=74, 456.70625pt x 304.1
 3625pt>
@@ -697,7 +697,7 @@ File: part_1_4_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (type pdf
 )
 <use part_1_4_files/figure-latex/unnamed-chunk-11-1.pdf>
 Package pdftex.def Info: part_1_4_files/figure-latex/unnamed-chunk-11-1.pdf  us
-ed on input line 395.
+ed on input line 397.
 (pdftex.def)             Requested size: 456.71906pt x 304.14478pt.
 [5 <./part_1_4_files/figure-latex/unnamed-chunk-10-1.pdf>]
 <part_1_4_files/figure-latex/unnamed-chunk-13-1.pdf, id=89, 432.61626pt x 311.1
@@ -706,7 +706,7 @@ File: part_1_4_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file (type pdf
 )
 <use part_1_4_files/figure-latex/unnamed-chunk-13-1.pdf>
 Package pdftex.def Info: part_1_4_files/figure-latex/unnamed-chunk-13-1.pdf  us
-ed on input line 401.
+ed on input line 403.
 (pdftex.def)             Requested size: 432.6218pt x 311.16649pt.
 [6 <./part_1_4_files/figure-latex/unnamed-chunk-11-1.pdf>]
 
@@ -718,7 +718,7 @@ File: part_1_4_files/figure-latex/unnamed-chunk-20-1.pdf Graphic file (type pdf
 )
 <use part_1_4_files/figure-latex/unnamed-chunk-20-1.pdf>
 Package pdftex.def Info: part_1_4_files/figure-latex/unnamed-chunk-20-1.pdf  us
-ed on input line 472.
+ed on input line 474.
 (pdftex.def)             Requested size: 461.72388pt x 315.17673pt.
 <part_1_4_files/figure-latex/unnamed-chunk-20-2.pdf, id=105, 463.7325pt x 310.1
 5875pt>
@@ -726,10 +726,10 @@ File: part_1_4_files/figure-latex/unnamed-chunk-20-2.pdf Graphic file (type pdf
 )
 <use part_1_4_files/figure-latex/unnamed-chunk-20-2.pdf>
 Package pdftex.def Info: part_1_4_files/figure-latex/unnamed-chunk-20-2.pdf  us
-ed on input line 473.
+ed on input line 475.
 (pdftex.def)             Requested size: 463.73135pt x 310.15799pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 472--474
+Underfull \hbox (badness 10000) in paragraph at lines 474--476
 [][]
  []
 
@@ -737,24 +737,24 @@ Underfull \hbox (badness 10000) in paragraph at lines 472--474
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.474 
+l.476 
        <./part_1_4_files/figure-latex/unnamed-chunk-13-1.pdf>] [8pdfTeX warning
  (ext4): destination with the same identifier (name{table.3}) has been already 
 used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.475 W
+l.477 W
        e also perform the goodness-of-fit test for individual estimated model. 
 <./part_1_4_files/figure-latex/unnamed-chunk-20-1.pdf>] [9 <./part_1_4_files/fi
 gure-latex/unnamed-chunk-20-2.pdf>] (./part_1_4.aux) ) 
 Here is how much of TeX's memory you used:
- 14652 strings out of 478994
- 218526 string characters out of 5858184
+ 14654 strings out of 478994
+ 218546 string characters out of 5858184
  587918 words of memory out of 5000000
  31674 multiletter control sequences out of 15000+600000
- 470629 words of font info for 131 fonts, out of 8000000 for 9000
+ 470712 words of font info for 132 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 85i,15n,88p,809b,358s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 85i,15n,88p,809b,386s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/
 texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2021/texmf-dist/fon
 ts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvi
@@ -776,7 +776,7 @@ fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/l
 ocal/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy5.pfb></usr/local/texliv
 e/2021/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></usr/local/texlive/2021/texm
 f-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on part_1_4.pdf (9 pages, 771257 bytes).
+Output written on part_1_4.pdf (9 pages, 771853 bytes).
 PDF statistics:
  277 PDF objects out of 1000 (max. 8388607)
  231 compressed objects within 3 object streams
