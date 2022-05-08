@@ -408,6 +408,7 @@ Another limitations is we only have up to year 2013. As climate change become an
 
 ## 4.3. Group Contributions
 
+All team members collaborated on this project. Ruiqi Yan, Tianchuan Gao, and Jiacheng Wu worked collectively on tasks 1-4. Ruiqi designed the MCMC algorithm to obtain the parameter estimates and assessed the model performance. Tianchuan generated the latex expressions of the likelihood and posterior distribution of the parameters. Jiacheng created the convergence trace plots, histograms, and chart of the estimated parameters. Amy Pitts coordinated our meetings , arranged the github files, and completed task 5. Jimmy Kelliher completed task 6. All team members worked on the presentation slides and the report write-up.
 
 
 \newpage
