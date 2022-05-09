@@ -235,7 +235,7 @@ Update component wise:
         $\beta_1$ & (0.04, 0.1) & 31.67 - 63.68\\ \hline 
         $\beta_2$ & (0.8, 1.0) & 38.60 - 45.60\\ \hline 
         $\beta_3$ & (0.5, 0.6) & 33.20 - 61.32\\ \hline 
-        $\beta_4$ & (0.4, 0.5) & 34.95 - 60.45\\ \hline 
+        $\beta_4$ & (0.3, 0.4) & 34.95 - 60.45\\ \hline 
         $\sigma^2$ & 2.0 & 44.83\\ \hline 
     \end{tabular}
     }

@@ -135,8 +135,7 @@ To see a more detailed description of each conditional posterior please see Appe
 ## 2.3. Markov Chain Monte Carlo (MCMC) Algorithm
 Due to the complexity of the above posterior distribution, we will use a Markov chain Monte Carlo (MCMC) process. Since we could generate full conditional posterior distribution for some parameters but not all we will instead apply a hybrid algorithm consisting of Metropolis-Hastings (MH) steps and Gibbs steps. We will perform a MH step for $\beta_{j,i}$, $\sigma^2$ and sample from the $\Sigma^{-1^{(t+1)}}$ distribution. We will also describe a Gibbs step for $\mu$ using the $\beta_{j,i}$ gathered. 
 
-
-First is the MH steps for $\beta_{j,i}$. Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$ for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposals are symmetry, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \Theta$ could be cancelled out, so the ratio simplified to be:
+For each iteration, we start from random walk MH step for $\beta_{j,i}$. Sampling proposed $\beta_{j,i}^{\prime}$, $j \in 0,1...4$ for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposed distribution is symmetric, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \Theta$ could be cancelled out and the ratio simplified to be:
 
 $$
 \frac{\pi\left(\boldsymbol \beta_{i}^{\prime},\boldsymbol \Theta_{(-\boldsymbol \beta_i)}^{(t)} \mid \boldsymbol Y\right)}{\pi\left(\boldsymbol \beta_{i}^{(t)}, \boldsymbol \Theta_{(-\boldsymbol \beta_i)}^{(t)} \mid \boldsymbol Y\right)}
@@ -156,7 +155,7 @@ Then we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with the log rat
 Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $\mathcal{N} \left(\bar{\boldsymbol \beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\boldsymbol \beta}^{(t+1)}$ is the average $\boldsymbol \beta_i^{(t+1)}$ over all hurricanes.
 
 
-Next, is the MH step to generate $\sigma^{2^{\prime}}$ from $U\left(\sigma^{2^{(t)}}-a_{\sigma^2},\sigma^{2^{(t)}}+a_{\sigma^2}\right)$. Firstly, check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with
+Next, is the random walk MH step to generate $\sigma^{2^{\prime}}$ with step size from $U\left(-a_{\sigma^2},a_{\sigma^2}\right)$. Firstly, check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with
 the log posterior ratio. The log posterior ratio
 $$
 \begin{aligned}
@@ -169,7 +168,7 @@ $$
 where $M$ is total number of observation for all hurricanes. If the $\log(u)$ is smaller, we accept $\sigma^{2^{\prime}} = \sigma^{2^{(t+1)}}$.
 
 
-Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right).$ 
+Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\mathrm{Wishart}\left(n = 3d+3+m, V = \left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right).$ 
 
 For the MCMC process we will run 10,000 iterations using the code shown in Appendix B. 
 
