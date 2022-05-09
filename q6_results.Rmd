@@ -106,3 +106,15 @@ gtsummary::tbl_summary(
   , statistic = list(all_continuous() ~ "({min}, {p25}, {p50}, {p75}, {max})")
 )
 ```
+
+
+
+```{r}
+jpeg(file="deaths_cv.jpeg")
+plot(cv_deaths, main = "Cross Validation for Deaths Model\n")
+dev.off()
+
+jpeg(file="damage_cv.jpeg")
+plot(cv_damage, main = "Cross Validation for Damage Model\n")
+dev.off()
+```

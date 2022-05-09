@@ -1,7 +1,9 @@
 ---
 title: |
   | P8160 - Project 3
-  | Baysian modeling of hurrican trajectories
+  | We're Not in Kansas Anymore:
+  | An Application of the MCMC Algorithm
+  | to Hurricane Trajectory Data
 author: |
   | Group 6
   |
@@ -28,9 +30,11 @@ source("report_r_code.R")
 theme_gtsummary_compact()
 ```
 
+\vspace{85mm}
+
 \begin{center}
 \begin{abstract}
-This project studies the factors that impact the wind speed, death and damage of hurricanes in the North Atlantic area since 1950. Using MCMC algorithm on a Bayesian model to estimate the effects of hurricane trajectory on the wind speed, we realize that the increase of previous wind speed and the larger increase during previous time interval correspond with a larger current wind speed, while the increase of latitude and longitude result in a decrease in wind speed. By modeling the estimated effects with the nature, month and year, no significant seasonal difference of the effects is found, but the effect of previous wind speed decreases over years and the wind speed for the extratropical hurricane is more strongly correlated with previous wind speed. The estimated model based on MCMC algorithm works well on track most hurricanes wind speed, but the performance worsens when the sample size is not large enough. The approach to deal with smaller sample needs further investigation.
+This project studies the factors that impact the wind speed, death and damage of hurricanes in the North Atlantic area since 1950. Using Bayesian model fitted via an MCMC algorithm to estimate the effects of hurricane trajectory on wind speed, we find that increases in lagged wind speed and lagged change in wind speed correspond to a larger current wind speed, while increases in lines of latitude and longitude result in a decrease in wind speed. By regressing estimated random effects against the nature, month and year of a hurricane, we observe no significant seasonal difference in the effects, but the effect of lagged wind speed has decreased over time, and the wind speed of extratropical hurricanes tends to be more strongly correlated with lagged wind speed. We also find that estimated random effects, along with poverty, year, month, and nature, tend to be strong, statistically significant predictors of fatalities. Conversely, only some random effects, season, and month are associated with damage incurred by a hurricane. Generally, the predictability of a hurricane is a strong predictor of deaths. The estimated model based on the MCMC algorithm works well in terms of tracking most hurricanes, but the performance worsens when the sample size is not large enough. The methodology for tracking hurricanes with fewer records needs further investigation.
 \end{abstract}
 \end{center}
 
@@ -39,8 +43,7 @@ This project studies the factors that impact the wind speed, death and damage of
 
 ## 1.1. Background
 
-Hurricanes are tropical storms that reach a wind speed of 74 miles (119 kilometers) per hour or greater. They also bring heavy rain, thunder storms, and other severe meteorological phenomena. 
-Throughout history, hurricanes have brought about huge death tolls and financial loss, especially in coastal cities and countries. Therefore, it is crucial for researchers to predict the behaviors of hurricanes, take appropriate counter measures, and minimize casualty. 
+Hurricanes are tropical storms that reach a wind speed of 74 miles (119 kilometers) per hour or greater. They also bring heavy rain, thunder storms, and other severe meteorological phenomena. Throughout history, hurricanes have brought about huge death tolls and financial loss, especially in coastal cities and countries. Therefore, it is crucial for researchers to predict the behaviors of hurricanes, take appropriate counter measures, and minimize casualties. There is some literature [1] on forecasting hurricane trajectory, but there is an ongoing need to understand and employ these forecast in predicting and mitigating loss.
 
 ## 1.2. Objectives
 
@@ -227,13 +230,22 @@ Features include the season and nature of each hurricane, the total population o
     \log(\theta_i)
     = \log(m_i) + \mathbf{x}_i' \boldsymbol\gamma + \boldsymbol\beta_i'\boldsymbol\delta,
   \]
-where $m_i$ is the total population of the affected area, $\mathbf{x}_i \in \mathbb{R}^p$ is a vector of observed features, and $\boldsymbol\beta_i \in \mathbb{R}^5$ is a vector of estimated effects from the MCMC algorithm.
+where $m_i$ is the total population of the affected area, $\mathbf{x}_i \in \mathbb{R}^p$ is a vector of observed features, and $\boldsymbol\beta_i \in \mathbb{R}^5$ is a vector of estimated random effects from the MCMC algorithm.
 
 Because $p = 8$ in the dataset provided, the dimension of our parameter space is large relative to $n$, which is small. As such, we consider a penalized lasso Poisson regression to select only the most important features. To identify the optimal penalty, we employ a leave-one-out cross-validation procedure, which is feasible for small $n$. This procedure is also desirable in that there is only one unique way to assign the $n$ folds, and hence the model selection is non-random. Our selection criterion will be the minimizer of the average Poisson deviance, as more familiar metrics like the linear correlation coefficient and the AUC are not appropriate for Poisson regression.
 
-Finally, we employ a bootstrap smoothing procedure due to Efron (2014) in order to consider post-selection inference. Generally, inference is not tenable when considering penalized regression, but we can estimate standard errors for our constrained point estimates via bootstrapping.
+Finally, we employ a bootstrap smoothing procedure due to Efron [2] in order to consider post-selection inference. Generally, inference is not tenable when considering penalized regression, but we can estimate standard errors for our constrained point estimates via bootstrapping. In particular, the algorithm proceeds as follows.
+  \begin{enumerate}
+    \item Estimate the {\it unconstrained} $\hat{\theta} \equiv (\hat{\boldsymbol\gamma}, \hat{\boldsymbol\delta})$ via Poisson regression for the full model.
+    \item For each bootstrap sample $b \in \{ 1, \ldots, B \}$ with $B =$ 5,000, randomly draw $y_{bi} \sim \text{Poisson}\big(\log(m_i) + \mathbf{x}_i' \hat{\boldsymbol\gamma} + \boldsymbol\beta_i'\hat{\boldsymbol\delta} \big)$ for each hurricane $i \in \{ 1, \ldots, n \}$.
+    \item For each bootstrap sample $b \in \{ 1, \ldots, B \}$, estimate the {\it constrained} $\check{\theta}_b \equiv (\check{\boldsymbol\gamma}_b, \check{\boldsymbol\delta}_b)$ via Poisson lasso regression using $\mathbf{y}_b \equiv (y_{b1}, \ldots, y_{bn})$ as the smoothed outcome.
+    \item Compute the empirical standard deviation of the bootstrap estimates $\check{\theta}_1, \ldots \check{\theta}_B$.
+  \end{enumerate}
+Implicitly, the component-wise empirical standard deviation of our bootstrap estimates is an application of the delta method. From these bootstrapped standard errors, we can then construct $p$-values and confidence intervals around our point estimates from the previous analysis.
 
-# 3. Results 
+
+
+# 3. Results
 
 ## 3.1 MCMC Convergence and Estimates
 Using the starting values describe above, we get 10000 samples for each parameters. We are particular interested in the parameter convergence. Below we can see on Figure \ref{fig:converge} tracing 10000 samples for selected parameters. Each parameter reaches a convergence after 5,500 runs. Therefore, we will use 5500 as our burn-in period. Figure \ref{fig:hist_select} displays the histogram of the selected parameters after burn in. We see that each of the distributions is relatively normal with some skewed results for $\Sigma^{-1}$ and heavy tails in $\mu_0$. 
@@ -390,11 +402,83 @@ Just exploring the decade variable we can address the question of does "the hurr
 
 ## 3.5 Death and Damages Results 
 
-\large{\textbf{Summarize the death and damages here}}
+```{r, echo = FALSE, message = FALSE}
+load("q6output.RData")
+hurr <-
+  read_csv("hurricanoutcome2.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  mutate(damage = as.numeric(str_replace(damage, "\\$", ""))) %>%
+  dplyr::select(-c(hurrican_id, season, month, nature))
+```
 
+Upon executing our cross-validated penalized Poisson regression for the death outcome, we select thirteen features. The deviance of this model and that of other specifications is summarized in the figure below.
 
+```{=latex}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{deaths_cv.jpeg}
+    \caption{Poisson Deviance against Lasso Penalty with Deaths as Outcome}
+    \label{fig:deaths_cv}
+\end{figure}
+```
+
+The selected model (the leftmost vertical dotted line) enjoys a 94\% reduction in deviance relative to that of the full model, which can be thought of as a pseudo-estimate of the adjusted $R^2$.
+
+For the damage outcome, we select only seven features. The deviance of this selected model and that of other specifications is summarized in the figure below.
+
+```{=latex}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{damage_cv.jpeg}
+    \caption{Poisson Deviance against Lasso Penalty with Damage as Outcome}
+    \label{fig:damage_cv}
+\end{figure}
+```
+
+The selected model enjoys an 85\% reduction in deviance relative to that of the full model. Unlike in the death model, however, the null model - that which selects no features - does not perform substantially worse from the optimal model. As such, we should approach interpretations of the damage model more carefully. We now proceed to our main results.
+
+```{r, echo = FALSE}
+output_deaths %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    , d = 4
+    , caption = "Inferential Statistics for Selected Features in Death Model"
+  )
+```
+
+We find that the year (season), month, nature, pressure, and length of the hurricane, in addition to the percent of the affected area that is poor or in the US, can be used to predict deaths. Moreover, all random effects besides the acceleration effect of wind speed (i.e., $\beta_4$) are selected for prediction. However, upon obtaining bootstrapped standard errors, we find that the latitude random effect ($\beta_2$) and the percent of the affected area that is in the US are not statistically significant.
+
+Interpreting the effects of the $\beta$ coefficients can be challenging, as they are themselves random effects. For average wind speed $\beta_0$, the positive point estimate suggests that hurricanes with higher average wind speeds are more deadly. For the autoregressive random effect $\beta_1$, the negative point estimate suggests that hurricanes with more volatile wind speeds are more deadly. For the longitude effect $\beta_3$, the positive coefficient suggests that hurricanes covering more distance eastward tend to be more deadly.
+
+We now proceed to selection and inference in the damage model.
+
+```{r, echo = FALSE}
+output_damage %>%
+  slice(-1) %>%
+  dplyr::select(-c(zscore)) %>%
+  mutate(pvalue = 2 * (1 - pnorm(abs(estimate / smoothsd)))) %>%
+  mutate(pvalue = replace(pvalue, estimate == 0, NA)) %>%
+  relocate(variable, estimate, smoothsd, pvalue) %>%
+  filter(estimate != 0) %>%
+  knitr::kable(
+    col.names = c("Covariate", "Estimate", "SE", "p-value", "Left CI", "Right CI")
+    , d = 4
+    , caption = "Inferential Statistics for Selected Features in Damage Model"
+  )
+```
+
+We find that the year (season), month, and the percent of the affected area that is in the US can be used to predict damage. Moreover, random effects $\beta_1$, $\beta_2$, and $\beta_3$ are also selected for prediction. However, upon obtaining bootstrapped standard errors, we again find that the percent of the affected area that is in the US is not actually statistically significant.
+
+For the autoregressive random effect $\beta_1$, the positive point estimate suggests that hurricanes with more correlated wind speeds are more damaging. For the latitude effect $\beta_2$, the negative coefficient suggests that hurricanes covering more distance southward tend to be more damaging. For the longitude effect $\beta_3$, the positive coefficient suggests that hurricanes covering more distance eastward tend to be more deadly.
 
 # 4. Discussion 
+
 To be able to take appropriate actions and minimize casualties it is crucial for research to predict the behaviors of hurricanes. To do this we proposed a Bayesian model that predicts the wind speeds of hurricanes. Due to the complexity and number of parameters we implemented a Markov Chain Monte Carlo algorithm to estimate each parameter. Using the parameter estimates obtained in the MCMC process we are able to explore if wind speed differs between month, year and by the nature of the hurricane. We can also used the MCMC estimates to understand death and damages of hurricanes. 
 
 ## 4.1. Summary of Findings
@@ -405,19 +489,20 @@ Overall, our model predicts wind speeds well when observing the adjusted $R^2$ v
 
 Exploring how the decade, month and nature of the hurricane play in role in wind speed it was found that month and nature do not have a significant effect on each of the $\beta_j$ values when adjusting for the decade. When fitting a model with just the decade we do see that there does seem to be a linear trend for $\beta_1$ (corresponding to previous wind speed) and $\beta_3$ (corresponding to the impact of change in longitude). Because one of these is estimates is positive and the other is negative there does not seem to be conclusive evidence that wind speed has increased over the years. 
 
-
-\large{\textbf{Summarize the death and damages here}}
-
+In terms of predicting deaths and damage, there is a common theme in our findings: predictability is an important predictor of deaths, but it is less important for predicting total damage. In the deaths model, the autoregressive random effect $\beta_1$ had a negative association with deaths, suggesting that hurricanes that are less predictable lead to more fatalities. This makes sense, as people might not have time to prepare for a hurricane with rapidly changing wind speeds. This association completely reverses in thee damage model, however. This could be due to hurricanes with more constant wind speeds having higher (in magnitude) average wind speeds, thereby causing more damage over a sustained period of time. Intuitively, people can prepare for predictable hurricanes, whereas buildings and infrastructure cannot. We also find that poverty is significantly associated with deaths, which is an alarming public health outcome that demands further research.
 
 ## 4.2. Limitations
+
 Due to some hurricanes only having a few observations we had to exclude them from the model. This might have introduced biased into our model due to the systematic exclusion. For example, the hurricanes with limited observations might have been smaller hurricanes that lasted for less amount of time. Therefore, our model might be more powerful at predicting bigger more destructive hurricanes that last for a longer amount of time. This should be kept in mind when using our algorithm. However, we would like to argue that being able to predict bigger more destructive hurricanes is of more interest to public health officials. 
 
-Another limitations is we only have up to year 2013. As climate change become an ever increasing problem storms in years closer to 2022 might be more extreme compared to in 2013. To be able to have a full grasp on how hurricanes behave using data from years closer to 2022 is imporant to be able to predict this years hurricane behaviors. 
+Another limitation is that we only have up to year 2013. As climate change become an ever increasing problem storms in years closer to 2022 might be more extreme compared to in 2013. To be able to have a full grasp on how hurricanes behave using data from years closer to 2022 is important to be able to predict this years hurricane behaviors.
 
+Regarding the deaths and damage models, it is helpful to understand the impact of our estimated random effects on relevant outcomes. However, as is the case with random effects models in general, out-of-sample prediction is not possible, especially when trying to predict the destructive force of a hurricane as it is forming. One idea for future research is to use the estimated random effects center $\hat{\mu}$ and covariance structure $\hat{\Sigma}$ in order to generate a random effects model so that out-of-sample random effects $\hat{\beta}_i$ can be estimated.
 
 ## 4.3. Group Contributions
 
-All team members collaborated on this project. Ruiqi Yan, Tianchuan Gao, and Jiacheng Wu worked collectively on tasks 1-4. Ruiqi designed the MCMC algorithm to obtain the parameter estimates and assessed the model performance. Tianchuan generated the latex expressions of the likelihood and posterior distribution of the parameters. Jiacheng created the convergence trace plots, histograms, and chart of the estimated parameters. Amy Pitts coordinated our meetings , arranged the github files, and completed task 5. Jimmy Kelliher completed task 6. All team members worked on the presentation slides and the report write-up.
+All team members collaborated on this project. Ruiqi Yan, Tianchuan Gao, and Jiacheng Wu worked collectively on tasks 1-4. Ruiqi designed the MCMC algorithm to obtain the parameter estimates and assessed the model performance. Tianchuan generated the latex expressions of the likelihood and posterior distribution of the parameters. Jiacheng created the convergence trace plots, histograms, and chart of the estimated parameters. Amy Pitts coordinated our meetings, arranged the github files, and completed task 5. Jimmy Kelliher completed task 6, designed the algorithm for post-selection inference, and compiled references. All team members worked on the presentation slides and the report write-up.
+
 
 
 \newpage
@@ -425,8 +510,8 @@ All team members collaborated on this project. Ruiqi Yan, Tianchuan Gao, and Jia
 # References 
 
 \begin{enumerate}[label={[\arabic*]}]
-  \item  one 
-  \item  two 
+  \item Elsner, James B., et al. "Detecting Shifts in Hurricane Rates Using a Markov Chain Monte Carlo Approach." {\it Journal of Climate}, vol. 17, no. 13, 2004, pp. 2652–66, http://www.jstor.org/stable/26251818. Accessed 9 May 2022.
+  \item  Efron, Bradley. "Estimation and Accuracy After Model Selection." {\it Journal of the American Statistical Association}, vol. 109, no. 507, 2014, pp. 991–1007, http://www.jstor.org/stable/24247426. Accessed 9 May 2022.
 \end{enumerate}
 
 \newpage 
