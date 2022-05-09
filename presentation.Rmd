@@ -206,7 +206,7 @@ Update component wise:
 
 - Sampling proposed $\beta_{j,i}^{\prime}$, $j = 0,1...4$, for $i^{th}$ hurricane from proposed distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposed is symmetric, the acceptance probability is the ratio of posterior distribution.
 - Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $\mathcal{N}\left(\bar{\beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\beta}^{(t+1)}$ is the average of $\beta_{i}^{(t+1)}$ over all hurricanes.
-- Next, Random-walk Metropolis to generate $\sigma^{2^{\prime}}$ with step size from $U\left(-a_{\sigma^2},-a_{\sigma^2}\right)$ and compare the ratio of posterior distribution with $u \sim U(0,1)$
+- Next, Random-walk Metropolis to generate $\sigma^{2^{\prime}}$ with step size from $U\left(-a_{\sigma^2},a_{\sigma^2}\right)$ and compare the ratio of posterior distribution with $u \sim U(0,1)$
 - Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\scriptsize{\mathrm{Wishart}\left(3d+3+m,\left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right)}$ 
 
 
@@ -244,7 +244,7 @@ Update component wise:
 \end{columns}
 
 
-# MCMC Model Convergence 
+# MCMC Model Convergence (Burn-In 5500)
 
 ![](pics/covergence_plots.png)
 
