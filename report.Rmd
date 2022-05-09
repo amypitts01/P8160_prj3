@@ -58,7 +58,7 @@ temp = table(dt1$ID) %>% as.data.frame()
 
 There are `r length(unique(dt1$ID))` unique hurricanes in this dataset all the occurred in the North American region between the years `r range(dt1$Season)[1]` to `r range(dt1$Season)[2]`. Data on the storm's location (longitude & latitude) and maximum wind speed were recorded every 6 hours. The number of observations we have for each storm range from `r range(temp$Freq)[1]` to `r range(temp$Freq)[2]` with a mean value of `r round(mean(temp$Freq))` observations per hurricane. Data is also collected on the storm's month, and the nature of the hurricane; (Extra-Tropical (ET), Disturbance (DS), Not Rated (NR), Sub Tropical (SS), and Tropical Storm (TS)). 
 
-To conduct our analysis we require at least 7 observations for each unique hurricane. In addition, we are only concerned about observations that occurred at 6-hour intervals. The dataset includes a couple of observations between the 6-hour periods. For our analysis, we are only going to include observations that are recorded on hours 0, 6, 12, and 18. In addition, we will exclude all hurricane IDs that have less than 7 observations. Through this process we remove `r (dim(dt1)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. In addition we also created variables of lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed as $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$ and lag of wind speed as $Y_{i}(t-6)$. 
+To conduct our analysis we require at least 7 observations for each unique hurricane. In addition, we are only concerned about observations that occurred at 6-hour intervals. The dataset includes a couple of observations between the 6-hour periods. For our analysis, we are only going to include observations that are recorded on hours 0, 6, 12, and 18. In addition, we will exclude all hurricane IDs that have less than 7 observations. Through this process we remove `r (dim(dt1)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. In addition we also created variables of lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed as $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$ and lag of wind speed as $Y_{i}(t-6)$. The first two observations for each hurricane left are removed, because the change during previous time interval is not available for those observations, such that each hurricane has at least 5 observations.
 
 
 \begin{center}
@@ -133,7 +133,7 @@ To see a more detailed description of each conditional posterior please see Appe
 
 
 ## 2.3. Markov Chain Monte Carlo (MCMC) Algorithm
-Due to the complexity of the above posterior distribution, we will use a Markov chain Monte Carlo (MCMC) process. Since we could generate full conditional posterior distribution for some parameters but not all we will instead apply a hybrid algorithm consisting of Metropolis-Hastings (MH) steps and Gibbs steps. We will perform a MH step for $\beta_{j,i}$, $\sigma^2$ and sample from the $\Sigma^{-1^{(t+1)}}$ distribution. We will also describe a Gibbs step for $\mu$ using the $\beta_{j,i}$ gathered. 
+Due to the complexity of the above posterior distribution, we will use a Markov chain Monte Carlo (MCMC) process. Since we could generate full conditional posterior distribution for some parameters but not all we will instead apply a hybrid algorithm consisting of Metropolis-Hastings (MH) steps and Gibbs steps. We will perform a MH step for $\beta_{j,i}$, $\sigma^2$ and sample $\Sigma^{-1^{(t+1)}}$ from Wishart distribution. We will also describe a Gibbs step for $\mu$ using the $\beta_{j,i}$ gathered. 
 
 For each iteration, we start from random walk MH step for $\beta_{j,i}$. Sampling proposed $\beta_{j,i}^{\prime}$, $j \in 0,1...4$ for $i^{th}$ hurricane from proposal distribution $U\left(\beta_{j,i}^{(t)}-a_{j,i},\beta_{j,i}^{(t)}+a_{j,i}\right)$, where $a_{j,i}$ is the search window for $\beta_{j,i}$. Since the proposed distribution is symmetric, the accepting or rejecting the proposed $\beta_{j,i}^{\prime}$ depends on the ratio of posterior distribution. Some of the parameters in $\boldsymbol \Theta$ could be cancelled out and the ratio simplified to be:
 
@@ -155,8 +155,7 @@ Then we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with the log rat
 Then, Gibb step for $\boldsymbol \mu$: Sample $\boldsymbol \mu^{(t+1)}$ from $\mathcal{N} \left(\bar{\boldsymbol \beta}^{(t+1)} ,\Sigma^{(t)}/m\right)$, where $\bar{\boldsymbol \beta}^{(t+1)}$ is the average $\boldsymbol \beta_i^{(t+1)}$ over all hurricanes.
 
 
-Next, is the random walk MH step to generate $\sigma^{2^{\prime}}$ with step size from $U\left(-a_{\sigma^2},a_{\sigma^2}\right)$. Firstly, check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with
-the log posterior ratio. The log posterior ratio
+Next, is the random walk MH step to generate $\sigma^{2^{\prime}}$ with step size from $U\left(-a_{\sigma^2},a_{\sigma^2}\right)$. Firstly, check whether $\sigma^{2^{\prime}}$ is positive, if not, we reject $\sigma^{2^{\prime}}$. Then, we randomly sample $u$ from $U(0,1)$ and compare $\log(u)$ with the log posterior ratio. The log posterior ratio
 $$
 \begin{aligned}
 \log \frac{\pi\left(\sigma^{2^{\prime}},\boldsymbol \Theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)}{\pi\left( \sigma^{2^{(t)}},\boldsymbol \Theta^{(t)}_{(-\sigma^{2})} \mid \boldsymbol Y\right)} 
@@ -165,7 +164,7 @@ $$
 \end{aligned}
 $$
 
-where $M$ is total number of observation for all hurricanes. If the $\log(u)$ is smaller, we accept $\sigma^{2^{\prime}} = \sigma^{2^{(t+1)}}$.
+where $M$ is total number of observation for all hurricanes. If the $\log(u)$ is smaller, we accept $\sigma^{2^{\prime}} = \sigma^{2^{(t+1)}}$, otherwise, $\sigma^{2^{(t+1)}} = \sigma^{2^{(t)}}$
 
 
 Finally, we sample $\Sigma^{-1^{(t+1)}}$ from  $\mathrm{Wishart}\left(n = 3d+3+m, V = \left(\boldsymbol I+\sum_{i=1}^{m}\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)\left(\boldsymbol \beta_{i}^{(t+1)}-\boldsymbol \mu^{(t+1)}\right)^{T}\right)^{-1} \right).$ 
