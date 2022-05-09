@@ -582,19 +582,6 @@ componentwisemixedMH=function(a, a_sigma, beta_0,sigma_0,cov_0, nrep=10000){
   }
   return(theta_chain_mix)
 }
-
-
-## calculate the number of unique value
-numunique <- function(x){ length(unique(x)) }
-
-##
-trace_inverse <- function(x){
-  m = matrix(0,5,5)
-  m[lower.tri(m, diag = TRUE)] = x[cov_m_ind]
-  m[upper.tri(m)] = t(m)[upper.tri(m)]
-  return(sum(diag(m)))
-}
-
 ```
 
 
