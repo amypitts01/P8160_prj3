@@ -1,10 +1,11 @@
 ---
 title: |
   | P8160 - Project 3
-  | Baysian Modeling of Hurrican Trajectories
+  | We're Not in Kansas Anymore:
+  | An Application of the MCMC Algorithm to Hurricane Trajectory Data
 author: |
   | Amy Pitts, Jiacheng Wu, Jimmy Kelliher,
-  | Ruiqi Yan & Tianchuan Gao
+  | Ruiqi Yan, and Tianchuan Gao
 date: "2022-05-09"
 output:
   beamer_presentation:
@@ -43,7 +44,7 @@ theta_chain = rbind(theta_chain_1, theta_chain_2, theta_chain_3,
 
 # Motivation
 
-Climate researchers are interested in modeling the hurricane trajectories to forecast the wind speed.
+Climate researchers are interested in modeling hurricane trajectories to forecast wind speed and to predict how destructive a storm might become.
 
 ## Data 
 
@@ -64,20 +65,19 @@ Climate researchers are interested in modeling the hurricane trajectories to for
 # Outline
 
 \begin{enumerate}
-  \item Exploration into the Data 
+  \item Exploration into the data 
   \item  Bayesian modeling of hurricane wind speed
     \begin{itemize}
       \item Model Equation
       \item Posterior Derivation 
       \item MCMC Algorithm 
     \end{itemize}
-  \item  How Month, Year, and the Nature of the hurricane affect wind speed
+  \item  How month, year, and the nature of the hurricane affect wind speed
     \begin{itemize}
       \item Explore seasonal differences
-      \item  Explore if wind speeds is increasing over years
+      \item  Identify whether average wind speeds are increasing over years
     \end{itemize}
-  \item Exploring wind speeds impact on death and damages
-  \item  As well as the characteristic of a hurricane associated with damages and deaths
+  \item How Bayesian estimates are associated with deaths and damage
 \end{enumerate}
 
 
@@ -109,7 +109,7 @@ map <- ggplot(df_temp, aes(x = Longitude, y = Latitude, group = ID)) +
 seasonrange <- paste(range(dt[, Season]), collapse=" - ")
 
 mapMonth <- map + facet_wrap(~ Month) +
-  ggtitle(paste("Atlantic named Windstorm Trajectories by Month (", 
+  ggtitle(paste0("Atlantic named Windstorm Trajectories by Month (", 
                  seasonrange, ")\n")) 
 mapMonth
 ```
@@ -118,11 +118,10 @@ mapMonth
 
 # Data Cleaning 
 
-- We are only concerned about observations that occurred on 6 hour intervals. hour 0, 6, 12, and 18. 
-- In addition we will exclude all hurricane IDs that have less then 7 observations. 
-- We used the lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed to build $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$ and lag of wind speed as $Y_{i}(t-6)$
-
-Through this process we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations so we are left with `r dim(df_rm)[1]` observations and `r length(unique(df_rm$ID))` unique hurricanes. 
+- We are only concerned about observations that occurred on 6-hour intervals (e.g., hour 0, 6, 12, etc.). 
+- We will exclude all hurricane IDs that have fewer than 7 observations. 
+- We use the lag difference ($t-6$ to $t-12$) for latitude, longitude and wind speed to construct $\Delta_{i,1}(t),\Delta_{i,2}(t), \Delta_{i,3}(t)$, and the lag of the wind speed is given by $Y_{i}(t-6)$
+- Through this process, we remove `r (dim(dt)[1]-dim(df_rm)[1])` observations, leaving `r dim(df_rm)[1]` observations across `r length(unique(df_rm$ID))` unique hurricanes.
 
 # Bayesian Model for Hurricane Trajectories
 
@@ -200,7 +199,7 @@ $$
 
 # MCMC Algorithm 
 
-We apply hybrid algorithm consisting with Metropolis-Hastings steps and Gibbs steps.
+We apply a hybrid algorithm consisting of Metropolis-Hastings steps and Gibbs steps.
 
 Update component wise: 
 
@@ -227,7 +226,7 @@ Update component wise:
   \centering 
    \begin{table}
     \centering
-    \caption{Range of Search Window and Acceptance Rate for paraemters used MH step}
+    \caption{Range of Search Window and Acceptance Rate for Paraemters Used in the MH Step}
     \resizebox{\linewidth}{!}{
     \begin{tabular}{|c|c|c|} \hline 
      & Search Window& Acceptance Rate (\%) \\ \hline 
@@ -507,12 +506,11 @@ dt_long %>%
   \begin{column}{0.47\textwidth}
   \textbf{Results:}
   \begin{itemize}
-    \item Due to length each model estimate were omitted 
-    \item No Nature Indicators were significant 
-    \item No Month Indicators were significant 
-    \item For the $\beta_1$ model the decade estimated is significant -0.003 (-0.002, -0.004)
+    \item No nature indicators were significant 
+    \item No month indicators were significant 
+    \item For the $\beta_1$ model, the decade estimated is significant with point estimate -0.003 (-0.002, -0.004)
   \end{itemize}
-  Thus Month and Nature don't have a linear association with each beta value. 
+  That is, month and nature do not exhibit a linear association with each beta value. 
   \end{column}
 \end{columns}
 
@@ -563,8 +561,8 @@ Note: For each characteristic, values denote the minimum, 25th percentile, media
 
 - Model Selection
   - Poisson regression with total population as offset
-    - $y_i \sim \text{Poisson}(\mu_i)$
-    - $\log(\mu_i) = \mathbf{x}_i' \gamma$
+    - $y_i \sim \text{Poisson}(\theta_i)$
+    - $\log(\theta_i) = \mathbf{x}_i' \gamma$
   - penalized regression via lasso
   - optimal $\lambda$ selected via leave-one-out cross validation
     - feasible with small $n$
@@ -572,10 +570,10 @@ Note: For each characteristic, values denote the minimum, 25th percentile, media
 
 - Post-selection Inference
   - bootstrap smoothing as proposed by Efron (2014)
-    - fit full model via Poisson-family GLM to obtain $\hat{\boldsymbol\mu}$
-    - for single bootstrap $b$, draw $\mathbf{y}_b^* \sim \text{Poisson}(\hat{\boldsymbol\mu})$
-    - execute lasso with $\mathbf{y}_b^*$ as output to obtain distribution of $\hat{\gamma}_b^*$
-    - compute empirical standard error of $\hat{\gamma}_b^*$
+    - fit full model via Poisson-family GLM to obtain $\hat{\boldsymbol\theta}$
+    - for single bootstrap $b$, draw $\mathbf{y}_b^* \sim \text{Poisson}(\hat{\boldsymbol\theta})$
+    - execute lasso with $\mathbf{y}_b^*$ as output to obtain $\hat{\gamma}_b^*$
+    - compute empirical standard error of $(\hat{\gamma}_b^*)$
 
 # Hurricane Deaths - Model Selection
 
@@ -625,12 +623,12 @@ output_damage %>%
 
 # Conclusions 
 
--  Based on the estimated $\mu$, on average, the increase of previous wind speed and larger increase of speed in previous time interval are corresponding with increase of current wind speed, while the wind will be slower when the hurricane moves further to north and east. 
+-  Based on $\hat{\mu}$, on average, increases in the current wind speed and acceleration are associated with increases in the future wind speed, whereas the future wind will slow when the hurricane moves north and east 
 - Hurricanes with more observations enjoy better MCMC estimates
-- With such a high-dimensional parameter space:
-  - burn-in takes longer than expected
-  - very sensitive to starting values
-- There does not seem to be a Nature or Month effect on wind speeds 
+- With such a high-dimensional parameter space,
+  - burn-in takes longer than expected, and
+  - convergence is very sensitive to starting values
+- There does not seem to be a nature or month effect on wind speeds 
 - Estimated $\beta$ coefficients generally prove useful in predicting damage and deaths
   - particularly, $(\beta_1, \beta_2, \beta_3)$ are always selected
   - however, $\beta_2$ is only inferentially significant in the damage model
