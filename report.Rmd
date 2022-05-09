@@ -220,8 +220,18 @@ We are also going to consider 5 different models just using decade as a predicto
 
 ## 2.7. Models to Explore Death and Damages 
 
-\textbf{FILL IN}
+Using cross-sectional data for $n = 43$ distinct hurricanes pertaining to damage (in billions of US dollars), deaths, and possible features of interest, we seek to build a model that can predict the destruction of a hurricane and offer insight into inferential relationships between selected features, damage, and deaths.
 
+Features include the season and nature of each hurricane, the total population of the affected area, the fraction of poor residents in the affected area, as well as coefficients $\boldsymbol\beta$ estimated via our MCMC algorithm. Because both outcomes (i.e., damage and deaths) are non-negative, right-skewed, and subject to an exposure characterized by population, we naturally consider Poisson regression with a log link and a population offset. In particular, for each hurricane $i \in \{ 1, \ldots, n \}$, we assume outcome $y_i \sim \text{Poisson}(\theta_i)$, such that
+  \[
+    \log(\theta_i)
+    = \log(m_i) + \mathbf{x}_i' \boldsymbol\gamma + \boldsymbol\beta_i'\boldsymbol\delta,
+  \]
+where $m_i$ is the total population of the affected area, $\mathbf{x}_i \in \mathbb{R}^p$ is a vector of observed features, and $\boldsymbol\beta_i \in \mathbb{R}^5$ is a vector of estimated effects from the MCMC algorithm.
+
+Because $p = 8$ in the dataset provided, the dimension of our parameter space is large relative to $n$, which is small. As such, we consider a penalized lasso Poisson regression to select only the most important features. To identify the optimal penalty, we employ a leave-one-out cross-validation procedure, which is feasible for small $n$. This procedure is also desirable in that there is only one unique way to assign the $n$ folds, and hence the model selection is non-random. Our selection criterion will be the minimizer of the average Poisson deviance, as more familiar metrics like the linear correlation coefficient and the AUC are not appropriate for Poisson regression.
+
+Finally, we employ a bootstrap smoothing procedure due to Efron (2014) in order to consider post-selection inference. Generally, inference is not tenable when considering penalized regression, but we can estimate standard errors for our constrained point estimates via bootstrapping.
 
 # 3. Results 
 
