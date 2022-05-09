@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  8 MAY 2022 21:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.2.18)  8 MAY 2022 21:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1210,51 +1210,51 @@ Package pdftex.def Info: pics/year_model_visual.png  used on input line 671.
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.711 
+l.712 
       pdfTeX warning (ext4): destination with the same identifier (name{figure.
 9}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.711 
+l.712 
        <./pics/nature_box.png> <./pics/year_model_visual.png>] [12] [13] [14]
-Overfull \hbox (74.08447pt too wide) detected at line 819
+Overfull \hbox (74.08447pt too wide) detected at line 820
 [][]
  []
 
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 8
-30.
+31.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
-841.
+842.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [15]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 876.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 877.
 
 LaTeX Font Warning: Font shape `T1/lmtt/bx/it' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/sl' tried instead on input line 876.
+(Font)              Font shape `T1/lmtt/b/sl' tried instead on input line 877.
 
 [16] [17]
 <pics/linear_est_all.png, id=216, 957.5775pt x 770.88pt>
 File: pics/linear_est_all.png Graphic file (type png)
 <use pics/linear_est_all.png>
-Package pdftex.def Info: pics/linear_est_all.png  used on input line 955.
+Package pdftex.def Info: pics/linear_est_all.png  used on input line 956.
 (pdftex.def)             Requested size: 469.7577pt x 378.16972pt.
 [18] [19pdfTeX warning (ext4): destination with the same identifier (name{figur
 e.10}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.960 \end{document}
+l.961 \end{document}
                      <./pics/linear_est_all.png>] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 36326 strings out of 478994
- 832470 string characters out of 5858184
+ 36328 strings out of 478994
+ 832490 string characters out of 5858184
  1278268 words of memory out of 5000000
  52818 multiletter control sequences out of 15000+600000
- 499012 words of font info for 208 fonts, out of 8000000 for 9000
+ 499099 words of font info for 209 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  87i,15n,88p,1057b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/t
@@ -1290,7 +1290,7 @@ ublic/lm/lmtk10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/l
 mtko10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt12.pfb
 ></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtti10.pfb></usr/lo
 cal/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on report.pdf (19 pages, 2470406 bytes).
+Output written on report.pdf (19 pages, 2470569 bytes).
 PDF statistics:
  447 PDF objects out of 1000 (max. 8388607)
  371 compressed objects within 4 object streams
